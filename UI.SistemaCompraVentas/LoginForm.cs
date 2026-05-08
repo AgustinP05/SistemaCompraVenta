@@ -53,5 +53,6 @@ namespace UI.SistemaCompraVentas
                 MessageBox.Show("Credenciales incorrectas");
             }
         }
+
     }
 }
