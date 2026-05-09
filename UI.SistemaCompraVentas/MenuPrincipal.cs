@@ -35,10 +35,14 @@ namespace UI.SistemaCompraVentas
         {
             var rol = Sesion.ObtenerInstancia().UsuarioActual.Rol;
 
-            btnUsuarios.Visible = (rol == Rol.Administrador);
-            btnVentas.Visible = (rol == Rol.Vendedor);
-            btnProductos.Visible = (rol == Rol.Stock);
-            btnReportes.Visible = (rol == Rol.Gerente);
+            btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
+
+            btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
+
+            btnProductos.Visible = rol.TienePermiso("GestionarProductos");
+
+            btnReportes.Visible = rol.TienePermiso("VerReportes");
+
         }
 
         private void btnLogout_Click(object sender, EventArgs e)

@@ -1,4 +1,6 @@
-﻿using BLL.SistemaCompraVenta.Services;
+﻿using BLL.SistemaCompraVenta.Composite;
+using BLL.SistemaCompraVenta.Entities;
+using BLL.SistemaCompraVenta.Services;
 using BLL.SistemaCompraVenta.Sesion;
 using System;
 using System.Collections.Generic;
@@ -37,21 +39,49 @@ namespace UI.SistemaCompraVentas
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            /* var service = new UsuarioService();
+             var usuario = service.Login(txtUsuario.Text, txtPassword.Text);
+
+             if (usuario != null)
+             {
+                 Sesion.ObtenerInstancia().Login(usuario);
+
+                 var menu = new MenuPrincipal();
+                 menu.Show();
+                 this.Hide();
+             }
+             else
+             {
+                 MessageBox.Show("Credenciales incorrectas");
+             }*/
+
             var service = new UsuarioService();
+
             var usuario = service.Login(txtUsuario.Text, txtPassword.Text);
 
             if (usuario != null)
             {
-                Sesion.ObtenerInstancia().Login(usuario);
+                Sesion.ObtenerInstancia().UsuarioActual = usuario;
 
                 var menu = new MenuPrincipal();
                 menu.Show();
+
                 this.Hide();
             }
             else
             {
                 MessageBox.Show("Credenciales incorrectas");
             }
+
+        }
+
+        private void btnMostrarUsuarios_Click(object sender, EventArgs e)
+        {
+            UsuarioService usuarioService = new UsuarioService();
+
+            DataTable tabla = usuarioService.ObtenerUsuarios();
+
+            dataGridView1.DataSource = tabla;
         }
     }
 }

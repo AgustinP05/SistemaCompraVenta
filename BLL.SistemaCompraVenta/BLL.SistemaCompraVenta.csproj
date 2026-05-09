@@ -41,8 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Composite\Componente.cs" />
+    <Compile Include="Composite\FamiliaPermisos.cs" />
+    <Compile Include="Composite\Permiso.cs" />
+    <Compile Include="Entities\Compra.cs" />
+    <Compile Include="Entities\DetalleCompra.cs" />
+    <Compile Include="Entities\DetalleVenta.cs" />
+    <Compile Include="Entities\Producto.cs" />
     <Compile Include="Entities\Rol.cs" />
     <Compile Include="Entities\Usuario.cs" />
+    <Compile Include="Entities\Venta.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\UsuarioService.cs" />
     <Compile Include="Sesion\Sesion.cs" />
