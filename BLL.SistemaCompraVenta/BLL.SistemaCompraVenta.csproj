@@ -55,7 +55,9 @@
     <Compile Include="Services\UsuarioService.cs" />
     <Compile Include="Sesion\Sesion.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL.SistemaCompraVenta\DAL.SistemaCompraVenta.csproj">
       <Project>{6884b498-6300-4d65-b9cc-5ee7c8b55aa5}</Project>
