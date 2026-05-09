@@ -1,6 +1,7 @@
 ﻿using BLL.SistemaCompraVenta.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace BLL.SistemaCompraVenta.Services
 {
     public class UsuarioService
     {
+        //Para probar iniciar sesion (sin BBDD)
         public Usuario Login(string nombre, string password)
         {
             if (nombre == "admin" && password == "123")
@@ -25,5 +27,14 @@ namespace BLL.SistemaCompraVenta.Services
 
             return null;
         }
+
+        private DAL.SistemaCompraVenta.Usuario usuario = new DAL.SistemaCompraVenta.Usuario();
+
+        public DataTable ObtenerUsuarios()
+        {
+            return usuario.ObtenerUsuarios();
+        }
+
+
     }
 }

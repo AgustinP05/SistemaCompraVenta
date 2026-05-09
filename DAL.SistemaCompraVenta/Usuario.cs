@@ -17,6 +17,7 @@ namespace DAL.SistemaCompraVenta
         }
 
 
+        //Ejemplo dado por el profe en clase 2
         public DataTable ListarUsuariosDataTable()
         {
             Conexion objConexion = new Conexion();

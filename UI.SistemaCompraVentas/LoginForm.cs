@@ -54,5 +54,13 @@ namespace UI.SistemaCompraVentas
             }
         }
 
+        private void btnMostrarUsuarios_Click(object sender, EventArgs e)
+        {
+            UsuarioService usuarioService = new UsuarioService();
+
+            DataTable tabla = usuarioService.ObtenerUsuarios();
+
+            dataGridView1.DataSource = tabla;
+        }
     }
 }
