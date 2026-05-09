@@ -11,7 +11,7 @@ namespace BLL.SistemaCompraVenta.Sesion
     {
         private static Sesion instancia;
 
-        public Usuario UsuarioActual { get; private set; }
+        public Usuario UsuarioActual { get;  set; }
 
         private Sesion() { }
 
