@@ -44,6 +44,15 @@ namespace UI.SistemaCompraVentas
             btnReportes.Visible = rol.TienePermiso("VerReportes");
 
         }
+        
+        private void btnUsuarios_Click(object sender, EventArgs e)
+        {
+            // Creamos la instancia de la pantalla de gestión
+            FormGestionUsuarios frmGestion = new FormGestionUsuarios();
+
+            // La mostramos como cuadro de diálogo
+            frmGestion.ShowDialog();
+        }
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
