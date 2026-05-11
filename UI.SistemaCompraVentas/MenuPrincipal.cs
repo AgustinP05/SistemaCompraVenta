@@ -48,6 +48,18 @@ namespace UI.SistemaCompraVentas
             vistaVentas.StartPosition = FormStartPosition.CenterScreen;
             vistaVentas.ShowDialog();
         }
+        private void btnProductos_Click(object sender, EventArgs e)
+        {
+            // 1. Creamos la instancia del formulario de Stock
+            FormProductos vistaStock = new FormProductos();
+
+            // 2. Lo centramos respecto al menú para que quede prolijo
+            vistaStock.StartPosition = FormStartPosition.CenterScreen;
+
+            // 3. Lo abrimos como cuadro de diálogo (ShowDialog)
+            // Esto impide que el usuario toque el menú principal mientras carga stock
+            vistaStock.ShowDialog();
+        }
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
@@ -58,5 +70,7 @@ namespace UI.SistemaCompraVentas
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e) { }
+
+    
     }
 }
