@@ -61,6 +61,18 @@ namespace UI.SistemaCompraVentas
             vistaStock.ShowDialog();
         }
 
+        private void btnReportes_Click(object sender, EventArgs e)
+        {
+            // 1. Aquí lo llamamos 'vistaGerente'
+            FormReportes vistaGerente = new FormReportes();
+
+            // 2. Aquí también debemos usar 'vistaGerente'
+            vistaGerente.StartPosition = FormStartPosition.CenterScreen;
+
+            // 3. Y aquí también
+            vistaGerente.ShowDialog();
+        }
+
         private void btnLogout_Click(object sender, EventArgs e)
         {
             Sesion.ObtenerInstancia().Logout();

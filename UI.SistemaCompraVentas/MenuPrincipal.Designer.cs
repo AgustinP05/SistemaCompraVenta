@@ -80,6 +80,7 @@
             this.btnReportes.TabIndex = 3;
             this.btnReportes.Text = "btnReportes";
             this.btnReportes.UseVisualStyleBackColor = true;
+            this.btnReportes.Click += new System.EventHandler(this.btnReportes_Click);
             // 
             // lblUsuario
             // 
