@@ -1,9 +1,7 @@
-﻿using BLL.SistemaCompraVenta.Entities;
+﻿using ENT.SistemaCompraVenta; // <--- CAMBIÁ ESTA LÍNEA (la vieja ya no existe)
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+// ... otros usings si tenés
 
 namespace BLL.SistemaCompraVenta.Sesion
 {
@@ -11,9 +9,10 @@ namespace BLL.SistemaCompraVenta.Sesion
     {
         private static Sesion instancia;
 
-        public Usuario UsuarioActual { get;  set; }
+        // Ahora Visual Studio va a encontrar 'Usuario' porque está en el using de arriba
+        public Usuario UsuarioActual { get; set; }
 
-        private Sesion() { }
+        private Sesion() { } // Constructor privado: nadie puede hacer "new Sesion()"
 
         public static Sesion ObtenerInstancia()
         {

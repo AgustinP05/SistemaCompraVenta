@@ -45,8 +45,14 @@
     <Compile Include="Conexion.cs" />
     <Compile Include="Producto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Usuario.cs" />
+    <Compile Include="UsuarioDAL.cs" />
     <Compile Include="Venta.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ENT.SistemaCompraVenta\ENT.SistemaCompraVenta.csproj">
+      <Project>{11342c5c-edc0-4dc4-9348-13723bb5e150}</Project>
+      <Name>ENT.SistemaCompraVenta</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

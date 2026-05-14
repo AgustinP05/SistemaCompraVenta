@@ -1,12 +1,12 @@
-﻿using BLL.SistemaCompraVenta.Entities;
-using BLL.SistemaCompraVenta.Sesion;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+// --- CAMBIO CLAVE AQUÍ ---
+using ENT.SistemaCompraVenta;       // <--- Aquí viven ahora Usuario, Rol y Permisos
+using BLL.SistemaCompraVenta.Sesion; // Aquí vive el Singleton (Sesion)
 
 namespace UI.SistemaCompraVentas
 {
-    // Agregamos 'public' para que coincida con el Designer
     public partial class MenuPrincipal : Form
     {
         public MenuPrincipal()
@@ -17,6 +17,8 @@ namespace UI.SistemaCompraVentas
         private void MenuPrincipal_Load(object sender, EventArgs e)
         {
             ConfigurarPermisos();
+
+            // Verificamos si hay alguien logueado usando el Singleton de la BLL
             if (Sesion.ObtenerInstancia().UsuarioActual != null)
             {
                 lblUsuario.Text = "Hola usuario " + Sesion.ObtenerInstancia().UsuarioActual.Nombre;
@@ -25,10 +27,14 @@ namespace UI.SistemaCompraVentas
 
         private void ConfigurarPermisos()
         {
-            var sesion = Sesion.ObtenerInstancia().UsuarioActual;
-            if (sesion != null && sesion.Rol != null)
+            // Usamos el objeto Usuario que ahora viene de la capa ENT
+            var usuario = Sesion.ObtenerInstancia().UsuarioActual;
+
+            if (usuario != null && usuario.Rol != null)
             {
-                var rol = sesion.Rol;
+                var rol = usuario.Rol;
+
+                // Estos nombres de permisos deben coincidir con los que pusiste en UsuarioService
                 btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
                 btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
                 btnProductos.Visible = rol.TienePermiso("GestionarProductos");
@@ -48,28 +54,18 @@ namespace UI.SistemaCompraVentas
             vistaVentas.StartPosition = FormStartPosition.CenterScreen;
             vistaVentas.ShowDialog();
         }
+
         private void btnProductos_Click(object sender, EventArgs e)
         {
-            // 1. Creamos la instancia del formulario de Stock
             FormStock vistaStock = new FormStock();
-
-            // 2. Lo centramos respecto al menú para que quede prolijo
             vistaStock.StartPosition = FormStartPosition.CenterScreen;
-
-            // 3. Lo abrimos como cuadro de diálogo (ShowDialog)
-            // Esto impide que el usuario toque el menú principal mientras carga stock
             vistaStock.ShowDialog();
         }
 
         private void btnReportes_Click(object sender, EventArgs e)
         {
-            // 1. Aquí lo llamamos 'vistaGerente'
             FormGerente vistaGerente = new FormGerente();
-
-            // 2. Aquí también debemos usar 'vistaGerente'
             vistaGerente.StartPosition = FormStartPosition.CenterScreen;
-
-            // 3. Y aquí también
             vistaGerente.ShowDialog();
         }
 
@@ -82,7 +78,5 @@ namespace UI.SistemaCompraVentas
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e) { }
-
-    
     }
 }
