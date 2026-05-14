@@ -6,7 +6,6 @@ namespace UI.SistemaCompraVentas
 {
     public partial class FormProductos : Form
     {
-        // Lista temporal para simular la base de datos
         List<object> listaProductos = new List<object>();
 
         public FormProductos()
@@ -16,46 +15,51 @@ namespace UI.SistemaCompraVentas
 
         private void FormProductos_Load(object sender, EventArgs e)
         {
-            // Limpiamos antes de cargar para evitar duplicados
             cboCategoria.Items.Clear();
-            cboCategoria.Items.Add("Hierros");
-            cboCategoria.Items.Add("Cementos");
-            cboCategoria.Items.Add("Áridos");
-            cboCategoria.Items.Add("Herramientas");
+            cboCategoria.Items.Add("Calzado");
+            cboCategoria.Items.Add("Vestimenta");
+            cboCategoria.Items.Add("Accesorios");
 
             if (cboCategoria.Items.Count > 0)
                 cboCategoria.SelectedIndex = 0;
 
-            // Simulamos productos iniciales
-            listaProductos.Add(new { Nombre = "Cemento Avellaneda 50kg", Categoria = "Cementos", Precio = 8500.00, Stock = 120 });
-            listaProductos.Add(new { Nombre = "Hierro del 12", Categoria = "Hierros", Precio = 15400.00, Stock = 45 });
+            // Productos de ejemplo acordes al negocio
+            listaProductos.Add(new { NombreProducto = "Zapatillas Running Nike Air", Categoria = "Calzado", Marca = "Nike", Talle = "42", PrecioVenta = 85000.00, PrecioCosto = 55000.00, StockActual = 10, StockMinimo = 3 });
+            listaProductos.Add(new { NombreProducto = "Remera Deportiva Adidas", Categoria = "Vestimenta", Marca = "Adidas", Talle = "M", PrecioVenta = 32000.00, PrecioCosto = 18000.00, StockActual = 25, StockMinimo = 5 });
 
             ActualizarGrilla();
         }
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            // Validación de nombre
             if (string.IsNullOrWhiteSpace(txtNombre.Text))
             {
                 MessageBox.Show("Por favor, ingrese el nombre del producto.");
                 return;
             }
 
-            // Validación de categoría (por si no seleccionó nada)
             if (cboCategoria.SelectedItem == null)
             {
                 MessageBox.Show("Seleccione una categoría válida.");
                 return;
             }
 
-            // Agregamos a la lista
+            if (string.IsNullOrWhiteSpace(txtMarca.Text))
+            {
+                MessageBox.Show("Por favor, ingrese la marca del producto.");
+                return;
+            }
+
             listaProductos.Add(new
             {
-                Nombre = txtNombre.Text,
+                NombreProducto = txtNombre.Text,
                 Categoria = cboCategoria.SelectedItem.ToString(),
-                Precio = (double)nmPrecio.Value,
-                Stock = (int)nmStock.Value
+                Marca = txtMarca.Text,
+                Talle = txtTalle.Text,
+                PrecioVenta = (double)nmPrecioVenta.Value,
+                PrecioCosto = (double)nmPrecioCosto.Value,
+                StockActual = (int)nmStockActual.Value,
+                StockMinimo = (int)nmStockMinimo.Value
             });
 
             ActualizarGrilla();
@@ -72,10 +76,34 @@ namespace UI.SistemaCompraVentas
         private void LimpiarCampos()
         {
             txtNombre.Clear();
-            nmPrecio.Value = 0;
-            nmStock.Value = 0;
+            txtMarca.Clear();
+            txtTalle.Clear();
+            nmPrecioVenta.Value = 0;
+            nmPrecioCosto.Value = 0;
+            nmStockActual.Value = 0;
+            nmStockMinimo.Value = 0;
             if (cboCategoria.Items.Count > 0)
                 cboCategoria.SelectedIndex = 0;
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void nmPrecioVenta_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
