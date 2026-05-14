@@ -2,16 +2,11 @@
 using BLL.SistemaCompraVenta.Sesion;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace UI.SistemaCompraVentas
 {
+    // Agregamos 'public' para que coincida con el Designer
     public partial class MenuPrincipal : Form
     {
         public MenuPrincipal()
@@ -19,39 +14,75 @@ namespace UI.SistemaCompraVentas
             InitializeComponent();
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void MenuPrincipal_Load(object sender, EventArgs e)
         {
             ConfigurarPermisos();
-
-            lblUsuario.Text ="Hola usuario "+Sesion.ObtenerInstancia().UsuarioActual.Nombre;
+            if (Sesion.ObtenerInstancia().UsuarioActual != null)
+            {
+                lblUsuario.Text = "Hola usuario " + Sesion.ObtenerInstancia().UsuarioActual.Nombre;
+            }
         }
 
         private void ConfigurarPermisos()
         {
-            var rol = Sesion.ObtenerInstancia().UsuarioActual.Rol;
+            var sesion = Sesion.ObtenerInstancia().UsuarioActual;
+            if (sesion != null && sesion.Rol != null)
+            {
+                var rol = sesion.Rol;
+                btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
+                btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
+                btnProductos.Visible = rol.TienePermiso("GestionarProductos");
+                btnReportes.Visible = rol.TienePermiso("VerReportes");
+            }
+        }
 
-            btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
+        private void btnUsuarios_Click(object sender, EventArgs e)
+        {
+            FormGestionUsuarios frmGestion = new FormGestionUsuarios();
+            frmGestion.ShowDialog();
+        }
 
-            btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
+        private void btnVentas_Click(object sender, EventArgs e)
+        {
+            FormVendedor vistaVentas = new FormVendedor();
+            vistaVentas.StartPosition = FormStartPosition.CenterScreen;
+            vistaVentas.ShowDialog();
+        }
+        private void btnProductos_Click(object sender, EventArgs e)
+        {
+            // 1. Creamos la instancia del formulario de Stock
+            FormStock vistaStock = new FormStock();
 
-            btnProductos.Visible = rol.TienePermiso("GestionarProductos");
+            // 2. Lo centramos respecto al menú para que quede prolijo
+            vistaStock.StartPosition = FormStartPosition.CenterScreen;
 
-            btnReportes.Visible = rol.TienePermiso("VerReportes");
+            // 3. Lo abrimos como cuadro de diálogo (ShowDialog)
+            // Esto impide que el usuario toque el menú principal mientras carga stock
+            vistaStock.ShowDialog();
+        }
 
+        private void btnReportes_Click(object sender, EventArgs e)
+        {
+            // 1. Aquí lo llamamos 'vistaGerente'
+            FormGerente vistaGerente = new FormGerente();
+
+            // 2. Aquí también debemos usar 'vistaGerente'
+            vistaGerente.StartPosition = FormStartPosition.CenterScreen;
+
+            // 3. Y aquí también
+            vistaGerente.ShowDialog();
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
             Sesion.ObtenerInstancia().Logout();
-
             var login = new LoginForm();
             login.Show();
             this.Close();
         }
+
+        private void panel1_Paint(object sender, PaintEventArgs e) { }
+
+    
     }
 }
