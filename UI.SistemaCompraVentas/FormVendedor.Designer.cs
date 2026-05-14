@@ -1,6 +1,6 @@
 ﻿namespace UI.SistemaCompraVentas
 {
-    partial class FormVentas
+    partial class FormVendedor
     {
         private System.ComponentModel.IContainer components = null;
 

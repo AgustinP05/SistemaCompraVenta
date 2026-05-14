@@ -10,13 +10,13 @@ using System.Windows.Forms;
 
 namespace UI.SistemaCompraVentas
 {
-    public partial class FormVentas : Form
+    public partial class FormVendedor : Form
     {
         // Lista para el "carrito" de esta venta
         List<object> carrito = new List<object>();
         double acumuladoTotal = 0;
 
-        public FormVentas()
+        public FormVendedor()
         {
             InitializeComponent();
         }

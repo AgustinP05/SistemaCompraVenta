@@ -44,14 +44,14 @@ namespace UI.SistemaCompraVentas
 
         private void btnVentas_Click(object sender, EventArgs e)
         {
-            FormVentas vistaVentas = new FormVentas();
+            FormVendedor vistaVentas = new FormVendedor();
             vistaVentas.StartPosition = FormStartPosition.CenterScreen;
             vistaVentas.ShowDialog();
         }
         private void btnProductos_Click(object sender, EventArgs e)
         {
             // 1. Creamos la instancia del formulario de Stock
-            FormProductos vistaStock = new FormProductos();
+            FormStock vistaStock = new FormStock();
 
             // 2. Lo centramos respecto al menú para que quede prolijo
             vistaStock.StartPosition = FormStartPosition.CenterScreen;
@@ -64,7 +64,7 @@ namespace UI.SistemaCompraVentas
         private void btnReportes_Click(object sender, EventArgs e)
         {
             // 1. Aquí lo llamamos 'vistaGerente'
-            FormReportes vistaGerente = new FormReportes();
+            FormGerente vistaGerente = new FormGerente();
 
             // 2. Aquí también debemos usar 'vistaGerente'
             vistaGerente.StartPosition = FormStartPosition.CenterScreen;

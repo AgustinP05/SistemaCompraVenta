@@ -1,6 +1,6 @@
 ﻿namespace UI.SistemaCompraVentas
 {
-    partial class FormReportes
+    partial class FormGerente
     {
         /// <summary>
         /// Required designer variable.

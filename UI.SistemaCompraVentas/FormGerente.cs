@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace UI.SistemaCompraVentas
 {
-    public partial class FormReportes : Form
+    public partial class FormGerente : Form
     {
-        public FormReportes()
+        public FormGerente()
         {
             InitializeComponent();
         }

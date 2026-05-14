@@ -48,29 +48,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormProductos.cs">
+    <Compile Include="FormStock.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormProductos.Designer.cs">
-      <DependentUpon>FormProductos.cs</DependentUpon>
+    <Compile Include="FormStock.Designer.cs">
+      <DependentUpon>FormStock.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormReportes.cs">
+    <Compile Include="FormGerente.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormReportes.Designer.cs">
-      <DependentUpon>FormReportes.cs</DependentUpon>
+    <Compile Include="FormGerente.Designer.cs">
+      <DependentUpon>FormGerente.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormVentas.cs">
+    <Compile Include="FormVendedor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormVentas.Designer.cs">
-      <DependentUpon>FormVentas.cs</DependentUpon>
+    <Compile Include="FormVendedor.Designer.cs">
+      <DependentUpon>FormVendedor.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormUsuarios.cs">
+    <Compile Include="FormAdministrador.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormUsuarios.Designer.cs">
-      <DependentUpon>FormUsuarios.cs</DependentUpon>
+    <Compile Include="FormAdministrador.Designer.cs">
+      <DependentUpon>FormAdministrador.cs</DependentUpon>
     </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
@@ -86,17 +86,17 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FormProductos.resx">
-      <DependentUpon>FormProductos.cs</DependentUpon>
+    <EmbeddedResource Include="FormStock.resx">
+      <DependentUpon>FormStock.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormReportes.resx">
-      <DependentUpon>FormReportes.cs</DependentUpon>
+    <EmbeddedResource Include="FormGerente.resx">
+      <DependentUpon>FormGerente.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormVentas.resx">
-      <DependentUpon>FormVentas.cs</DependentUpon>
+    <EmbeddedResource Include="FormVendedor.resx">
+      <DependentUpon>FormVendedor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormUsuarios.resx">
-      <DependentUpon>FormUsuarios.cs</DependentUpon>
+    <EmbeddedResource Include="FormAdministrador.resx">
+      <DependentUpon>FormAdministrador.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>

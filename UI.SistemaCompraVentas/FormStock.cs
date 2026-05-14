@@ -4,11 +4,11 @@ using System.Windows.Forms;
 
 namespace UI.SistemaCompraVentas
 {
-    public partial class FormProductos : Form
+    public partial class FormStock : Form
     {
         List<object> listaProductos = new List<object>();
 
-        public FormProductos()
+        public FormStock()
         {
             InitializeComponent();
         }

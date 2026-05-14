@@ -2,7 +2,7 @@
 
 namespace UI.SistemaCompraVentas
 {
-    partial class FormProductos
+    partial class FormStock
     {
         /// <summary>
         /// Required designer variable.
