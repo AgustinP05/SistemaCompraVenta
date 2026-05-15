@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.SistemaCompraVenta
 {
-    // CAMBIAMOS EL NOMBRE A UsuarioDAL PARA EVITAR AMBIGÜEDAD
+    // CAMBIAMOS EL NOMBRE DE LA CLASE A UsuarioDAL
+    // Esto mata la ambigüedad con la entidad Usuario
     public class UsuarioDAL
     {
         Conexion conexion = new Conexion();

@@ -1,27 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ENT.SistemaCompraVenta
 {
     public class Rol
     {
-        // Cambiamos 'Nombre' por 'NombreRol' para que coincida con tu error
         public string NombreRol { get; set; }
+        public List<Componente> Permisos { get; set; } = new List<Componente>();
 
-        public List<Componente> Permisos { get; set; }
-
-        public Rol()
+        // ESTE MÉTODO DEBE SER PUBLIC
+        public bool TienePermiso(string nombrePermiso)
         {
-            Permisos = new List<Componente>();
-        }
-
-        public bool TienePermiso(string permiso)
-        {
-            // OJO: Si acá usabas p.Nombre, fijate que la clase Componente 
-            // tenga la propiedad Nombre (que la tiene según lo que me pasaste antes)
             foreach (var p in Permisos)
             {
-                if (p.Nombre == permiso) return true;
+                if (p.Nombre == nombrePermiso) return true;
             }
             return false;
         }

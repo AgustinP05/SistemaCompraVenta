@@ -9,7 +9,10 @@ namespace ENT.SistemaCompraVenta // Cambiamos el namespace al nuevo proyecto
     {
         public int ID { get; set; }
         public string Nombre { get; set; }
-        public double Precio { get; set; }
+        public string Marca { get; set; } 
+        public string Categoria { get; set; }
+        public double PrecioVenta { get; set; }
+        public double PrecioCosto { get; set; }
         public int Stock { get; set; }
 
         // Un método útil para mostrar en la UI
