@@ -1,17 +1,10 @@
-﻿using BLL.SistemaCompraVenta.Composite;
-using BLL.SistemaCompraVenta.Entities;
-using BLL.SistemaCompraVenta.Services;
-using BLL.SistemaCompraVenta.Sesion;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Collections.Specialized.BitVector32;
+// --- CAMBIOS CLAVE AQUÍ ---
+using ENT.SistemaCompraVenta;      // Traemos Usuario, Rol y Permisos de la nueva capa
+using BLL.SistemaCompraVenta.Services; // Para usar UsuarioService
+using BLL.SistemaCompraVenta.Sesion;   // Para usar el Singleton (Sesion)
 
 namespace UI.SistemaCompraVentas
 {
@@ -22,66 +15,43 @@ namespace UI.SistemaCompraVentas
             InitializeComponent();
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtUsuario_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtPassword_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            /* var service = new UsuarioService();
-             var usuario = service.Login(txtUsuario.Text, txtPassword.Text);
+            // 1. Instanciamos el servicio de la BLL
+            UsuarioService service = new UsuarioService();
 
-             if (usuario != null)
-             {
-                 Sesion.ObtenerInstancia().Login(usuario);
+            // 2. Intentamos loguear (service ahora devuelve un Usuario de la capa ENT)
+            var usuarioLogueado = service.Login(txtUsuario.Text, txtPassword.Text);
 
-                 var menu = new MenuPrincipal();
-                 menu.Show();
-                 this.Hide();
-             }
-             else
-             {
-                 MessageBox.Show("Credenciales incorrectas");
-             }*/
-
-            var service = new UsuarioService();
-
-            var usuario = service.Login(txtUsuario.Text, txtPassword.Text);
-
-            if (usuario != null)
+            if (usuarioLogueado != null)
             {
-                Sesion.ObtenerInstancia().UsuarioActual = usuario;
+                // 3. Guardamos el usuario en el Singleton (BLL)
+                Sesion.ObtenerInstancia().UsuarioActual = usuarioLogueado;
 
-                var menu = new MenuPrincipal();
+                MessageBox.Show("¡Bienvenido " + usuarioLogueado.Nombre + "!");
+
+                // 4. Abrimos el menú principal
+                MenuPrincipal menu = new MenuPrincipal();
                 menu.Show();
 
-                this.Hide();
+                this.Hide(); // Ocultamos el login
             }
             else
             {
-                MessageBox.Show("Credenciales incorrectas");
+                MessageBox.Show("Credenciales incorrectas. Intente nuevamente.");
             }
-
         }
 
         private void btnMostrarUsuarios_Click(object sender, EventArgs e)
         {
             UsuarioService usuarioService = new UsuarioService();
-
             DataTable tabla = usuarioService.ObtenerUsuarios();
-
             dataGridView1.DataSource = tabla;
         }
+
+        // Métodos vacíos por si el diseñador los requiere
+        private void label1_Click(object sender, EventArgs e) { }
+        private void txtUsuario_TextChanged(object sender, EventArgs e) { }
+        private void txtPassword_TextChanged(object sender, EventArgs e) { }
     }
 }

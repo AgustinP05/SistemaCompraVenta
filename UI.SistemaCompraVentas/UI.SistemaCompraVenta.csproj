@@ -134,6 +134,10 @@
       <Project>{9BD93DFD-D7EF-416B-80D3-709A43D95083}</Project>
       <Name>BLL.SistemaCompraVenta</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ENT.SistemaCompraVenta\ENT.SistemaCompraVenta.csproj">
+      <Project>{11342c5c-edc0-4dc4-9348-13723bb5e150}</Project>
+      <Name>ENT.SistemaCompraVenta</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\back-image.png" />

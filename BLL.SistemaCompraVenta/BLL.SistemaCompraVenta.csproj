@@ -41,19 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Composite\Componente.cs" />
-    <Compile Include="Composite\FamiliaPermisos.cs" />
-    <Compile Include="Composite\Permiso.cs" />
-    <Compile Include="Entities\Compra.cs" />
-    <Compile Include="Entities\DetalleCompra.cs" />
-    <Compile Include="Entities\DetalleVenta.cs" />
-    <Compile Include="Entities\Producto.cs" />
-    <Compile Include="Entities\Rol.cs" />
-    <Compile Include="Entities\Usuario.cs" />
-    <Compile Include="Entities\Venta.cs" />
+    <Compile Include="ClienteBLL.cs" />
+    <Compile Include="ProductoBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\UsuarioService.cs" />
     <Compile Include="Sesion\Sesion.cs" />
+    <Compile Include="VentaBLL.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -62,6 +55,10 @@
     <ProjectReference Include="..\DAL.SistemaCompraVenta\DAL.SistemaCompraVenta.csproj">
       <Project>{6884b498-6300-4d65-b9cc-5ee7c8b55aa5}</Project>
       <Name>DAL.SistemaCompraVenta</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ENT.SistemaCompraVenta\ENT.SistemaCompraVenta.csproj">
+      <Project>{11342c5c-edc0-4dc4-9348-13723bb5e150}</Project>
+      <Name>ENT.SistemaCompraVenta</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

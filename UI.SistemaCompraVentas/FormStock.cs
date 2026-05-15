@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using ENT.SistemaCompraVenta; // <--- USAR ENTIDADES
+using BLL.SistemaCompraVenta; // <--- USAR NEGOCIO
 
 namespace UI.SistemaCompraVentas
 {
     public partial class FormStock : Form
     {
-        List<object> listaProductos = new List<object>();
+        // Ya no usamos List<object>, usamos el servicio de negocio
+        ProductoBLL oProductoBLL = new ProductoBLL();
 
         public FormStock()
         {
@@ -18,92 +21,52 @@ namespace UI.SistemaCompraVentas
             cboCategoria.Items.Clear();
             cboCategoria.Items.Add("Calzado");
             cboCategoria.Items.Add("Vestimenta");
-            cboCategoria.Items.Add("Accesorios");
-
-            if (cboCategoria.Items.Count > 0)
-                cboCategoria.SelectedIndex = 0;
-
-            // Productos de ejemplo acordes al negocio
-            listaProductos.Add(new { NombreProducto = "Zapatillas Running Nike Air", Categoria = "Calzado", Marca = "Nike", Talle = "42", PrecioVenta = 85000.00, PrecioCosto = 55000.00, StockActual = 10, StockMinimo = 3 });
-            listaProductos.Add(new { NombreProducto = "Remera Deportiva Adidas", Categoria = "Vestimenta", Marca = "Adidas", Talle = "M", PrecioVenta = 32000.00, PrecioCosto = 18000.00, StockActual = 25, StockMinimo = 5 });
+            cboCategoria.SelectedIndex = 0;
 
             ActualizarGrilla();
         }
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtNombre.Text))
-            {
-                MessageBox.Show("Por favor, ingrese el nombre del producto.");
-                return;
-            }
+            // ... (validaciones previas)
 
-            if (cboCategoria.SelectedItem == null)
-            {
-                MessageBox.Show("Seleccione una categoría válida.");
-                return;
-            }
+            Producto nuevoProducto;
+            if (cboCategoria.Text == "Calzado")
+                nuevoProducto = new Calzado { Talle = txtTalle.Text };
+            else
+                nuevoProducto = new Vestimenta { Talle = txtTalle.Text };
 
-            if (string.IsNullOrWhiteSpace(txtMarca.Text))
-            {
-                MessageBox.Show("Por favor, ingrese la marca del producto.");
-                return;
-            }
+            // --- AQUÍ ESTÁ EL TRUCO: ASIGNAR LOS VALORES ---
+            nuevoProducto.Nombre = txtNombre.Text;
+            nuevoProducto.Marca = txtMarca.Text; 
+            nuevoProducto.Categoria = cboCategoria.Text;
+            nuevoProducto.PrecioVenta = (double)nmPrecioVenta.Value;
+            nuevoProducto.PrecioCosto = (double)nmPrecioCosto.Value;
+            nuevoProducto.Stock = (int)nmStockActual.Value;
 
-            listaProductos.Add(new
-            {
-                NombreProducto = txtNombre.Text,
-                Categoria = cboCategoria.SelectedItem.ToString(),
-                Marca = txtMarca.Text,
-                Talle = txtTalle.Text,
-                PrecioVenta = (double)nmPrecioVenta.Value,
-                PrecioCosto = (double)nmPrecioCosto.Value,
-                StockActual = (int)nmStockActual.Value,
-                StockMinimo = (int)nmStockMinimo.Value
-            });
+            // Enviamos a la BLL
+            oProductoBLL.GuardarProducto(nuevoProducto);
 
             ActualizarGrilla();
             LimpiarCampos();
-            MessageBox.Show("Producto registrado correctamente.");
+            MessageBox.Show("Producto registrado con ID: " + nuevoProducto.ID);
         }
 
         private void ActualizarGrilla()
         {
             dgvProductos.DataSource = null;
-            dgvProductos.DataSource = listaProductos;
+            dgvProductos.DataSource = oProductoBLL.ListarProductos();
         }
 
         private void LimpiarCampos()
         {
             txtNombre.Clear();
-            txtMarca.Clear();
             txtTalle.Clear();
-            nmPrecioVenta.Value = 0;
-            nmPrecioCosto.Value = 0;
-            nmStockActual.Value = 0;
+            txtMarca.Clear();
             nmStockMinimo.Value = 0;
-            if (cboCategoria.Items.Count > 0)
-                cboCategoria.SelectedIndex = 0;
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label8_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void nmPrecioVenta_ValueChanged(object sender, EventArgs e)
-        {
-
+            nmPrecioCosto.Value = 0;
+            nmPrecioVenta.Value = 0;
+            nmStockActual.Value = 0;
         }
     }
 }

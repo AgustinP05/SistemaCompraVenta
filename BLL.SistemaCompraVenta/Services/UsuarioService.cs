@@ -1,115 +1,71 @@
-﻿using BLL.SistemaCompraVenta.Composite;
-using BLL.SistemaCompraVenta.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ENT.SistemaCompraVenta; // Capa de Entidades
+using DAL.SistemaCompraVenta; // Capa de Datos
 
 namespace BLL.SistemaCompraVenta.Services
 {
+    // 1. TODO debe estar dentro de la clase
     public class UsuarioService
     {
-
-        public Usuario Login(string nombre, string password)
+        // 2. El método Login DEBE estar dentro de estas llaves
+        public ENT.SistemaCompraVenta.Usuario Login(string nombre, string password)
         {
-            //Si el usuario ingresado es de rol Administrador...
-            if (nombre == "admin" && password == "123") //Recordemos que estos estan login hardcodeados estan provisoriamente
+            // --- ROL: ADMINISTRADOR ---
+            if (nombre == "admin" && password == "123")
             {
-                //Permisos de este rol
-                Permiso permisoUsuarios = new Permiso();
-                permisoUsuarios.Nombre = "GestionarUsuarios";
-                //Ver cuales mas agregar
-                // // // //
-
-
+                Permiso permisoUsuarios = new Permiso { Nombre = "GestionarUsuarios" };
                 Rol rolAdmin = new Rol();
-                rolAdmin.Nombre = "Administrador";      //Nombre del Rol
+                rolAdmin.NombreRol = "Administrador";
+                rolAdmin.Permisos.Add(permisoUsuarios);
 
-                rolAdmin.Permisos.Add(permisoUsuarios); //Se le asigna este permiso
-
-                return new Usuario
-                {
-                    Nombre = "admin",                   //Esto sería el nombre del Usuario, por ejemplo Juan
-                    Rol = rolAdmin
-                };
+                return new ENT.SistemaCompraVenta.Usuario { Nombre = "admin", Rol = rolAdmin };
             }
 
-            //Si el usuario ingresado es de rol Vendedor...
+            // --- ROL: VENDEDOR ---
             if (nombre == "vendedor" && password == "123")
             {
-                //Permisos de este rol
-                Permiso permisoVentas = new Permiso();
-                permisoVentas.Nombre = "RegistrarVentas";
-                //Ver cuales mas agregar
-                // // // //
-
+                Permiso permisoVentas = new Permiso { Nombre = "RegistrarVentas" };
                 Rol rolVendedor = new Rol();
-                rolVendedor.Nombre = "Vendedor";
-
+                rolVendedor.NombreRol = "Vendedor";
                 rolVendedor.Permisos.Add(permisoVentas);
 
-                return new Usuario
-                {
-                    Nombre = "vendedor",
-                    Rol = rolVendedor
-                };
+                return new ENT.SistemaCompraVenta.Usuario { Nombre = "vendedor", Rol = rolVendedor };
             }
 
-            //Si el usuario ingresado es de rol Stock...
-            if (nombre == "stock" && password == "123")
-            {
-                //Permisos de este rol
-                Permiso permisoProductos = new Permiso();
-                permisoProductos.Nombre = "GestionarProductos";
-                //Ver cuales mas agregar
-                // // // //
-
-                Rol rolStock = new Rol();
-                rolStock.Nombre = "Stock";
-
-                rolStock.Permisos.Add(permisoProductos);
-
-                return new Usuario
-                {
-                    Nombre = "stock",
-                    Rol = rolStock
-                };
-            }
-
-            //Si el usuario ingresado es de rol Gerente...
+            // --- ROL: GERENTE ---
             if (nombre == "gerente" && password == "123")
             {
-
-                //Permisos de este rol
-                Permiso permisoReportes = new Permiso();
-                permisoReportes.Nombre = "VerReportes";
-                //Ver cuales mas agregar
-                // // // //
-
+                Permiso permisoReportes = new Permiso { Nombre = "VerReportes" };
                 Rol rolGerente = new Rol();
-                rolGerente.Nombre = "Gerente";
-
+                rolGerente.NombreRol = "Gerente";
                 rolGerente.Permisos.Add(permisoReportes);
 
-                return new Usuario
-                {
-                    Nombre = "gerente",
-                    Rol = rolGerente
-                };
+                return new ENT.SistemaCompraVenta.Usuario { Nombre = "gerente", Rol = rolGerente };
+            }
+
+            // --- ROL: STOCK ---
+            if (nombre == "stock" && password == "123")
+            {
+                Permiso permisoProductos = new Permiso { Nombre = "GestionarProductos" };
+                Rol rolStock = new Rol();
+                rolStock.NombreRol = "Stock";
+                rolStock.Permisos.Add(permisoProductos);
+
+                return new ENT.SistemaCompraVenta.Usuario { Nombre = "stock", Rol = rolStock };
             }
 
             return null;
         }
 
-        private DAL.SistemaCompraVenta.Usuario usuario = new DAL.SistemaCompraVenta.Usuario();
+        // 3. Los otros miembros de la clase también van aquí adentro
+        private DAL.SistemaCompraVenta.UsuarioDAL oUsuarioDAL = new DAL.SistemaCompraVenta.UsuarioDAL();
 
         public DataTable ObtenerUsuarios()
         {
-            return usuario.ObtenerUsuarios();
+            return oUsuarioDAL.ObtenerUsuarios();
         }
 
-
-    }
-}
+    } // AQUÍ CIERRA LA CLASE
+} // AQUÍ CIERRA EL NAMESPACE
