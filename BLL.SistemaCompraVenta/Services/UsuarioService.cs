@@ -6,10 +6,10 @@ using DAL.SistemaCompraVenta; // Capa de Datos
 
 namespace BLL.SistemaCompraVenta.Services
 {
-    // 1. TODO debe estar dentro de la clase
+
     public class UsuarioService
     {
-        // 2. El método Login DEBE estar dentro de estas llaves
+        
         public ENT.SistemaCompraVenta.Usuario Login(string nombre, string password)
         {
             // --- ROL: ADMINISTRADOR ---
@@ -59,7 +59,7 @@ namespace BLL.SistemaCompraVenta.Services
             return null;
         }
 
-        // 3. Los otros miembros de la clase también van aquí adentro
+        
         private DAL.SistemaCompraVenta.UsuarioDAL oUsuarioDAL = new DAL.SistemaCompraVenta.UsuarioDAL();
 
         public DataTable ObtenerUsuarios()
@@ -67,5 +67,5 @@ namespace BLL.SistemaCompraVenta.Services
             return oUsuarioDAL.ObtenerUsuarios();
         }
 
-    } // AQUÍ CIERRA LA CLASE
-} // AQUÍ CIERRA EL NAMESPACE
+    } 
+} 
