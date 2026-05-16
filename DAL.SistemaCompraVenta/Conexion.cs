@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 
 //Incorporo el espacio de nombre System.Data.SqlClient
@@ -23,9 +24,8 @@ namespace DAL.SistemaCompraVenta
          * 
          */
         private void Conectar()
-        {   // HACK: Cadena de conexión hardcodeada. Luego ponerla como parametro de configuración del proyecto u otra alternativa.
-            strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=AgusPC";
-
+        {   
+            strCadenaDeConexion = ConfigurationManager.ConnectionStrings["MiCadenaConexion"].ConnectionString;
             //Instanció un objeto del tipo SqlConnection
             objConexion = new SqlConnection();
             objConexion.ConnectionString = strCadenaDeConexion;
@@ -90,7 +90,7 @@ namespace DAL.SistemaCompraVenta
 
             return unaTabla;
         }
-
+        /* TODO : Borrar estos metodos, ya que solo sirvieron de prueba, van en contra del esquema de sql embebido...
         public DataTable LeerPorComando(string pComando)
         {
             //Instancio un objeto del tipo DataTable
@@ -170,7 +170,7 @@ namespace DAL.SistemaCompraVenta
 
             return filasAfectadas;
         }
-
+        */
 
         public int EscribirPorStoreProcedure(string pTexto, SqlParameter[] pParametrosSql)
         {
