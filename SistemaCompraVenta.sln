@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.5.11723.231 stable
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL.SistemaCompraVenta", "BLL.SistemaCompraVenta\BLL.SistemaCompraVenta.csproj", "{9BD93DFD-D7EF-416B-80D3-709A43D95083}"
 EndProject
@@ -10,6 +10,15 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.SistemaCompraVenta", "UI.SistemaCompraVentas\UI.SistemaCompraVenta.csproj", "{EDCD2434-E50C-49CD-96E6-7FCBC338DEC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ENT.SistemaCompraVenta", "ENT.SistemaCompraVenta\ENT.SistemaCompraVenta.csproj", "{11342C5C-EDC0-4DC4-9348-13723BB5E150}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsSQL", "ScriptsSQL", "{79BCA2F8-3041-4C08-9805-7AA57ACE633D}"
+	ProjectSection(SolutionItems) = preProject
+		1-BaseDatos.sql = 1-BaseDatos.sql
+		2-Tablas.sql = 2-Tablas.sql
+		3-DatosIniciales.sql = 3-DatosIniciales.sql
+		4-StoreProcedures.sql = 4-StoreProcedures.sql
+		5-Extras.sql = 5-Extras.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
