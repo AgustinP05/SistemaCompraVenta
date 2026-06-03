@@ -11,11 +11,23 @@ namespace ENT.SistemaCompraVenta
     {
         public int IdVenta { get; set; }
         public DateTime Fecha { get; set; }
-        public string Cliente { get; set; } // O la entidad Cliente si la tienen
+        public Cliente Cliente { get; set; }
 
-        // La lista que conecta con los detalles
+
         public List<DetalleVenta> Detalles { get; set; } = new List<DetalleVenta>();
 
-        public double Total { get; set; }
+        public double Total
+        {
+            get
+            {
+                double suma = 0;
+                foreach (DetalleVenta detalle in Detalles)
+                {
+                    suma += detalle.DevolverSubtotal();
+                }
+                return suma;
+            }
+        }
     }
 }
+
