@@ -10,9 +10,9 @@ namespace BLL.SistemaCompraVenta.Services
     public class UsuarioService
     {
         
-        public ENT.SistemaCompraVenta.Usuario Login(string nombre, string password)
+        public Usuario Login(string nombre, string password)
         {
-            // --- ROL: ADMINISTRADOR ---
+            // --- ROL: ADMINISTRADOR --- Hardcodeado
             if (nombre == "admin" && password == "123")
             {
                 Permiso permisoUsuarios = new Permiso { Nombre = "GestionarUsuarios" };
@@ -20,8 +20,9 @@ namespace BLL.SistemaCompraVenta.Services
                 rolAdmin.NombreRol = "Administrador";
                 rolAdmin.Permisos.Add(permisoUsuarios);
 
-                return new ENT.SistemaCompraVenta.Usuario { Nombre = "admin", Rol = rolAdmin };
+                return new Usuario { Nombre = "admin", Rol = rolAdmin };
             }
+
 
             // --- ROL: VENDEDOR ---
             if (nombre == "vendedor" && password == "123")
@@ -31,7 +32,7 @@ namespace BLL.SistemaCompraVenta.Services
                 rolVendedor.NombreRol = "Vendedor";
                 rolVendedor.Permisos.Add(permisoVentas);
 
-                return new ENT.SistemaCompraVenta.Usuario { Nombre = "vendedor", Rol = rolVendedor };
+                return new Usuario { Nombre = "vendedor", Rol = rolVendedor };
             }
 
             // --- ROL: GERENTE ---
@@ -42,7 +43,7 @@ namespace BLL.SistemaCompraVenta.Services
                 rolGerente.NombreRol = "Gerente";
                 rolGerente.Permisos.Add(permisoReportes);
 
-                return new ENT.SistemaCompraVenta.Usuario { Nombre = "gerente", Rol = rolGerente };
+                return new Usuario { Nombre = "gerente", Rol = rolGerente };
             }
 
             // --- ROL: STOCK ---
@@ -53,14 +54,59 @@ namespace BLL.SistemaCompraVenta.Services
                 rolStock.NombreRol = "Stock";
                 rolStock.Permisos.Add(permisoProductos);
 
-                return new ENT.SistemaCompraVenta.Usuario { Nombre = "stock", Rol = rolStock };
+                return new Usuario { Nombre = "stock", Rol = rolStock };
             }
 
-            return null;
+            //----------------------------------------------------------------
+            ////---Con SQL Server
+            DataTable tabla = oUsuarioDAL.LoginUsuario(nombre, password);//Funcion de UsuarioDAL para generar una tabla con el usuario que coincida
+
+            //Si no econtro usuario
+            if (tabla.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            DataRow fila = tabla.Rows[0]; //Tomamos la primera fila
+            
+            //Creamos el Rol
+            Rol rol = new Rol();                    //Nueva instancia de un Rol (Viene de ENT)
+            rol.NombreRol = fila["Rol"].ToString(); //Le asignamos a NombreRol (del nuevo Rol) el valor en string de la columna "Rol" de la fila tomada previamente
+
+            //Asignar permisos segun el rol
+            switch (rol.NombreRol)
+            {
+                case "Administrador":
+                    rol.Permisos.Add(new Permiso { Nombre = "GestionarUsuarios" }); //Creamos una instancia de Permiso (de Composite) y le queremos asignar un Nombre. Esta nueva instancia se agrega al atributo Permisos de la clase Rol
+                    break;
+                case "Vendedor":
+                    rol.Permisos.Add(new Permiso { Nombre = "RegistrarVentas" });
+                    break;
+
+                case "Gerente":
+                    rol.Permisos.Add(new Permiso { Nombre = "VerReportes" });
+                    break;
+
+                case "Stock":
+                    rol.Permisos.Add(new Permiso { Nombre = "GestionarProductos" });
+                    break;
+            }
+
+            //Crear nueva instancia de Usuario
+            Usuario usuario = new Usuario
+            {
+                Nombre = fila["Nombre"].ToString(),
+                Password = fila["Password"].ToString(),
+                Rol = rol
+            };
+
+            return usuario;
         }
 
+
+
         
-        private DAL.SistemaCompraVenta.UsuarioDAL oUsuarioDAL = new DAL.SistemaCompraVenta.UsuarioDAL();
+        private UsuarioDAL oUsuarioDAL = new UsuarioDAL();//Nexo con UsuarioDAL para poder utilizar las fuciones de ahi
 
         public DataTable ObtenerUsuarios()
         {
