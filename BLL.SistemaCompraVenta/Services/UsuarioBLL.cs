@@ -7,7 +7,7 @@ using DAL.SistemaCompraVenta; // Capa de Datos
 namespace BLL.SistemaCompraVenta.Services
 {
 
-    public class UsuarioService
+    public class UsuarioBLL
     {
         
         public Usuario Login(string nombre, string password)

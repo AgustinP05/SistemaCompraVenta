@@ -2,12 +2,19 @@
 
 namespace ENT.SistemaCompraVenta
 {
-    // Hereda de Producto (: Producto)
     public class Calzado : Producto
     {
-        // Propiedad específica para calzado deportivo
-        public string Talle { get; set; }
+        private int talle;
 
-        // Podés agregar otras como "TipoSuela" o "Color" si querés
+        public int Talle
+        {
+            get { return talle; }
+            set { talle = value; }
+        }
+
+        public override string DevolverTalle()
+        {
+            return talle.ToString();
+        }
     }
 }

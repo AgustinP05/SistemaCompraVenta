@@ -18,7 +18,7 @@ namespace UI.SistemaCompraVentas
         private void btnLogin_Click(object sender, EventArgs e)
         {
             // 1. Instanciamos el servicio de la BLL
-            UsuarioService service = new UsuarioService();
+            UsuarioBLL service = new UsuarioBLL();
 
             // 2. Intentamos loguear (service ahora devuelve un Usuario de la capa ENT)
             var usuarioLogueado = service.Login(txtUsuario.Text, txtPassword.Text);
@@ -44,8 +44,8 @@ namespace UI.SistemaCompraVentas
 
         private void btnMostrarUsuarios_Click(object sender, EventArgs e)
         {
-            UsuarioService usuarioService = new UsuarioService();
-            DataTable tabla = usuarioService.ObtenerUsuarios();
+            UsuarioBLL UsuarioBLL = new UsuarioBLL();
+            DataTable tabla = UsuarioBLL.ObtenerUsuarios();
             dataGridView1.DataSource = tabla;
         }
 

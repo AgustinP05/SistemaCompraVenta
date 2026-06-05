@@ -1,16 +1,48 @@
-﻿namespace ENT.SistemaCompraVenta
+﻿using System;
+
+namespace ENT.SistemaCompraVenta
 {
     public class Cliente
     {
-        public string DNI { get; set; } // ID del cliente
-        public string Nombre { get; set; }
-        public string Apellido { get; set; }
-        public string Telefono { get; set; }
-        public string Email { get; set; }
+        private int dni;
+        private string nombre;
+        private string apellido;
+        private string telefono;
+        private string email;
 
-        // Lo que se va a ver en la lista desplegable
-        public string NombreCompleto => $"{Apellido}, {Nombre} (DNI: {DNI})";
+        public int Dni
+        {
+            get { return dni; }
+            set { dni = value; }
+        }
 
-        public override string ToString() => NombreCompleto;
+        public string Nombre
+        {
+            get { return nombre; }
+            set { nombre = value; }
+        }
+
+        public string Apellido
+        {
+            get { return apellido; }
+            set { apellido = value; }
+        }
+
+        public string Telefono
+        {
+            get { return telefono; }
+            set { telefono = value; }
+        }
+
+        public string Email
+        {
+            get { return email; }
+            set { email = value; }
+        }
+
+        public string NombreCompleto
+        {
+            get { return nombre + " " + apellido; }
+        }
     }
 }

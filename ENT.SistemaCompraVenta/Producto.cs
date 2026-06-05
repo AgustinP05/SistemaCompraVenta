@@ -1,24 +1,60 @@
 ﻿using System;
 
-namespace ENT.SistemaCompraVenta // Cambiamos el namespace al nuevo proyecto
+namespace ENT.SistemaCompraVenta
 {
-    // IMPORTANTE: Debe ser "public" para que la UI, BLL y DAL la vean.
-    // La ponemos como "abstract" porque en SportUPE siempre vendemos 
-    // o un Calzado o una Vestimenta, nunca un "Producto" a secas.
+
     public abstract class Producto
     {
-        public int ID { get; set; }
-        public string Nombre { get; set; }
-        public string Marca { get; set; } 
-        public string Categoria { get; set; }
-        public double PrecioVenta { get; set; }
-        public double PrecioCosto { get; set; }
-        public int Stock { get; set; }
 
-        // Un método útil para mostrar en la UI
-        public override string ToString()
+        private int id;
+        private string nombre;
+        private string marca;
+        private string color;
+        private double precioVenta;
+        private double precioCosto;
+        private Stock _stock;
+
+
+        public int Id
         {
-            return Nombre;
+            get { return id; }
+            set { id = value; }
         }
+
+        public string Nombre
+        {
+            get { return nombre; }
+            set { nombre = value; }
+        }
+
+        public string Marca
+        {
+            get { return marca; }
+            set { marca = value; }
+        }
+        public string Color
+        {
+            get { return color; }
+            set { color = value; }
+        }
+        public double PrecioVenta
+        {
+            get { return precioVenta; }
+            set { precioVenta = value; }
+        }
+        public double PrecioCosto
+        {
+            get { return precioCosto; }
+            set { precioCosto = value; }
+        }
+
+        public Stock Stock
+        {
+            get { return _stock; }
+            set { _stock = value; }
+        }
+
+        public abstract string DevolverTalle();
+
     }
 }

@@ -14,6 +14,12 @@ namespace BLL.SistemaCompraVenta
             oProductoDAL.Guardar(p);
         }
 
+        public Stock BuscarStockPorId(int id)
+        {
+            // Delegamos la búsqueda a la Capa de Acceso a Datos (DAL)
+            return oProductoDAL.BuscarStockPorId(id);
+        }
+
         public List<Producto> ListarProductos()
         {
             return oProductoDAL.ListarTodo();

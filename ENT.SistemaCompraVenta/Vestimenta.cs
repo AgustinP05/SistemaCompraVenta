@@ -2,12 +2,19 @@
 
 namespace ENT.SistemaCompraVenta
 {
-    // Hereda de Producto (: Producto)
     public class Vestimenta : Producto
     {
-        // Propiedad específica para ropa (S, M, L, XL, etc.)
-        public string Talle { get; set; }
+        private string talle;
 
-        // Podés agregar otras como "Material" o "Genero"
+        public string Talle
+        {
+            get { return talle; }
+            set { talle = value; }
+        }
+
+        public override string DevolverTalle()
+        {
+            return talle; 
+        }
     }
 }

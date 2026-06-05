@@ -24,6 +24,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.cboProducto = new System.Windows.Forms.ComboBox();
             this.lblProductoNombre = new System.Windows.Forms.Label();
+            this.lblProductoPrecio = new System.Windows.Forms.Label();
+            this.lblProductoStock = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.nmCantidad = new System.Windows.Forms.NumericUpDown();
             this.btnAgregar = new System.Windows.Forms.Button();
@@ -33,8 +35,6 @@
             this.btnCancelarVenta = new System.Windows.Forms.Button();
             this.btnConfirmar = new System.Windows.Forms.Button();
             this.btnSalir = new System.Windows.Forms.Button();
-            this.lblProductoPrecio = new System.Windows.Forms.Label();
-            this.lblProductoStock = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nmCantidad)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCarrito)).BeginInit();
@@ -48,6 +48,8 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.cboProducto);
             this.groupBox1.Controls.Add(this.lblProductoNombre);
+            this.groupBox1.Controls.Add(this.lblProductoPrecio);
+            this.groupBox1.Controls.Add(this.lblProductoStock);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.nmCantidad);
             this.groupBox1.Controls.Add(this.btnAgregar);
@@ -115,9 +117,27 @@
             this.lblProductoNombre.TabIndex = 5;
             this.lblProductoNombre.Text = "Producto: -";
             // 
+            // lblProductoPrecio
+            // 
+            this.lblProductoPrecio.AutoSize = true;
+            this.lblProductoPrecio.Location = new System.Drawing.Point(10, 148);
+            this.lblProductoPrecio.Name = "lblProductoPrecio";
+            this.lblProductoPrecio.Size = new System.Drawing.Size(53, 13);
+            this.lblProductoPrecio.TabIndex = 9;
+            this.lblProductoPrecio.Text = "Precio: -";
+            // 
+            // lblProductoStock
+            // 
+            this.lblProductoStock.AutoSize = true;
+            this.lblProductoStock.Location = new System.Drawing.Point(10, 164);
+            this.lblProductoStock.Name = "lblProductoStock";
+            this.lblProductoStock.Size = new System.Drawing.Size(67, 13);
+            this.lblProductoStock.TabIndex = 10;
+            this.lblProductoStock.Text = "Stock Disp: -";
+            // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(10, 169);
+            this.label3.Location = new System.Drawing.Point(10, 184);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(67, 15);
@@ -126,15 +146,16 @@
             // 
             // nmCantidad
             // 
-            this.nmCantidad.Location = new System.Drawing.Point(10, 187);
+            this.nmCantidad.Location = new System.Drawing.Point(10, 200);
             this.nmCantidad.Margin = new System.Windows.Forms.Padding(2);
             this.nmCantidad.Name = "nmCantidad";
             this.nmCantidad.Size = new System.Drawing.Size(67, 20);
             this.nmCantidad.TabIndex = 7;
+            this.nmCantidad.ValueChanged += new System.EventHandler(this.nmCantidad_ValueChanged);
             // 
             // btnAgregar
             // 
-            this.btnAgregar.Location = new System.Drawing.Point(10, 226);
+            this.btnAgregar.Location = new System.Drawing.Point(10, 240);
             this.btnAgregar.Margin = new System.Windows.Forms.Padding(2);
             this.btnAgregar.Name = "btnAgregar";
             this.btnAgregar.Size = new System.Drawing.Size(160, 29);
@@ -203,24 +224,6 @@
             this.btnSalir.Text = "Salir";
             this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
             // 
-            // lblProductoPrecio
-            // 
-            this.lblProductoPrecio.AutoSize = true;
-            this.lblProductoPrecio.Location = new System.Drawing.Point(10, 150);
-            this.lblProductoPrecio.Name = "lblProductoPrecio";
-            this.lblProductoPrecio.Size = new System.Drawing.Size(53, 13);
-            this.lblProductoPrecio.TabIndex = 0;
-            this.lblProductoPrecio.Text = "Precio: -";
-            // 
-            // lblProductoStock
-            // 
-            this.lblProductoStock.AutoSize = true;
-            this.lblProductoStock.Location = new System.Drawing.Point(10, 168);
-            this.lblProductoStock.Name = "lblProductoStock";
-            this.lblProductoStock.Size = new System.Drawing.Size(53, 13);
-            this.lblProductoStock.TabIndex = 0;
-            this.lblProductoStock.Text = "Stock Disp: -";
-            // 
             // FormVendedor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -243,29 +246,27 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvCarrito)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
-  
-
         #endregion
+
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cboCliente;
         private System.Windows.Forms.Label lblClienteNombre;
+        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox cboProducto;
         private System.Windows.Forms.Label lblProductoNombre;
+        private System.Windows.Forms.Label lblProductoPrecio;
+        private System.Windows.Forms.Label lblProductoStock;
+        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown nmCantidad;
         private System.Windows.Forms.Button btnAgregar;
         private System.Windows.Forms.DataGridView dgvCarrito;
         private System.Windows.Forms.Label lblTotal;
-        private System.Windows.Forms.Button btnConfirmar;
         private System.Windows.Forms.Button btnEliminarItem;
         private System.Windows.Forms.Button btnCancelarVenta;
+        private System.Windows.Forms.Button btnConfirmar;
         private System.Windows.Forms.Button btnSalir;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label lblProductoPrecio;
-        private System.Windows.Forms.Label lblProductoStock;
     }
 }
