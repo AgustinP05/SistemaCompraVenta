@@ -30,7 +30,30 @@ BEGIN
 END
 GO
 
+---- REGISTRAR LOGIN del usuario logueado en tLogLogin ----
+CREATE PROCEDURE SP_RegistrarLogin
+(
+    @ID_Usuario INT,
+    @FechaHoraLogin DATETIME
+)
+AS
+BEGIN
+    INSERT INTO tLogLogin
+    (
+        ID_Usuario,
+        FechaHoraLogin
+    )
+    VALUES
+    (
+        @ID_Usuario,
+        @FechaHoraLogin
+    )
+END
+GO
+
+
 
 /*
 Funciones para tProducto
 */
+

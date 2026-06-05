@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-// --- CAMBIO CLAVE AQUÍ ---
+
 using ENT.SistemaCompraVenta;       // <--- Aquí viven ahora Usuario, Rol y Permisos
 using BLL.SistemaCompraVenta.Sesion; // Aquí vive el Singleton (Sesion)
 
@@ -22,6 +22,7 @@ namespace UI.SistemaCompraVentas
             if (Sesion.ObtenerInstancia().UsuarioActual != null)
             {
                 lblUsuario.Text = "Hola usuario " + Sesion.ObtenerInstancia().UsuarioActual.Nombre;
+                lblSesion.Text = "Sesion iniciada: " + Sesion.ObtenerInstancia().UsuarioActual.FechaHoraLogin.ToString("dd/MM/yyyy HH:mm:ss"); 
             }
         }
 

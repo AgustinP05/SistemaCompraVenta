@@ -95,10 +95,15 @@ namespace BLL.SistemaCompraVenta.Services
             //Crear nueva instancia de Usuario
             Usuario usuario = new Usuario
             {
+                ID = Convert.ToInt32(fila["ID"]),
                 Nombre = fila["Nombre"].ToString(),
                 Password = fila["Password"].ToString(),
-                Rol = rol
+                Rol = rol,
+                FechaHoraLogin= DateTime.Now
             };
+
+            //Guardamos en la base de datos la fecha y hora del login con el usuario asociado para tLogLogin
+            oUsuarioDAL.RegistrarLogin(usuario.ID,usuario.FechaHoraLogin);//El ID y FechaHoraLogin tomadas en la instancia Usuario, se pasan a esta funcion que hace que el UsuarioDAL lo guarde en la base de datos
 
             return usuario;
         }
@@ -108,10 +113,13 @@ namespace BLL.SistemaCompraVenta.Services
         
         private UsuarioDAL oUsuarioDAL = new UsuarioDAL();//Nexo con UsuarioDAL para poder utilizar las fuciones de ahi
 
+        
         public DataTable ObtenerUsuarios()
         {
             return oUsuarioDAL.ObtenerUsuarios();
         }
+
+     
 
     } 
 } 
