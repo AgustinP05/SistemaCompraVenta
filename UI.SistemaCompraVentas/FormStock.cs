@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ENT.SistemaCompraVenta; // <--- USAR ENTIDADES
-using BLL.SistemaCompraVenta; // <--- USAR NEGOCIO
+using ENT.SistemaCompraVenta;
+using BLL.SistemaCompraVenta;
 
 namespace UI.SistemaCompraVentas
 {
     public partial class FormStock : Form
     {
-        // Ya no usamos List<object>, usamos el servicio de negocio
         ProductoBLL oProductoBLL = new ProductoBLL();
 
         public FormStock()
@@ -28,28 +27,48 @@ namespace UI.SistemaCompraVentas
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            // ... (validaciones previas)
+            try
+            {
+                Producto nuevoProducto;
 
-            Producto nuevoProducto;
-            if (cboCategoria.Text == "Calzado")
-                nuevoProducto = new Calzado { Talle = txtTalle.Text };
-            else
-                nuevoProducto = new Vestimenta { Talle = txtTalle.Text };
+                // 1. Instanciamos la subclase específica según lo elegido en pantalla
+                if (cboCategoria.Text == "Calzado")
+                {
+                    Calzado oCalzado = new Calzado();
+                    // Como el talle del calzado es numérico, lo parseamos a int
+                    oCalzado.Talle = int.Parse(txtTalle.Text);
+                    nuevoProducto = oCalzado; // Upcasting automático
+                }
+                else
+                {
+                    Vestimenta oVestimenta = new Vestimenta();
+                    // Como el talle de vestimenta es texto, pasa directo
+                    oVestimenta.Talle = txtTalle.Text;
+                    nuevoProducto = oVestimenta; // Upcasting automático
+                }
 
-            // --- AQUÍ ESTÁ EL TRUCO: ASIGNAR LOS VALORES ---
-            nuevoProducto.Nombre = txtNombre.Text;
-            nuevoProducto.Marca = txtMarca.Text; 
-            nuevoProducto.Categoria = cboCategoria.Text;
-            nuevoProducto.PrecioVenta = (double)nmPrecioVenta.Value;
-            nuevoProducto.PrecioCosto = (double)nmPrecioCosto.Value;
-            nuevoProducto.Stock = (int)nmStockActual.Value;
+                // 2. Llenamos los atributos COMUNES que heredaron de 'Producto'
+                nuevoProducto.Nombre = txtNombre.Text;
+                nuevoProducto.Marca = txtMarca.Text;
+                nuevoProducto.PrecioVenta = (double)nmPrecioVenta.Value;
+                nuevoProducto.PrecioCosto = (double)nmPrecioCosto.Value;
+                nuevoProducto.Stock = new Stock { Cantidad = (int)nmStockActual.Value };
 
-            // Enviamos a la BLL
-            oProductoBLL.GuardarProducto(nuevoProducto);
+                // 3. Enviamos a la BLL (Polimorfismo en acción)
+                oProductoBLL.GuardarProducto(nuevoProducto);
 
-            ActualizarGrilla();
-            LimpiarCampos();
-            MessageBox.Show("Producto registrado con ID: " + nuevoProducto.ID);
+                ActualizarGrilla();
+                LimpiarCampos();
+                MessageBox.Show("Producto registrado con éxito en el catálogo.");
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Error: Asegúrese de ingresar un número válido para el talle del calzado.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error inesperado: " + ex.Message);
+            }
         }
 
         private void ActualizarGrilla()

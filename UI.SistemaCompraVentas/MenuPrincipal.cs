@@ -35,7 +35,7 @@ namespace UI.SistemaCompraVentas
             {
                 var rol = usuario.Rol;
 
-                // Estos nombres de permisos deben coincidir con los que pusiste en UsuarioService
+                // Estos nombres de permisos deben coincidir con los que pusiste en UsuarioBLL
                 btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
                 btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
                 btnProductos.Visible = rol.TienePermiso("GestionarProductos");

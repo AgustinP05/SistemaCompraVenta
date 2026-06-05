@@ -1,33 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace ENT.SistemaCompraVenta
 {
     public class Venta
     {
-        public int IdVenta { get; set; }
-        public DateTime Fecha { get; set; }
-        public Cliente Cliente { get; set; }
+        private int idVenta;
+        private DateTime fecha;
 
+        private Cliente _cliente;
+        private Usuario _usuario;
+        private List<DetalleVenta> _detalles = new List<DetalleVenta>();
 
-        public List<DetalleVenta> Detalles { get; set; } = new List<DetalleVenta>();
-
-        public double Total
+        public int IdVenta
         {
-            get
+            get { return idVenta; }
+            set { idVenta = value; }
+        }
+
+        public DateTime Fecha
+        {
+            get { return fecha; }
+            set { fecha = value; }
+        }
+
+        public Cliente Cliente
+        {
+            get { return _cliente; }
+            set { _cliente = value; }
+        }
+
+        public Usuario Usuario
+        {
+            get { return _usuario; }
+            set { _usuario = value; }
+        }
+
+        public List<DetalleVenta> Detalles
+        {
+            get { return _detalles; }
+            set { _detalles = value; }
+        }
+
+        public double DevolverTotal()
+        {
+            double total = 0;
+            foreach (DetalleVenta detalle in _detalles)
             {
-                double suma = 0;
-                foreach (DetalleVenta detalle in Detalles)
-                {
-                    suma += detalle.DevolverSubtotal();
-                }
-                return suma;
+                total += detalle.DevolverSubtotal();
             }
+            return total;
         }
     }
 }
-

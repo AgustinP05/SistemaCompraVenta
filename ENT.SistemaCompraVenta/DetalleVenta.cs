@@ -1,21 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ENT.SistemaCompraVenta
 {
     public class DetalleVenta
     {
-        public int IdDetalleVenta { get; set; }
+        private int idDetalleVenta;
+        private Producto _producto; 
+        private int cantidad;
+        private double precioUnitario;
 
-        public Producto Producto { get; set; }
+        public int IdDetalleVenta
+        {
+            get { return idDetalleVenta; }
+            set { idDetalleVenta = value; }
+        }
 
-        public int Cantidad { get; set; }
+        public Producto Producto
+        {
+            get { return _producto; }
+            set { _producto = value; }
+        }
 
-        public double PrecioUnitario { get; set; }
+        public int Cantidad
+        {
+            get { return cantidad; }
+            set { cantidad = value; }
+        }
 
-        public double Subtotal => Cantidad * PrecioUnitario;
+        public double PrecioUnitario
+        {
+            get { return precioUnitario; }
+            set { precioUnitario = value; }
+        }
+
+        public double DevolverSubtotal()
+        {
+            return cantidad * precioUnitario;
+        }
     }
 }

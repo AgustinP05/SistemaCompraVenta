@@ -8,6 +8,8 @@ namespace ENT.SistemaCompraVenta
 
         private int id;
         private string nombre;
+        private string marca;
+        private string color;
         private double precioVenta;
         private double precioCosto;
         private Stock _stock;
@@ -25,12 +27,22 @@ namespace ENT.SistemaCompraVenta
             set { nombre = value; }
         }
 
-        public double precioVenta
+        public string Marca
+        {
+            get { return marca; }
+            set { marca = value; }
+        }
+        public string Color
+        {
+            get { return color; }
+            set { color = value; }
+        }
+        public double PrecioVenta
         {
             get { return precioVenta; }
             set { precioVenta = value; }
         }
-        public double precioCosto
+        public double PrecioCosto
         {
             get { return precioCosto; }
             set { precioCosto = value; }
@@ -41,5 +53,8 @@ namespace ENT.SistemaCompraVenta
             get { return _stock; }
             set { _stock = value; }
         }
+
+        public abstract string DevolverTalle();
+
     }
 }

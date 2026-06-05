@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ENT.SistemaCompraVenta // Namespace unificado
+namespace ENT.SistemaCompraVenta
 {
-    // Cambiamos a PUBLIC para que la BLL y la UI puedan usarla
     public class FamiliaPermisos : Componente
     {
-        // La lista de hijos ahora guarda objetos 'Componente' que también están en ENT
         private List<Componente> hijos = new List<Componente>();
 
         public void AgregarHijo(Componente componente)
@@ -14,18 +12,18 @@ namespace ENT.SistemaCompraVenta // Namespace unificado
             hijos.Add(componente);
         }
 
-        // Propiedad para acceder a los hijos (útil para la BLL)
         public List<Componente> ObtenerHijos => hijos;
 
-        public override void Mostrar()
+        public override string Mostrar()
         {
-            // Lógica de visualización simple para consola/depuración
-            Console.WriteLine(Nombre);
+            string resultado = "[Familia] " + Nombre + Environment.NewLine;
 
             foreach (var hijo in hijos)
             {
-                hijo.Mostrar();
+                resultado += "   " + hijo.Mostrar();
             }
+
+            return resultado;
         }
     }
 }

@@ -2,13 +2,19 @@
 
 namespace ENT.SistemaCompraVenta
 {
-    // Hereda de Producto (: Producto)
     public class Calzado : Producto
     {
-        public int Talle { get; set; }
-        public string Color { get; set; }
+        private int talle;
 
-        public string Marca { get; set; }
+        public int Talle
+        {
+            get { return talle; }
+            set { talle = value; }
+        }
 
+        public override string DevolverTalle()
+        {
+            return talle.ToString();
+        }
     }
 }
