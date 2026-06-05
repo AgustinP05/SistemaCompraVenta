@@ -43,63 +43,70 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(328, 64);
+            this.label1.Location = new System.Drawing.Point(37, 83);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(46, 13);
+            this.label1.Size = new System.Drawing.Size(68, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Usuario:";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // txtUsuario
             // 
-            this.txtUsuario.Location = new System.Drawing.Point(382, 61);
+            this.txtUsuario.Location = new System.Drawing.Point(41, 108);
+            this.txtUsuario.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(100, 20);
+            this.txtUsuario.Size = new System.Drawing.Size(148, 26);
             this.txtUsuario.TabIndex = 1;
             this.txtUsuario.TextChanged += new System.EventHandler(this.txtUsuario_TextChanged);
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(382, 113);
+            this.txtPassword.Location = new System.Drawing.Point(41, 187);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(100, 20);
+            this.txtPassword.Size = new System.Drawing.Size(148, 26);
             this.txtPassword.TabIndex = 3;
             this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(312, 116);
+            this.label2.Location = new System.Drawing.Point(37, 162);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(64, 13);
+            this.label2.Size = new System.Drawing.Size(96, 20);
             this.label2.TabIndex = 2;
             this.label2.Text = "Contraseña:";
             // 
             // btnLogin
             // 
-            this.btnLogin.Location = new System.Drawing.Point(407, 155);
+            this.btnLogin.Location = new System.Drawing.Point(41, 223);
+            this.btnLogin.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(75, 23);
+            this.btnLogin.Size = new System.Drawing.Size(112, 35);
             this.btnLogin.TabIndex = 4;
-            this.btnLogin.Text = "Sign in";
+            this.btnLogin.Text = "Log In";
             this.btnLogin.UseVisualStyleBackColor = true;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(380, 19);
+            this.label3.Location = new System.Drawing.Point(37, 39);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(70, 13);
+            this.label3.Size = new System.Drawing.Size(104, 20);
             this.label3.TabIndex = 5;
             this.label3.Text = "Iniciar Sesion";
             // 
             // btnMostrarUsuarios
             // 
-            this.btnMostrarUsuarios.Location = new System.Drawing.Point(334, 231);
+            this.btnMostrarUsuarios.Location = new System.Drawing.Point(405, 87);
+            this.btnMostrarUsuarios.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnMostrarUsuarios.Name = "btnMostrarUsuarios";
-            this.btnMostrarUsuarios.Size = new System.Drawing.Size(116, 23);
+            this.btnMostrarUsuarios.Size = new System.Drawing.Size(174, 35);
             this.btnMostrarUsuarios.TabIndex = 6;
             this.btnMostrarUsuarios.Text = "Mostrar Usuarios";
             this.btnMostrarUsuarios.UseVisualStyleBackColor = true;
@@ -110,27 +117,30 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(275, 260);
+            this.dataGridView1.Location = new System.Drawing.Point(316, 132);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(240, 150);
+            this.dataGridView1.RowHeadersWidth = 62;
+            this.dataGridView1.Size = new System.Drawing.Size(360, 231);
             this.dataGridView1.TabIndex = 7;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(310, 215);
+            this.label4.Location = new System.Drawing.Point(369, 53);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(172, 13);
+            this.label4.Size = new System.Drawing.Size(260, 20);
             this.label4.TabIndex = 8;
             this.label4.Text = "Mostrar todos los usuarios (Prueba)";
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(689, 385);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btnMostrarUsuarios);
@@ -140,7 +150,9 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtUsuario);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "LoginForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login - Sistema Compra Venta";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
