@@ -38,5 +38,23 @@ namespace DAL.SistemaCompraVenta
             return conexion.LeerPorStoreProcedure("SP_LoginUsuario", sp);
 
         }
+
+
+
+        //Para registrar el login del usuario
+        public void RegistrarLogin(int idUsuario, DateTime fechaHora)
+        {
+            SqlParameter[] parametros =
+            {
+                conexion.crearParametro("@ID_Usuario", idUsuario),
+                conexion.crearParametro("@FechaHoraLogin", fechaHora)
+            };
+
+            conexion.EscribirPorStoreProcedure(
+                "SP_RegistrarLogin",
+                parametros
+            );
+        }
+
     }
 }
