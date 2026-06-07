@@ -4,8 +4,7 @@ using System.Data.SqlClient;
 
 namespace DAL.SistemaCompraVenta
 {
-    // CAMBIAMOS EL NOMBRE DE LA CLASE A UsuarioDAL
-    // Esto mata la ambigüedad con la entidad Usuario
+   
     public class UsuarioDAL
     {
         Conexion conexion = new Conexion();
@@ -54,6 +53,21 @@ namespace DAL.SistemaCompraVenta
                 "SP_RegistrarLogin",
                 parametros
             );
+        }
+
+        // Método para persistir un nuevo usuario en la base de datos
+        public int InsertarUsuario(string nombre, string password, string rol)
+        {
+            // Creamos los parámetros que espera el Stored Procedure SP_InsertarUsuario
+            SqlParameter[] parametros =
+            {
+                conexion.crearParametro("@Nombre", nombre),
+                conexion.crearParametro("@Password", password),
+                conexion.crearParametro("@Rol", rol)
+            };
+
+            // Ejecutamos el Store Procedure y devolvemos la cantidad de filas afectadas
+            return conexion.EscribirPorStoreProcedure("SP_InsertarUsuario", parametros);
         }
 
     }

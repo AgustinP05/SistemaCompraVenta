@@ -23,7 +23,7 @@ namespace UI.SistemaCompraVentas
             // Estética de la grilla
             dgvUsuarios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
-
+        /*
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             // Validación simple
@@ -55,7 +55,45 @@ namespace UI.SistemaCompraVentas
             txtNombre.Clear();
             txtApellido.Clear();
         }
+        */
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            // 1. Validación de campos obligatorios
+            if (string.IsNullOrEmpty(txtDni.Text) || string.IsNullOrEmpty(txtNombre.Text))
+            {
+                MessageBox.Show("Por favor, cargue DNI y Nombre para continuar.");
+                return;
+            }
 
+            try
+            {
+                // 2. Instanciamos la BLL para guardar en la BD real
+                BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
+
+                // 3. Llamamos al método de creación (pasando el Rol seleccionado del ComboBox)
+                // Nota: Asegurate que tu método en la BLL reciba estos parámetros o adaptalo
+                bool exito = bll.CrearUsuario(txtNombre.Text, "1234", cboRoles.SelectedItem.ToString());
+
+                if (exito)
+                {
+                    MessageBox.Show("Usuario registrado correctamente en la base de datos.");
+
+                    // 4. Limpiamos y refrescamos la grilla
+                    txtDni.Clear();
+                    txtNombre.Clear();
+                    txtApellido.Clear();
+                    // Aquí podrías llamar a un método que recargue el DataGridView desde la BD
+                }
+                else
+                {
+                    MessageBox.Show("Error al registrar el usuario en la base de datos.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error: " + ex.Message);
+            }
+        }
         private void dgvUsuarios_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 

@@ -72,5 +72,20 @@ namespace BLL.SistemaCompraVenta.Services
         {
             return oUsuarioDAL.ObtenerUsuarios();
         }
+      
+        public bool CrearUsuario(string nombre, string password, string rol)
+        {
+            // 1. Validación básica de negocio antes de tocar la DAL
+            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(password))
+            {
+                return false;
+            }
+
+            // 2. Llamamos a la DAL para ejecutar el INSERT en la tabla tUsuario
+            int filasAfectadas = oUsuarioDAL.InsertarUsuario(nombre, password, rol);
+
+            // 3. Retornamos true si la base de datos respondió correctamente
+            return filasAfectadas > 0;
+        }
     }
 }
