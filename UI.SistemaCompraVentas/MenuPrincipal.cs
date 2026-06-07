@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ENT.SistemaCompraVenta;       // <--- Aquí viven ahora Usuario, Rol y Permisos
+using ENT.SistemaCompraVenta;       //  Usuario, Rol y Permisos
 using BLL.SistemaCompraVenta.Sesion; // Aquí vive el Singleton (Sesion)
 
 namespace UI.SistemaCompraVentas
@@ -13,33 +13,45 @@ namespace UI.SistemaCompraVentas
         {
             InitializeComponent();
         }
-
         private void MenuPrincipal_Load(object sender, EventArgs e)
         {
+            // 1. Configuramos las visibilidades de los botones usando el patrón Composite
             ConfigurarPermisos();
 
-            // Verificamos si hay alguien logueado usando el Singleton de la BLL
-            if (Sesion.ObtenerInstancia().UsuarioActual != null)
+            // 2. Verificamos si hay alguien logueado usando el Singleton de la BLL
+            var usuarioLogueado = Sesion.ObtenerInstancia().UsuarioActual;
+            if (usuarioLogueado != null)
             {
-                lblUsuario.Text = "Hola usuario " + Sesion.ObtenerInstancia().UsuarioActual.Nombre;
-                lblSesion.Text = "Sesion iniciada: " + Sesion.ObtenerInstancia().UsuarioActual.FechaHoraLogin.ToString("dd/MM/yyyy HH:mm:ss"); 
+                // Usamos la propiedad calculada 'NombreMostrar' que configuramos en la entidad
+                lblUsuario.Text = "Hola usuario " + usuarioLogueado.NombreMostrar;
+                lblSesion.Text = "Sesion iniciada: " + usuarioLogueado.FechaHoraLogin.ToString("dd/MM/yyyy HH:mm:ss");
             }
         }
 
         private void ConfigurarPermisos()
         {
-            // Usamos el objeto Usuario que ahora viene de la capa ENT
+            // Recuperamos el usuario activo de la sesión
             var usuario = Sesion.ObtenerInstancia().UsuarioActual;
 
-            if (usuario != null && usuario.Rol != null)
+            // Verificamos que el usuario y su árbol de permisos existan
+            if (usuario != null && usuario.Permisos != null)
             {
-                var rol = usuario.Rol;
+                var arbolPermisos = usuario.Permisos;
 
-                // Estos nombres de permisos deben coincidir con los que pusiste en UsuarioBLL
-                btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
-                btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
-                btnProductos.Visible = rol.TienePermiso("GestionarProductos");
-                btnReportes.Visible = rol.TienePermiso("VerReportes");
+                // Evalua en cascada de forma recursiva gracias al patrón Composite
+                // Los nombres de cadenas coinciden exactamente con PermisosFactory
+                btnUsuarios.Visible = arbolPermisos.TienePermiso("GestionarUsuarios");
+                btnVentas.Visible = arbolPermisos.TienePermiso("RegistrarVentas");
+                btnProductos.Visible = arbolPermisos.TienePermiso("GestionarProductos");
+                btnReportes.Visible = arbolPermisos.TienePermiso("VerReportes");
+            }
+            else
+            {
+                // Por seguridad, si ocurre un fallo o no hay usuario, ocultamos los accesos
+                btnUsuarios.Visible = false;
+                btnVentas.Visible = false;
+                btnProductos.Visible = false;
+                btnReportes.Visible = false;
             }
         }
 

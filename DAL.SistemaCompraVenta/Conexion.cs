@@ -24,7 +24,9 @@ namespace DAL.SistemaCompraVenta
          */
         private void Conectar()
         {   // HACK: Cadena de conexión hardcodeada. Luego ponerla como parametro de configuración del proyecto u otra alternativa.
-            strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=AgusPC";
+            //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=AgusPC";
+            //cadena de compu sofi,
+            strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=SOFI\SQLEXPRESS";
 
             //Instanció un objeto del tipo SqlConnection
             objConexion = new SqlConnection();

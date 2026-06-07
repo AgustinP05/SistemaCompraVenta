@@ -25,5 +25,15 @@ namespace ENT.SistemaCompraVenta
 
             return resultado;
         }
+        // REQUERIDO: Busca en cascada dentro de toda la familia
+        public override bool TienePermiso(string nombrePermiso)
+        {
+            foreach (var hijo in hijos)
+            {
+                if (hijo.TienePermiso(nombrePermiso))
+                    return true;
+            }
+            return false;
+        }
     }
 }

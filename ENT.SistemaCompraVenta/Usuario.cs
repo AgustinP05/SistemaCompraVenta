@@ -9,11 +9,16 @@ namespace ENT.SistemaCompraVenta
         public string Password { get; set; }
 
         // Relación con la entidad Rol
-        public Rol Rol { get; set; }
+        //public Rol Rol { get; set; }
 
         public DateTime FechaHoraLogin { get; set; }
 
-        // Podés agregar una propiedad extra para legibilidad
-        public string NombreMostrar => $"{Nombre} ({Rol?.NombreRol})";
+        
+
+        // guarda toda la estructura Compositecon sus permisos
+        public Componente Permisos { get; set; }
+
+        
+        public string NombreMostrar => $"{Nombre} ({Permisos.Nombre})";
     }
 }
