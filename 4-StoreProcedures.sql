@@ -50,3 +50,30 @@ BEGIN
     SELECT * FROM tUsuario;
 END
 GO
+
+
+-- procedimiento para creacion de clientes en la DB, si se ejecuta todo junto las dos lineas sieguientes son innecesarias.
+USE SistemaCompraVenta;
+GO
+
+IF OBJECT_ID('SP_InsertarCliente', 'P') IS NOT NULL
+    DROP PROCEDURE SP_InsertarCliente;
+GO
+
+CREATE PROCEDURE SP_InsertarCliente(
+    @DNI VARCHAR(20),
+    @Nombre VARCHAR(100),
+    @Apellido VARCHAR(100),
+    @Telefono VARCHAR(30),
+    @Email VARCHAR(150),
+    @Direccion VARCHAR(255)
+)
+AS
+BEGIN
+    INSERT INTO tCliente (DNI, Nombre, Apellido, Telefono, Email, Direccion)
+    VALUES (@DNI, @Nombre, @Apellido, @Telefono, @Email, @Direccion);
+    
+    -- Retornamos el ID recién creado para confirmación
+    SELECT SCOPE_IDENTITY() AS ID_Cliente;
+END
+GO
