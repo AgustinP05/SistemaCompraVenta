@@ -10,6 +10,7 @@ namespace ENT.SistemaCompraVenta
 
         // Relación con la entidad Rol
         //public Rol Rol { get; set; }
+        public string DNI { get; set; }
 
         public DateTime FechaHoraLogin { get; set; }
 

@@ -72,19 +72,41 @@ namespace BLL.SistemaCompraVenta.Services
         {
             return oUsuarioDAL.ObtenerUsuarios();
         }
-      
-        public bool CrearUsuario(string nombre, string password, string rol)
+        /*
+          public bool CrearUsuario(string nombre, string password, string rol)
+          {
+              // 1. Validación básica de negocio antes de tocar la DAL
+              if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(password))
+              {
+                  return false;
+              }
+
+              // 2. Llamamos a la DAL para ejecutar el INSERT en la tabla tUsuario
+              int filasAfectadas = oUsuarioDAL.InsertarUsuario(nombre, password, rol);
+
+              // 3. Retornamos true si la base de datos respondió correctamente
+              return filasAfectadas > 0;
+          }
+        */
+        /*
+        public bool CrearUsuario(string dni, string nombre, string password, string rol)
         {
-            // 1. Validación básica de negocio antes de tocar la DAL
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(password))
+            // Validación: que el DNI no esté vacío
+            if (string.IsNullOrWhiteSpace(dni) || string.IsNullOrWhiteSpace(nombre))
             {
                 return false;
             }
 
-            // 2. Llamamos a la DAL para ejecutar el INSERT en la tabla tUsuario
-            int filasAfectadas = oUsuarioDAL.InsertarUsuario(nombre, password, rol);
+            // Llamamos a la DAL incluyendo el DNI
+            int filasAfectadas = oUsuarioDAL.InsertarUsuario(dni, nombre, password, rol);
 
-            // 3. Retornamos true si la base de datos respondió correctamente
+            return filasAfectadas > 0;
+        }
+        */
+        public bool CrearUsuario(string dni, string nombre, string password, string rol)
+        {
+            // Asegurate que la llamada a la DAL incluya el 'dni'
+            int filasAfectadas = oUsuarioDAL.InsertarUsuario(dni, nombre, password, rol);
             return filasAfectadas > 0;
         }
     }

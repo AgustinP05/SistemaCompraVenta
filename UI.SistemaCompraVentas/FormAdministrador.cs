@@ -22,6 +22,7 @@ namespace UI.SistemaCompraVentas
 
             // Estética de la grilla
             dgvUsuarios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            CargarGrilla();
         }
         /*
         private void btnGuardar_Click(object sender, EventArgs e)
@@ -71,9 +72,9 @@ namespace UI.SistemaCompraVentas
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
 
                 // 3. Llamamos al método de creación (pasando el Rol seleccionado del ComboBox)
-                // Nota: Asegurate que tu método en la BLL reciba estos parámetros o adaptalo
-                bool exito = bll.CrearUsuario(txtNombre.Text, "1234", cboRoles.SelectedItem.ToString());
+                bool exito = bll.CrearUsuario(txtDni.Text, txtNombre.Text, txtPassword.Text, cboRoles.SelectedItem.ToString());
 
+                //bool exito = bll.CrearUsuario(txtDni.Text, txtNombre.Text, txtPassword.Text, cboRoles.SelectedItem.ToString());
                 if (exito)
                 {
                     MessageBox.Show("Usuario registrado correctamente en la base de datos.");
@@ -82,7 +83,9 @@ namespace UI.SistemaCompraVentas
                     txtDni.Clear();
                     txtNombre.Clear();
                     txtApellido.Clear();
+                    txtPassword.Clear();
                     // Aquí podrías llamar a un método que recargue el DataGridView desde la BD
+                    CargarGrilla();
                 }
                 else
                 {
@@ -94,9 +97,17 @@ namespace UI.SistemaCompraVentas
                 MessageBox.Show("Ocurrió un error: " + ex.Message);
             }
         }
+        
         private void dgvUsuarios_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
+        private void CargarGrilla()
+        {
+            BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
+            // Esto llama a tu SP_ObtenerUsuarios que ya estaba en la DAL
+            dgvUsuarios.DataSource = bll.ObtenerUsuarios();
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
 
 namespace DAL.SistemaCompraVenta
 {
@@ -21,7 +22,7 @@ namespace DAL.SistemaCompraVenta
             return conexion.LeerPorStoreProcedure("SP_ObtenerUsuarios");
         }
 
-
+        /*
         public DataTable LoginUsuario(string nombre, string password) {//Devuelve un DataTable si el login existe ya que filtra en la bd por nombre y password en tUsuario
 
             //SqlParameter[] viene de SqlClient. Un SqlParameter es un parametro que enviaremos a SQL Server  
@@ -37,7 +38,16 @@ namespace DAL.SistemaCompraVenta
             return conexion.LeerPorStoreProcedure("SP_LoginUsuario", sp);
 
         }
+        */
 
+        public DataTable LoginUsuario(string dni, string password) // Cambiamos nombre por dni
+        {
+            SqlParameter[] sp = new SqlParameter[] {
+        conexion.crearParametro("@DNI", dni),    
+        conexion.crearParametro("@Password", password)
+    };
+            return conexion.LeerPorStoreProcedure("SP_LoginUsuario", sp);
+        }
 
 
         //Para registrar el login del usuario
@@ -55,18 +65,16 @@ namespace DAL.SistemaCompraVenta
             );
         }
 
-        // Método para persistir un nuevo usuario en la base de datos
-        public int InsertarUsuario(string nombre, string password, string rol)
+        public int InsertarUsuario(string dni, string nombre, string password, string rol)
         {
-            // Creamos los parámetros que espera el Stored Procedure SP_InsertarUsuario
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@Nombre", nombre),
-                conexion.crearParametro("@Password", password),
-                conexion.crearParametro("@Rol", rol)
+        conexion.crearParametro("@DNI", dni),     
+        conexion.crearParametro("@Nombre", nombre),
+        conexion.crearParametro("@Password", password),
+        conexion.crearParametro("@Rol", rol)
             };
 
-            // Ejecutamos el Store Procedure y devolvemos la cantidad de filas afectadas
             return conexion.EscribirPorStoreProcedure("SP_InsertarUsuario", parametros);
         }
 

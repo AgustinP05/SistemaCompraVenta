@@ -19,6 +19,8 @@
         {
             this.dgvUsuarios = new System.Windows.Forms.DataGridView();
             this.datosDelUsuario = new System.Windows.Forms.GroupBox();
+            this.CONTRASEÑA = new System.Windows.Forms.Label();
+            this.txtPassword = new System.Windows.Forms.TextBox();
             this.btnGuardar = new System.Windows.Forms.Button();
             this.rol = new System.Windows.Forms.Label();
             this.txtDni = new System.Windows.Forms.TextBox();
@@ -46,6 +48,8 @@
             // 
             // datosDelUsuario
             // 
+            this.datosDelUsuario.Controls.Add(this.CONTRASEÑA);
+            this.datosDelUsuario.Controls.Add(this.txtPassword);
             this.datosDelUsuario.Controls.Add(this.btnGuardar);
             this.datosDelUsuario.Controls.Add(this.rol);
             this.datosDelUsuario.Controls.Add(this.txtDni);
@@ -62,6 +66,23 @@
             this.datosDelUsuario.TabIndex = 1;
             this.datosDelUsuario.TabStop = false;
             this.datosDelUsuario.Text = "Datos del Usuario";
+            // 
+            // CONTRASEÑA
+            // 
+            this.CONTRASEÑA.AutoSize = true;
+            this.CONTRASEÑA.Location = new System.Drawing.Point(6, 167);
+            this.CONTRASEÑA.Name = "CONTRASEÑA";
+            this.CONTRASEÑA.Size = new System.Drawing.Size(81, 13);
+            this.CONTRASEÑA.TabIndex = 3;
+            this.CONTRASEÑA.Text = "CONTRASEÑA";
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.Location = new System.Drawing.Point(94, 164);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
+            this.txtPassword.Size = new System.Drawing.Size(103, 20);
+            this.txtPassword.TabIndex = 3;
             // 
             // btnGuardar
             // 
@@ -181,5 +202,7 @@
         private System.Windows.Forms.Label rol;
         private System.Windows.Forms.Label seguridadGestionPermisos;
         private System.Windows.Forms.Button btnGuardar;
+        private System.Windows.Forms.Label CONTRASEÑA;
+        private System.Windows.Forms.TextBox txtPassword;
     }
 }
