@@ -42,7 +42,7 @@ public class ProductoDAL
         DataTable dt = conexion.LeerPorStoreProcedure("SP_BuscarStock", param);
 
         if (dt.Rows.Count > 0)
-            return new Stock { Cantidad = Convert.ToInt32(dt.Rows[0]["Cantidad"]) };
+            return new Stock { Cantidad = Convert.ToInt32(dt.Rows[0]["Stock"]) };
         return null;
     }
 

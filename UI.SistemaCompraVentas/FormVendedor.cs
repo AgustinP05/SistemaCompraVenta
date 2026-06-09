@@ -134,7 +134,7 @@ namespace UI.SistemaCompraVentas
             cboCliente.Enabled = true;
         }
 
-        private void btnConfirmar_Click(object sender, EventArgs e)
+        /*private void btnConfirmar_Click(object sender, EventArgs e)
         {
             try
             {
@@ -153,6 +153,45 @@ namespace UI.SistemaCompraVentas
                 ActualizarGrilla();
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }*/
+        private void btnConfirmar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (ventaActual.Detalles.Count == 0)
+                {
+                    MessageBox.Show("El carrito está vacío. Agregá productos antes de confirmar.");
+                    return;
+                }
+
+                // Si el combo está vacío o no seleccionaste a nadie
+                if (cboCliente.SelectedItem == null)
+                {
+                    MessageBox.Show("Por favor, seleccioná un cliente antes de confirmar la venta.");
+                    return;
+                }
+
+                Cliente cli = (Cliente)cboCliente.SelectedItem;
+                // Asegúrate de asignar un usuario, aunque sea uno por defecto para probar
+                ventaActual.Usuario = new Usuario { ID = 1 }; // O el usuario que esté logueado
+                ventaActual.Cliente = cli;
+                ventaActual.Fecha = DateTime.Now;
+
+                oVentaBLL.FinalizarVenta(ventaActual);
+                ventaActual.Cliente = cli;
+                ventaActual.Fecha = DateTime.Now;
+
+                oVentaBLL.FinalizarVenta(ventaActual);
+                MessageBox.Show("¡Venta registrada con éxito!");
+
+                ventaActual = new Venta();
+                cboCliente.SelectedIndex = -1;
+                ActualizarGrilla();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al confirmar: " + ex.Message);
+            }
         }
 
         private void btnSalir_Click(object sender, EventArgs e) => this.Close();
