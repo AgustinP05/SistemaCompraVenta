@@ -1,5 +1,7 @@
 ﻿using ENT.SistemaCompraVenta;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace DAL.SistemaCompraVenta
@@ -34,6 +36,26 @@ namespace DAL.SistemaCompraVenta
 
             // Ejecutamos la inserción usando la lógica de conexión ya existente
             return conexion.EscribirPorStoreProcedure("SP_InsertarCliente", parametros);
+        }
+
+        public List<Cliente> ListarTodo()
+        {
+            List<Cliente> lista = new List<Cliente>();
+            // Llamamos a tu SP de listar (asegúrate de tener SP_ListarClientes en SQL)
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarClientes", null);
+
+            foreach (DataRow fila in dt.Rows)
+            {
+                lista.Add(new Cliente
+                {
+                    IdCliente = Convert.ToInt32(fila["ID_Cliente"]),
+                    Dni = fila["DNI"].ToString(),
+                    Nombre = fila["Nombre"].ToString(),
+                    Apellido = fila["Apellido"].ToString()
+                    // Agregá los demás campos según tu tabla
+                });
+            }
+            return lista;
         }
     }
 }

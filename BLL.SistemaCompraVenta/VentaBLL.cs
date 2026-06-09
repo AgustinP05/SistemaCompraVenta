@@ -1,35 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DAL.SistemaCompraVenta;
 using ENT.SistemaCompraVenta; // Referencia a las entidades
+using System;
+using System.Collections.Generic;
 
 namespace BLL.SistemaCompraVenta
 {
     public class VentaBLL
     {
         private ProductoBLL oProductoBLL = new ProductoBLL();
+        private VentaDAL oVentaDAL = new VentaDAL();
 
         public void FinalizarVenta(Venta nuevaVenta)
         {
-            // 1. Validamos que haya stock suficiente para cada item del carrito
+            // 1. Validaciones previas de stock (las que ya tenías)
             foreach (var detalle in nuevaVenta.Detalles)
             {
-                // AHORA Stock ES UN OBJETO: Accedemos a su propiedad 'Cantidad'
-                if (detalle.Producto.Stock.Cantidad < detalle.Cantidad)
-                {
-                    // Usamos InvalidOperationException en lugar de Exception genérica (Suma puntos)
-                    throw new InvalidOperationException("No hay stock suficiente de: " + detalle.Producto.Nombre);
-                }
+                ValidarStockDisponible(detalle.Producto, detalle.Cantidad);
             }
 
-            // 2. Si hay stock, procedemos a descontarlo
+            // 2. Registramos la cabecera UNA SOLA VEZ antes de entrar al bucle
+            int idVentaGenerado = oVentaDAL.RegistrarVenta(nuevaVenta);
+
+            // 3. Ahora sí, iteramos para guardar detalles y actualizar stock
             foreach (var detalle in nuevaVenta.Detalles)
             {
-                // Restamos directamente sobre la propiedad Cantidad del objeto Stock
-                detalle.Producto.Stock.Cantidad -= detalle.Cantidad;
-            }
+                // Guardamos el detalle asociado al ID que obtuvimos arriba
+                oVentaDAL.InsertarDetalle(idVentaGenerado, detalle);
 
-            // 3. En el futuro, aquí llamarías a la DAL para guardar la venta en la DB
-            // oVentaDAL.Insertar(nuevaVenta);
+                // Descontamos el stock
+                oProductoBLL.ActualizarStock(detalle.Producto.Id, detalle.Cantidad);
+            }
         }
 
         public void ValidarStockDisponible(Producto prod, int cant)

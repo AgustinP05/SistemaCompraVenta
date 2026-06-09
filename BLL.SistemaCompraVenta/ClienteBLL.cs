@@ -1,6 +1,7 @@
 ﻿using DAL.SistemaCompraVenta; // La BLL sí puede ver a la DAL
 using ENT.SistemaCompraVenta;
 using System;
+using System.Collections.Generic;
 //using System.Collections.Generic;
 
 namespace BLL.SistemaCompraVenta
@@ -18,18 +19,21 @@ namespace BLL.SistemaCompraVenta
 
         public bool CrearCliente(Cliente c)
         {
-            // 1. Validaciones de Negocio (según página 10 del documento)
-            if (string.IsNullOrWhiteSpace(c.Dni) || string.IsNullOrWhiteSpace(c.Nombre))
+            // 1. Validaciones obligatorias 
+            if (string.IsNullOrWhiteSpace(c.Dni) ||
+                string.IsNullOrWhiteSpace(c.Nombre) ||
+                string.IsNullOrWhiteSpace(c.Apellido))
             {
                 throw new Exception("Complete todos los datos obligatorios");
             }
 
+            // 2. Validación de formato de email 
             if (!ValidarEmail(c.Email))
             {
                 throw new Exception("Email inválido");
             }
 
-            // 2. Llamada a la DAL para persistir
+            // 3. Persistencia a través de la DAL
             int resultado = oClienteDAL.InsertarCliente(c);
 
             return resultado > 0;
@@ -37,8 +41,14 @@ namespace BLL.SistemaCompraVenta
 
         private bool ValidarEmail(string email)
         {
-            // Lógica simple de validación
+            if (string.IsNullOrWhiteSpace(email)) return false;
             return email.Contains("@") && email.Contains(".");
         }
+        public List<Cliente> ListarClientes()
+        {
+           
+            return oClienteDAL.ListarTodo();
+        }
+
     }
 }
