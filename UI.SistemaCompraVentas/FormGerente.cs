@@ -84,5 +84,9 @@ private void MostrarDatosReales()
                 MessageBox.Show("Error al cargar los reportes: " + ex.Message);
             }
         }
+        private void FormGerente_Activated(object sender, EventArgs e)
+        {
+            CargarReportes(); // Actualiza los números cada vez que el gerente entra a la vista
+        }
     }
 }
