@@ -15,16 +15,15 @@ namespace BLL.SistemaCompraVentas
 
         public DataTable ObtenerVentasMensuales()
         {
-            // Aquí podrías agregar lógica de negocio si fuera necesario
             return oReporteDAL.ObtenerVentasMensuales();
         }
         public System.Data.DataTable ObtenerTopProductos()
         {
-            return oReporteDAL.ObtenerTopProductos(); // Asegurate de tener este método en tu ReporteDAL
+            return oReporteDAL.ObtenerTopProductos();
         }
         public int ObtenerTotalOperaciones()
         {
-            // Usamos LeerPorStoreProcedure que es lo que YA tenés funcionando
+            // Usamos LeerPorStoreProcedure
             DataTable dt = oReporteDAL.ObtenerTotalOperaciones();
 
             // Si la tabla tiene datos, convertimos el primer valor

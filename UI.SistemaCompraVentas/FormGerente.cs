@@ -51,7 +51,7 @@ private void MostrarDatosReales()
             {
                 ReporteBLL oReporteBLL = new ReporteBLL();
 
-                // 1. Lógica de la Grilla (Ya funcionando)
+                // 1. Lógica de la Grilla 
                 System.Data.DataTable datos = oReporteBLL.ObtenerVentasMensuales();
                 dgvCrecimiento.DataSource = datos;
                 dgvCrecimiento.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -60,7 +60,7 @@ private void MostrarDatosReales()
                     dgvCrecimiento.Columns["VentasTotales"].DefaultCellStyle.Format = "C2";
                 }
 
-                // 2. Cálculo del total para el Label Verde
+                // Ttotal para el Label Verde
                 decimal totalGeneral = 0;
                 foreach (System.Data.DataRow fila in datos.Rows)
                 {
@@ -68,11 +68,10 @@ private void MostrarDatosReales()
                 }
                 labelCantidadVentas.Text = totalGeneral.ToString("C2");
 
-                // 3. Panel Celeste (Cantidad de operaciones)
                 // Agregamos la lógica para mostrar el total de ventas realizadas
                 VentasDelMes.Text = oReporteBLL.ObtenerTotalOperaciones().ToString();
 
-                // 4. Panel Naranja (Alerta de Stock Crítico)
+                // Alerta de Stock Crítico
                 var stockCritico = oReporteBLL.ObtenerProductosStockCritico();
                 if (stockCritico.Rows.Count > 0)
                 {
