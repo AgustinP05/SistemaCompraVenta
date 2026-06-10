@@ -68,3 +68,60 @@ CREATE PROCEDURE SP_ListarProductos AS BEGIN
 END;
 GO
 
+
+----------------------------------------------------
+-- VISTA DE GERENTE!!!
+USE SistemaCompraVenta;
+GO
+
+-- SP para el Dashboard (Ventas Totales)
+IF OBJECT_ID('SP_ReporteVentasMensuales', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteVentasMensuales;
+GO
+CREATE PROCEDURE SP_ReporteVentasMensuales
+AS
+BEGIN
+    SELECT 
+        FORMAT(Fecha, 'MMMM') AS Mes, 
+        SUM(Total) AS VentasTotales
+    FROM tVenta
+    GROUP BY FORMAT(Fecha, 'MMMM'), MONTH(Fecha)
+    ORDER BY MONTH(Fecha);
+END;
+GO
+
+-- SP para productos más vendidos
+IF OBJECT_ID('SP_ReporteTopProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteTopProductos;
+GO
+CREATE PROCEDURE SP_ReporteTopProductos
+AS
+BEGIN
+    SELECT TOP 5 P.Nombre, SUM(DV.Cantidad) AS TotalVendidos
+    FROM tDetalleVenta DV
+    JOIN tProducto P ON DV.ID_Producto = P.ID_Producto
+    GROUP BY P.Nombre
+    ORDER BY TotalVendidos DESC;
+END;
+GO
+
+-- SP para el Panel Celeste: Cantidad total de ventas realizadas
+IF OBJECT_ID('SP_ContarVentas', 'P') IS NOT NULL DROP PROCEDURE SP_ContarVentas;
+GO
+CREATE PROCEDURE SP_ContarVentas
+AS
+BEGIN
+    SELECT COUNT(*) AS TotalOperaciones FROM tVenta;
+END;
+GO
+
+-- SP para el Panel Naranja: Alerta de Stock Bajo (menos de 5 unidades)
+IF OBJECT_ID('SP_ProductosStockMinimo', 'P') IS NOT NULL DROP PROCEDURE SP_ProductosStockMinimo;
+GO
+CREATE PROCEDURE SP_ProductosStockMinimo
+AS
+BEGIN
+    SELECT Nombre, Stock 
+    FROM tProducto 
+    WHERE Stock < 5;
+END;
+GO
+
