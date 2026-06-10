@@ -1,5 +1,5 @@
 ﻿using System;
-
+//Esto es el "nodo raíz" del árbol del Composite.
 namespace ENT.SistemaCompraVenta
 {
     public class Stock

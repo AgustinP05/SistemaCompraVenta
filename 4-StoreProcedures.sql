@@ -21,8 +21,30 @@ IF OBJECT_ID('SP_ObtenerUsuarios', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerUsu
 GO
 CREATE PROCEDURE SP_ObtenerUsuarios AS BEGIN SELECT * FROM tUsuario; END;
 GO
+-----
+IF OBJECT_ID('SP_InsertarUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarUsuario;
+GO
+CREATE PROCEDURE SP_InsertarUsuario(@DNI VARCHAR(20), @Nombre VARCHAR(100), @Password VARCHAR(50), @Rol VARCHAR(50) )
+AS BEGIN
+    INSERT INTO tUsuario (DNI, Nombre, Password, Rol) VALUES (@DNI, @Nombre, @Password, @Rol);
+    SELECT SCOPE_IDENTITY() AS ID_Usuario;
+END;
+GO
+
 
 -- CLIENTES
+-- SP para Listar Clientes (Requerido para el registro de ventas)
+IF OBJECT_ID('SP_ListarClientes', 'P') IS NOT NULL 
+    DROP PROCEDURE SP_ListarClientes;
+GO
+CREATE PROCEDURE SP_ListarClientes 
+AS 
+BEGIN
+    SELECT ID_Cliente, DNI, Nombre, Apellido, Telefono, Email ,Direccion
+    FROM tCliente;
+END;
+GO
+-------------------
 IF OBJECT_ID('SP_InsertarCliente', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarCliente;
 GO
 CREATE PROCEDURE SP_InsertarCliente(@DNI VARCHAR(20), @Nombre VARCHAR(100), @Apellido VARCHAR(100), @Telefono VARCHAR(30), @Email VARCHAR(150), @Direccion VARCHAR(255))
@@ -64,9 +86,11 @@ GO
 IF OBJECT_ID('SP_ListarProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ListarProductos;
 GO
 CREATE PROCEDURE SP_ListarProductos AS BEGIN
-    SELECT ID_Producto, Nombre, Marca, PrecioVenta, PrecioCosto, Stock FROM tProducto;
+    SELECT ID_Producto, Nombre, Marca, Tipo, PrecioVenta, PrecioCosto, Stock FROM tProducto;
 END;
 GO
+
+
 
 
 ----------------------------------------------------

@@ -4,13 +4,13 @@ using ENT.SistemaCompraVenta; // Para reconocer Componente, Permiso y FamiliaPer
 namespace BLL.SistemaCompraVenta.Componentes
 {
     public static class PermisosFactory
-    {
+    {//Factory: Centraliza la logica de creacion para que no haya duplicacion de codigo cada vez que instanciamos un usuario nuevo.
         public static Componente CrearArbolPermisos(string nombreRol)
         {
             // Crea la raíz del Composite (el grupo/rol que contiene a los demás)
             FamiliaPermisos rolComposite = new FamiliaPermisos { Nombre = nombreRol };
 
-            // Instancia los permisos atómicos (Hojas) tal cual los usa el swicj
+            // Instancia los permisos atómicos (Hojas) tal cual los usa el swich
             Permiso login = new Permiso { Nombre = "LogIn" };
             Permiso gestionarUsuarios = new Permiso { Nombre = "GestionarUsuarios" };
             Permiso registrarVentas = new Permiso { Nombre = "RegistrarVentas" };
@@ -42,8 +42,13 @@ namespace BLL.SistemaCompraVenta.Componentes
                     rolComposite.AgregarHijo(login);
                     rolComposite.AgregarHijo(gestionarProductos);
                     break;
+           
+                 case "SuperGerente":
+                    rolComposite.AgregarHijo(login);
+                    rolComposite.AgregarHijo(verReportes);
+                    rolComposite.AgregarHijo(gestionarUsuarios);
+                break;
             }
-
             return rolComposite;
         }
     }

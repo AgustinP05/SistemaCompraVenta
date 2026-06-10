@@ -37,7 +37,11 @@ CREATE TABLE tCliente (
     ID_Cliente INT PRIMARY KEY IDENTITY(1,1),
     DNI VARCHAR(20) NOT NULL,
     Nombre VARCHAR(100) NOT NULL,
-    Apellido VARCHAR(100) NOT NULL
+    Apellido VARCHAR(100) NOT NULL,
+    Telefono VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) NOT NULL,
+    Direccion VARCHAR(100) NOT NULL,
+
 );
 GO
 
@@ -45,8 +49,11 @@ GO
 CREATE TABLE tProducto (
     ID_Producto INT PRIMARY KEY IDENTITY(1,1),
     Nombre VARCHAR(100) NOT NULL,
-    Precio DECIMAL(18,2) NOT NULL,
-    Stock INT NOT NULL
+    Marca VARCHAR(100) NOT NULL,
+    PrecioVenta DECIMAL(10,2) NOT NULL,
+    PrecioCosto DECIMAL(10,2) NOT NULL,
+    Stock INT NOT NULL,
+    Tipo VARCHAR(100) NOT NULL,
 );
 GO
 

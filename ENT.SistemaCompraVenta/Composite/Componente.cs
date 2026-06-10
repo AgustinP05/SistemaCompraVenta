@@ -12,3 +12,7 @@ namespace ENT.SistemaCompraVenta
         public abstract bool TienePermiso(string nombrePermiso);
     }
 }
+
+/**
+ * Todo lo que forme parte de nuestro sistema de permisos debe tener un nombre y debe saber hacer dos cosas: 
+ * mostrarse y decir si tiene un permiso específico*/

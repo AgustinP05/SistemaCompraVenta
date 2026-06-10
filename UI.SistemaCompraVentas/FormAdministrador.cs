@@ -16,7 +16,10 @@ namespace UI.SistemaCompraVentas
 
         private void FormGestionUsuarios_Load(object sender, EventArgs e)
         {
-            // Cargamos los roles en el ComboBox apenas abre la ventana
+            // Cargamos los roles en el ComboBox apenas abre la ventana 
+            /*
+             *hay que conectar con la clase Factory
+             */
             List<string> roles = new List<string> { "Administrador", "Vendedor", "Stock", "Gerente" };
             cboRoles.DataSource = roles;
 

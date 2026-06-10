@@ -37,3 +37,11 @@ namespace ENT.SistemaCompraVenta
         }
     }
 }
+
+/*
+ * Lógica (La recursividad): 
+ * Su método TienePermiso implementa una búsqueda en cascada. 
+ * No se fija solo en su nombre, sino que le pregunta a todos sus "hijos": 
+ * "¿Alguno de ustedes tiene este permiso?". 
+ * Si un hijo es a su vez una FamiliaPermisos, este vuelve a preguntar a sus hijos, 
+ * creando una búsqueda profunda en toda la estructura.*/
