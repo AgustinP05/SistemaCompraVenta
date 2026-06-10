@@ -104,12 +104,10 @@ GO
 CREATE PROCEDURE SP_ReporteVentasMensuales
 AS
 BEGIN
-    SELECT 
-        FORMAT(Fecha, 'MMMM') AS Mes, 
-        SUM(Total) AS VentasTotales
-    FROM tVenta
-    GROUP BY FORMAT(Fecha, 'MMMM'), MONTH(Fecha)
-    ORDER BY MONTH(Fecha);
+SELECT FORMAT(v.Fecha, 'MMMM') AS Mes, u.Nombre AS Usuario, SUM(v.Total) AS VentasTotales
+FROM tVenta v
+JOIN tUsuario u ON v.ID_Usuario = u.ID
+GROUP BY FORMAT(v.Fecha, 'MMMM'), MONTH(v.Fecha), u.Nombre;
 END;
 GO
 
