@@ -89,6 +89,18 @@ CREATE PROCEDURE SP_ListarProductos AS BEGIN
     SELECT ID_Producto, Nombre, Marca, Tipo, PrecioVenta, PrecioCosto, Stock FROM tProducto;
 END;
 GO
+-- inserta producto
+IF OBJECT_ID('SP_InsertarProducto', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarProducto;
+GO
+CREATE PROCEDURE SP_InsertarProducto(
+    @Nombre VARCHAR(100), @Marca VARCHAR(100), @Color VARCHAR(50), 
+    @PrecioVenta FLOAT, @PrecioCosto FLOAT, @Stock INT, @Tipo VARCHAR(50)
+)
+AS BEGIN
+    INSERT INTO tProducto (Nombre, Marca, Color, PrecioVenta, PrecioCosto, Stock, Tipo) 
+    VALUES (@Nombre, @Marca, @Color, @PrecioVenta, @PrecioCosto, @Stock, @Tipo);
+END;
+GO
 
 
 

@@ -50,16 +50,19 @@ namespace UI.SistemaCompraVentas
                 // 2. Llenamos los atributos COMUNES que heredaron de 'Producto'
                 nuevoProducto.Nombre = txtNombre.Text;
                 nuevoProducto.Marca = txtMarca.Text;
+                nuevoProducto.Color = txtColor.Text;
                 nuevoProducto.PrecioVenta = (double)nmPrecioVenta.Value;
                 nuevoProducto.PrecioCosto = (double)nmPrecioCosto.Value;
                 nuevoProducto.Stock = new Stock { Cantidad = (int)nmStockActual.Value };
 
-                // 3. Enviamos a la BLL (Polimorfismo en acción)
+
                 oProductoBLL.GuardarProducto(nuevoProducto);
 
                 ActualizarGrilla();
                 LimpiarCampos();
-                MessageBox.Show("Producto registrado con éxito en el catálogo.");
+                MessageBox.Show("Producto registrado correctamente.");
+
+            
             }
             catch (FormatException)
             {
@@ -74,14 +77,30 @@ namespace UI.SistemaCompraVentas
         private void ActualizarGrilla()
         {
             dgvProductos.DataSource = null;
-            dgvProductos.DataSource = oProductoBLL.ListarProductos();
+            var lista = oProductoBLL.ListarProductos();
+
+            dgvProductos.DataSource = lista;
+            //pongo en null para que no muestre la entidad compleja de Stock, 
+            if (dgvProductos.Columns["Stock"] != null)
+            {
+                dgvProductos.Columns["Stock"].Visible = false;
+            }
+
+            //accedemos a la propiedad stock 
+            if (dgvProductos.Columns["CantidadStock"] != null)
+            {
+                dgvProductos.Columns["CantidadStock"].HeaderText = "Stock";
+                dgvProductos.Columns["CantidadStock"].DisplayIndex = 5;
+            }
         }
+
 
         private void LimpiarCampos()
         {
             txtNombre.Clear();
             txtTalle.Clear();
             txtMarca.Clear();
+            txtColor.Clear();
             nmStockMinimo.Value = 0;
             nmPrecioCosto.Value = 0;
             nmPrecioVenta.Value = 0;

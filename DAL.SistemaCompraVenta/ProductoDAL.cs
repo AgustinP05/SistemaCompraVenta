@@ -21,6 +21,7 @@ public class ProductoDAL
         p.Id = Convert.ToInt32(fila["ID_Producto"]);
         p.Nombre = fila["Nombre"].ToString();
         p.Marca = fila["Marca"].ToString();
+        p.Color = fila["Color"].ToString();
         p.PrecioVenta = (double)Convert.ToDecimal(fila["PrecioVenta"]);
         p.PrecioCosto = (double)Convert.ToDecimal(fila["PrecioCosto"]);
         p.Stock = new Stock { Cantidad = Convert.ToInt32(fila["Stock"]) };
@@ -56,6 +57,16 @@ public class ProductoDAL
     }
     public void Guardar(Producto p)
     {
-        // Lógica para guardar
+        // Asegurate de tener un SP_InsertarProducto en tu SQL
+        SqlParameter[] param = {
+        conexion.crearParametro("@Nombre", p.Nombre),
+        conexion.crearParametro("@Marca", p.Marca),
+        conexion.crearParametro("@Color", p.Color), // ¡Agregado!
+        conexion.crearParametro("@PrecioVenta", p.PrecioVenta),
+        conexion.crearParametro("@PrecioCosto", p.PrecioCosto),
+        conexion.crearParametro("@Stock", p.Stock.Cantidad),
+        conexion.crearParametro("@Tipo", p.GetType().Name) // Calzado o Vestimenta
+    };
+        conexion.EscribirPorStoreProcedure("SP_InsertarProducto", param);
     }
 }

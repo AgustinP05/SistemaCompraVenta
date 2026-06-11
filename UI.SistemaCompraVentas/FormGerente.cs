@@ -1,8 +1,8 @@
 ﻿using BLL.SistemaCompraVentas;
+using BLL.SistemaCompraVentas; 
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using BLL.SistemaCompraVentas; 
 
 namespace UI.SistemaCompraVentas
 {
@@ -50,40 +50,31 @@ private void MostrarDatosReales()
             try
             {
                 ReporteBLL oReporteBLL = new ReporteBLL();
-
-                // 1. Lógica de la Grilla 
                 System.Data.DataTable datos = oReporteBLL.ObtenerVentasMensuales();
+
+                // Ahora tu grilla mostrará automáticamente las 3 columnas: Mes, Usuario, VentasTotales
                 dgvCrecimiento.DataSource = datos;
-                dgvCrecimiento.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+
+                // Formateo de columnas para que se vea profesional
                 if (dgvCrecimiento.Columns.Contains("VentasTotales"))
                 {
                     dgvCrecimiento.Columns["VentasTotales"].DefaultCellStyle.Format = "C2";
                 }
 
-                // Ttotal para el Label Verde
+                // El cálculo del total sigue igual, pero ahora sabemos que 'VentasTotales' existe
                 decimal totalGeneral = 0;
                 foreach (System.Data.DataRow fila in datos.Rows)
                 {
                     totalGeneral += Convert.ToDecimal(fila["VentasTotales"]);
                 }
                 labelCantidadVentas.Text = totalGeneral.ToString("C2");
-
-                // Agregamos la lógica para mostrar el total de ventas realizadas
-                VentasDelMes.Text = oReporteBLL.ObtenerTotalOperaciones().ToString();
-
-                // Alerta de Stock Crítico
-                var stockCritico = oReporteBLL.ObtenerProductosStockCritico();
-                if (stockCritico.Rows.Count > 0)
-                {
-                    DvgAlerta.Text = "Stock bajo: " + stockCritico.Rows.Count + " productos";
-                    DvgAlerta.BackColor = System.Drawing.Color.Red;
-                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al cargar los reportes: " + ex.Message);
+                MessageBox.Show("Error al cargar reportes: " + ex.Message);
             }
         }
+
         private void FormGerente_Activated(object sender, EventArgs e)
         {
             CargarReportes(); // Actualiza los números cada vez que el gerente entra a la vista

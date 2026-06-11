@@ -50,10 +50,27 @@ CREATE TABLE tProducto (
     ID_Producto INT PRIMARY KEY IDENTITY(1,1),
     Nombre VARCHAR(100) NOT NULL,
     Marca VARCHAR(100) NOT NULL,
+    Color VARCHAR(50),
     PrecioVenta DECIMAL(10,2) NOT NULL,
     PrecioCosto DECIMAL(10,2) NOT NULL,
     Stock INT NOT NULL,
     Tipo VARCHAR(100) NOT NULL,
+);
+GO
+--si ya tienen la tabla creada, ahora yo la edite. le agregué color.--- ver cual de ambas ejecutar. OJO
+-- tProducto (Estructura final unificada)
+IF OBJECT_ID('tProducto', 'U') IS NOT NULL DROP TABLE tProducto;
+GO
+
+CREATE TABLE tProducto (
+    ID_Producto INT PRIMARY KEY IDENTITY(1,1),
+    Nombre VARCHAR(100) NOT NULL,
+    Marca VARCHAR(100) NOT NULL,
+    Color VARCHAR(50), 
+    Tipo VARCHAR(100) NOT NULL,
+    PrecioVenta DECIMAL(10,2) NOT NULL,
+    PrecioCosto DECIMAL(10,2) NOT NULL,
+    Stock INT NOT NULL
 );
 GO
 
