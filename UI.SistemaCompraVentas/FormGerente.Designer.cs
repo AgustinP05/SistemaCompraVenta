@@ -33,10 +33,10 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.labelCantidadVentas = new System.Windows.Forms.Label();
             this.DvgAlerta = new System.Windows.Forms.Panel();
+            this.labelAlerta = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.dgvCrecimiento = new System.Windows.Forms.DataGridView();
             this.label4 = new System.Windows.Forms.Label();
-            this.labelAlerta = new System.Windows.Forms.Label();
             this.VentasDelMes.SuspendLayout();
             this.panel2.SuspendLayout();
             this.DvgAlerta.SuspendLayout();
@@ -88,6 +88,15 @@
             this.DvgAlerta.Size = new System.Drawing.Size(200, 36);
             this.DvgAlerta.TabIndex = 2;
             // 
+            // labelAlerta
+            // 
+            this.labelAlerta.AutoSize = true;
+            this.labelAlerta.Location = new System.Drawing.Point(25, 10);
+            this.labelAlerta.Name = "labelAlerta";
+            this.labelAlerta.Size = new System.Drawing.Size(35, 13);
+            this.labelAlerta.TabIndex = 0;
+            this.labelAlerta.Text = "Stock";
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -114,15 +123,6 @@
             this.label4.TabIndex = 5;
             this.label4.Text = "Top Ventas";
             // 
-            // labelAlerta
-            // 
-            this.labelAlerta.AutoSize = true;
-            this.labelAlerta.Location = new System.Drawing.Point(25, 10);
-            this.labelAlerta.Name = "labelAlerta";
-            this.labelAlerta.Size = new System.Drawing.Size(35, 13);
-            this.labelAlerta.TabIndex = 0;
-            this.labelAlerta.Text = "Stock";
-            // 
             // FormGerente
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -135,7 +135,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.VentasDelMes);
             this.Name = "FormGerente";
-            this.Text = "FormReportes";
+            this.Text = "SPORT UPE | Generar Reportes";
             this.VentasDelMes.ResumeLayout(false);
             this.VentasDelMes.PerformLayout();
             this.panel2.ResumeLayout(false);

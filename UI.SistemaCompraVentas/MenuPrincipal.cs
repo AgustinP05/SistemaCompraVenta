@@ -17,6 +17,7 @@ namespace UI.SistemaCompraVentas
         {
             // 1. Configuramos las visibilidades de los botones usando el patrón Composite
             ConfigurarPermisos();
+            ReordenarBotones();   
 
             // 2. Verificamos si hay alguien logueado usando el Singleton de la BLL
             var usuarioLogueado = Sesion.ObtenerInstancia().UsuarioActual;
@@ -52,6 +53,33 @@ namespace UI.SistemaCompraVentas
                 btnVentas.Visible = false;
                 btnProductos.Visible = false;
                 btnReportes.Visible = false;
+            }
+        }
+
+
+
+        private void ReordenarBotones()
+        {
+            // Lista de botones en el orden lógico que querés mostrarlos
+            var botones = new List<System.Windows.Forms.Button>
+            {
+                btnUsuarios,
+                btnReportes,
+                btnVentas,
+                btnProductos
+            };
+
+            int yInicial = 119; // misma Y que tenía btnUsuarios en el Designer
+            int separacion = 46;
+            int contador = 0;
+
+            foreach (var btn in botones)
+            {
+                if (btn.Visible)
+                {
+                    btn.Location = new System.Drawing.Point(btn.Location.X, yInicial + (contador * separacion));
+                    contador++;
+                }
             }
         }
 

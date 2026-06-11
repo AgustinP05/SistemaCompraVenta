@@ -43,16 +43,20 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-        private void btnMostrarUsuarios_Click(object sender, EventArgs e)
-        {
-            UsuarioBLL UsuarioBLL = new UsuarioBLL();
-            DataTable tabla = UsuarioBLL.ObtenerUsuarios();
-            dataGridView1.DataSource = tabla;
-        }
-
+        
         // Métodos vacíos por si el diseñador los requiere
         private void label1_Click(object sender, EventArgs e) { }
         private void txtUsuario_TextChanged(object sender, EventArgs e) { }
         private void txtPassword_TextChanged(object sender, EventArgs e) { }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 }

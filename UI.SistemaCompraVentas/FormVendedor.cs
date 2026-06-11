@@ -49,12 +49,16 @@ namespace UI.SistemaCompraVentas
             if (cboProducto.SelectedItem is Producto prod)
             {
                 lblProductoNombre.Text = $"Producto: {prod.Nombre}";
+                lblProductoMarca.Text = $"Marca: {prod.Marca}";      
+                lblProductoColor.Text = $"Color: {prod.Color}";       
                 lblProductoPrecio.Text = $"Precio: {prod.PrecioVenta.ToString("N2")}";
                 lblProductoStock.Text = $"Stock Disp: {prod.Stock.Cantidad}";
             }
             else
             {
                 lblProductoNombre.Text = "Producto: -";
+                lblProductoMarca.Text = "Marca: -";                  
+                lblProductoColor.Text = "Color: -";                  
                 lblProductoPrecio.Text = "Precio: -";
                 lblProductoStock.Text = "Stock Disp: -";
             }
@@ -67,6 +71,12 @@ namespace UI.SistemaCompraVentas
                 if (!(cboProducto.SelectedItem is Producto prodSeleccionado))
                 {
                     MessageBox.Show("Seleccioná un producto.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (nmCantidad.Value == 0)
+                {
+                    MessageBox.Show("La cantidad debe ser mayor a cero.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -96,6 +106,8 @@ namespace UI.SistemaCompraVentas
             dgvCarrito.Columns.Clear();
             dgvCarrito.Columns.Add("Codigo", "Código");
             dgvCarrito.Columns.Add("Nombre", "Nombre");
+            dgvCarrito.Columns.Add("Marca", "Marca");       
+            dgvCarrito.Columns.Add("Color", "Color");      
             dgvCarrito.Columns.Add("Cantidad", "Cantidad");
             dgvCarrito.Columns.Add("Precio", "Precio Unit.");
             dgvCarrito.Columns.Add("Subtotal", "Subtotal");
@@ -105,6 +117,8 @@ namespace UI.SistemaCompraVentas
                 dgvCarrito.Rows.Add(
                     d.Producto.Id,
                     d.Producto.Nombre,
+                    d.Producto.Marca,        
+                    d.Producto.Color,        
                     d.Cantidad,
                     d.PrecioUnitario.ToString("N2"),
                     d.DevolverSubtotal().ToString("N2")
@@ -121,6 +135,10 @@ namespace UI.SistemaCompraVentas
                 int fila = dgvCarrito.CurrentRow.Index;
                 ventaActual.Detalles.RemoveAt(fila);
                 ActualizarGrilla();
+            }
+            else
+            {
+                MessageBox.Show("No hay ningún item seleccionado para eliminar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -197,5 +215,10 @@ namespace UI.SistemaCompraVentas
         private void btnSalir_Click(object sender, EventArgs e) => this.Close();
 
         private void nmCantidad_ValueChanged(object sender, EventArgs e) { }
+
+        private void lblClienteNombre_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

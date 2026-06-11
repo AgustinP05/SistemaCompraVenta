@@ -7,9 +7,7 @@
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
-            {
                 components.Dispose();
-            }
             base.Dispose(disposing);
         }
 
@@ -17,192 +15,188 @@
 
         private void InitializeComponent()
         {
-            this.dgvUsuarios = new System.Windows.Forms.DataGridView();
             this.datosDelUsuario = new System.Windows.Forms.GroupBox();
-            this.CONTRASEÑA = new System.Windows.Forms.Label();
-            this.txtPassword = new System.Windows.Forms.TextBox();
-            this.btnGuardar = new System.Windows.Forms.Button();
-            this.rol = new System.Windows.Forms.Label();
-            this.txtDni = new System.Windows.Forms.TextBox();
-            this.cboRoles = new System.Windows.Forms.ComboBox();
-            this.apellido = new System.Windows.Forms.Label();
             this.dni = new System.Windows.Forms.Label();
+            this.txtDni = new System.Windows.Forms.TextBox();
             this.nombre = new System.Windows.Forms.Label();
-            this.txtApellido = new System.Windows.Forms.TextBox();
             this.txtNombre = new System.Windows.Forms.TextBox();
-            this.seguridadGestionPermisos = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).BeginInit();
+            this.apellido = new System.Windows.Forms.Label();
+            this.txtApellido = new System.Windows.Forms.TextBox();
+            this.rol = new System.Windows.Forms.Label();
+            this.cboRoles = new System.Windows.Forms.ComboBox();
+            this.btnGuardar = new System.Windows.Forms.Button();
+            this.btnCancelar = new System.Windows.Forms.Button();
+            this.dgvUsuarios = new System.Windows.Forms.DataGridView();
             this.datosDelUsuario.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).BeginInit();
             this.SuspendLayout();
-            // 
-            // dgvUsuarios
-            // 
-            this.dgvUsuarios.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.dgvUsuarios.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
-            this.dgvUsuarios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvUsuarios.Location = new System.Drawing.Point(226, 68);
-            this.dgvUsuarios.Name = "dgvUsuarios";
-            this.dgvUsuarios.Size = new System.Drawing.Size(574, 382);
-            this.dgvUsuarios.TabIndex = 0;
-            this.dgvUsuarios.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUsuarios_CellContentClick);
             // 
             // datosDelUsuario
             // 
-            this.datosDelUsuario.Controls.Add(this.CONTRASEÑA);
-            this.datosDelUsuario.Controls.Add(this.txtPassword);
-            this.datosDelUsuario.Controls.Add(this.btnGuardar);
-            this.datosDelUsuario.Controls.Add(this.rol);
-            this.datosDelUsuario.Controls.Add(this.txtDni);
-            this.datosDelUsuario.Controls.Add(this.cboRoles);
-            this.datosDelUsuario.Controls.Add(this.apellido);
             this.datosDelUsuario.Controls.Add(this.dni);
+            this.datosDelUsuario.Controls.Add(this.txtDni);
             this.datosDelUsuario.Controls.Add(this.nombre);
-            this.datosDelUsuario.Controls.Add(this.txtApellido);
             this.datosDelUsuario.Controls.Add(this.txtNombre);
-            this.datosDelUsuario.Dock = System.Windows.Forms.DockStyle.Left;
-            this.datosDelUsuario.Location = new System.Drawing.Point(0, 0);
+            this.datosDelUsuario.Controls.Add(this.apellido);
+            this.datosDelUsuario.Controls.Add(this.txtApellido);
+            this.datosDelUsuario.Controls.Add(this.rol);
+            this.datosDelUsuario.Controls.Add(this.cboRoles);
+            this.datosDelUsuario.Controls.Add(this.btnGuardar);
+            this.datosDelUsuario.Controls.Add(this.btnCancelar);
+            this.datosDelUsuario.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.datosDelUsuario.Location = new System.Drawing.Point(12, 12);
             this.datosDelUsuario.Name = "datosDelUsuario";
-            this.datosDelUsuario.Size = new System.Drawing.Size(220, 450);
+            this.datosDelUsuario.Size = new System.Drawing.Size(760, 132);
             this.datosDelUsuario.TabIndex = 1;
             this.datosDelUsuario.TabStop = false;
             this.datosDelUsuario.Text = "Datos del Usuario";
             // 
-            // CONTRASEÑA
+            // dni
             // 
-            this.CONTRASEÑA.AutoSize = true;
-            this.CONTRASEÑA.Location = new System.Drawing.Point(6, 167);
-            this.CONTRASEÑA.Name = "CONTRASEÑA";
-            this.CONTRASEÑA.Size = new System.Drawing.Size(81, 13);
-            this.CONTRASEÑA.TabIndex = 3;
-            this.CONTRASEÑA.Text = "CONTRASEÑA";
-            // 
-            // txtPassword
-            // 
-            this.txtPassword.Location = new System.Drawing.Point(94, 164);
-            this.txtPassword.Name = "txtPassword";
-            this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(103, 20);
-            this.txtPassword.TabIndex = 3;
-            // 
-            // btnGuardar
-            // 
-            this.btnGuardar.Location = new System.Drawing.Point(17, 260);
-            this.btnGuardar.Name = "btnGuardar";
-            this.btnGuardar.Size = new System.Drawing.Size(180, 30);
-            this.btnGuardar.TabIndex = 5;
-            this.btnGuardar.Text = "Guardar Usuario";
-            this.btnGuardar.UseVisualStyleBackColor = true;
-            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
-            // 
-            // rol
-            // 
-            this.rol.AutoSize = true;
-            this.rol.Location = new System.Drawing.Point(14, 214);
-            this.rol.Name = "rol";
-            this.rol.Size = new System.Drawing.Size(29, 13);
-            this.rol.TabIndex = 7;
-            this.rol.Text = "ROL";
+            this.dni.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.dni.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.dni.Location = new System.Drawing.Point(34, 53);
+            this.dni.Name = "dni";
+            this.dni.Size = new System.Drawing.Size(60, 20);
+            this.dni.TabIndex = 4;
+            this.dni.Text = "DNI";
+            this.dni.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // txtDni
             // 
-            this.txtDni.Location = new System.Drawing.Point(94, 37);
+            this.txtDni.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtDni.Location = new System.Drawing.Point(100, 53);
             this.txtDni.Name = "txtDni";
-            this.txtDni.Size = new System.Drawing.Size(100, 20);
-            this.txtDni.TabIndex = 2;
-            // 
-            // cboRoles
-            // 
-            this.cboRoles.FormattingEnabled = true;
-            this.cboRoles.Location = new System.Drawing.Point(73, 211);
-            this.cboRoles.Name = "cboRoles";
-            this.cboRoles.Size = new System.Drawing.Size(121, 21);
-            this.cboRoles.TabIndex = 4;
-            // 
-            // apellido
-            // 
-            this.apellido.AutoSize = true;
-            this.apellido.Location = new System.Drawing.Point(14, 125);
-            this.apellido.Name = "apellido";
-            this.apellido.Size = new System.Drawing.Size(68, 13);
-            this.apellido.TabIndex = 6;
-            this.apellido.Text = "APELLIDO : ";
-            // 
-            // dni
-            // 
-            this.dni.AutoSize = true;
-            this.dni.Location = new System.Drawing.Point(12, 37);
-            this.dni.Name = "dni";
-            this.dni.Size = new System.Drawing.Size(35, 13);
-            this.dni.TabIndex = 2;
-            this.dni.Text = "DNI : ";
+            this.txtDni.Size = new System.Drawing.Size(137, 20);
+            this.txtDni.TabIndex = 5;
             // 
             // nombre
             // 
-            this.nombre.AutoSize = true;
-            this.nombre.Location = new System.Drawing.Point(14, 79);
+            this.nombre.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.nombre.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.nombre.Location = new System.Drawing.Point(24, 27);
             this.nombre.Name = "nombre";
-            this.nombre.Size = new System.Drawing.Size(63, 13);
-            this.nombre.TabIndex = 5;
-            this.nombre.Text = "NOMBRE : ";
-            // 
-            // txtApellido
-            // 
-            this.txtApellido.Location = new System.Drawing.Point(94, 122);
-            this.txtApellido.Name = "txtApellido";
-            this.txtApellido.Size = new System.Drawing.Size(100, 20);
-            this.txtApellido.TabIndex = 3;
+            this.nombre.Size = new System.Drawing.Size(70, 20);
+            this.nombre.TabIndex = 0;
+            this.nombre.Text = "Nombre";
+            this.nombre.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // txtNombre
             // 
-            this.txtNombre.Location = new System.Drawing.Point(94, 79);
+            this.txtNombre.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtNombre.Location = new System.Drawing.Point(100, 27);
             this.txtNombre.Name = "txtNombre";
-            this.txtNombre.Size = new System.Drawing.Size(100, 20);
-            this.txtNombre.TabIndex = 2;
+            this.txtNombre.Size = new System.Drawing.Size(137, 20);
+            this.txtNombre.TabIndex = 1;
             // 
-            // seguridadGestionPermisos
+            // apellido
             // 
-            this.seguridadGestionPermisos.AutoSize = true;
-            this.seguridadGestionPermisos.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.seguridadGestionPermisos.Location = new System.Drawing.Point(299, 33);
-            this.seguridadGestionPermisos.Name = "seguridadGestionPermisos";
-            this.seguridadGestionPermisos.Size = new System.Drawing.Size(391, 17);
-            this.seguridadGestionPermisos.TabIndex = 2;
-            this.seguridadGestionPermisos.Text = "MÓDULO DE SEGURIDAD - GESTIÓN DE PERMISOS";
+            this.apellido.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.apellido.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.apellido.Location = new System.Drawing.Point(248, 27);
+            this.apellido.Name = "apellido";
+            this.apellido.Size = new System.Drawing.Size(70, 20);
+            this.apellido.TabIndex = 2;
+            this.apellido.Text = "Apellido";
+            this.apellido.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtApellido
+            // 
+            this.txtApellido.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.txtApellido.Location = new System.Drawing.Point(324, 27);
+            this.txtApellido.Name = "txtApellido";
+            this.txtApellido.Size = new System.Drawing.Size(137, 20);
+            this.txtApellido.TabIndex = 3;
+            // 
+            // rol
+            // 
+            this.rol.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.rol.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.rol.Location = new System.Drawing.Point(248, 52);
+            this.rol.Name = "rol";
+            this.rol.Size = new System.Drawing.Size(70, 20);
+            this.rol.TabIndex = 6;
+            this.rol.Text = "Rol";
+            this.rol.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // cboRoles
+            // 
+            this.cboRoles.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.cboRoles.FormattingEnabled = true;
+            this.cboRoles.Location = new System.Drawing.Point(324, 52);
+            this.cboRoles.Name = "cboRoles";
+            this.cboRoles.Size = new System.Drawing.Size(137, 21);
+            this.cboRoles.TabIndex = 7;
+            // 
+            // btnGuardar
+            // 
+            this.btnGuardar.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnGuardar.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
+            this.btnGuardar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnGuardar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btnGuardar.Location = new System.Drawing.Point(602, 73);
+            this.btnGuardar.Name = "btnGuardar";
+            this.btnGuardar.Size = new System.Drawing.Size(140, 32);
+            this.btnGuardar.TabIndex = 8;
+            this.btnGuardar.Text = "Guardar Usuario";
+            this.btnGuardar.UseVisualStyleBackColor = false;
+            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+            // 
+            // btnCancelar
+            // 
+            this.btnCancelar.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnCancelar.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
+            this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancelar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btnCancelar.Location = new System.Drawing.Point(602, 29);
+            this.btnCancelar.Name = "btnCancelar";
+            this.btnCancelar.Size = new System.Drawing.Size(140, 32);
+            this.btnCancelar.TabIndex = 9;
+            this.btnCancelar.Text = "Cancelar";
+            this.btnCancelar.UseVisualStyleBackColor = false;
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
+            // 
+            // dgvUsuarios
+            // 
+            this.dgvUsuarios.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvUsuarios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvUsuarios.Location = new System.Drawing.Point(12, 150);
+            this.dgvUsuarios.Name = "dgvUsuarios";
+            this.dgvUsuarios.Size = new System.Drawing.Size(760, 270);
+            this.dgvUsuarios.TabIndex = 1;
+            this.dgvUsuarios.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUsuarios_CellContentClick);
             // 
             // FormGestionUsuarios
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.seguridadGestionPermisos);
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.ClientSize = new System.Drawing.Size(784, 435);
             this.Controls.Add(this.datosDelUsuario);
             this.Controls.Add(this.dgvUsuarios);
             this.Name = "FormGestionUsuarios";
-            this.Text = "Gestión de Usuarios y Seguridad";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "SPORT UPE | Gestionar Usuarios";
             this.Load += new System.EventHandler(this.FormGestionUsuarios_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).EndInit();
             this.datosDelUsuario.ResumeLayout(false);
             this.datosDelUsuario.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.DataGridView dgvUsuarios;
         private System.Windows.Forms.GroupBox datosDelUsuario;
         private System.Windows.Forms.Label dni;
         private System.Windows.Forms.TextBox txtDni;
         private System.Windows.Forms.Label nombre;
-        private System.Windows.Forms.TextBox txtApellido;
         private System.Windows.Forms.TextBox txtNombre;
-        private System.Windows.Forms.ComboBox cboRoles;
         private System.Windows.Forms.Label apellido;
+        private System.Windows.Forms.TextBox txtApellido;
         private System.Windows.Forms.Label rol;
-        private System.Windows.Forms.Label seguridadGestionPermisos;
+        private System.Windows.Forms.ComboBox cboRoles;
         private System.Windows.Forms.Button btnGuardar;
-        private System.Windows.Forms.Label CONTRASEÑA;
-        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.DataGridView dgvUsuarios;
+        private System.Windows.Forms.Button btnCancelar;
     }
 }

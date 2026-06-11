@@ -65,7 +65,7 @@ namespace UI.SistemaCompraVentas
             // 1. Validación de campos obligatorios
             if (string.IsNullOrEmpty(txtDni.Text) || string.IsNullOrEmpty(txtNombre.Text))
             {
-                MessageBox.Show("Por favor, cargue DNI y Nombre para continuar.");
+                MessageBox.Show("Por favor, cargue datos del usuario para continuar.");
                 return;
             }
 
@@ -75,18 +75,15 @@ namespace UI.SistemaCompraVentas
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
 
                 // 3. Llamamos al método de creación (pasando el Rol seleccionado del ComboBox)
-                bool exito = bll.CrearUsuario(txtDni.Text, txtNombre.Text, txtPassword.Text, cboRoles.SelectedItem.ToString());
-
+                bool exito = bll.CrearUsuario(txtDni.Text, txtNombre.Text, txtDni.Text, cboRoles.SelectedItem.ToString());
                 //bool exito = bll.CrearUsuario(txtDni.Text, txtNombre.Text, txtPassword.Text, cboRoles.SelectedItem.ToString());
                 if (exito)
                 {
-                    MessageBox.Show("Usuario registrado correctamente en la base de datos.");
-
+                    MessageBox.Show("Usuario " + txtNombre.Text + " " + txtApellido.Text + " registrado correctamente en la base de datos.");
                     // 4. Limpiamos y refrescamos la grilla
                     txtDni.Clear();
                     txtNombre.Clear();
                     txtApellido.Clear();
-                    txtPassword.Clear();
                     // Aquí podrías llamar a un método que recargue el DataGridView desde la BD
                     CargarGrilla();
                 }
@@ -111,6 +108,11 @@ namespace UI.SistemaCompraVentas
             // Esto llama a tu SP_ObtenerUsuarios que ya estaba en la DAL
             dgvUsuarios.DataSource = bll.ObtenerUsuarios();
         }
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
 
     }
-}
+
+    }
