@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClienteDAL.cs" />
-    <Compile Include="Compra.cs" />
+    <Compile Include="CompraDAL.cs" />
     <Compile Include="Conexion.cs" />
     <Compile Include="ProductoDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

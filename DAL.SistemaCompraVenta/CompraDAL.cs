@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAL.SistemaCompraVenta
 {
-    internal class Compra
+    internal class CompraDAL
     {
     }
 }

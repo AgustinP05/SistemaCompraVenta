@@ -65,17 +65,58 @@ namespace DAL.SistemaCompraVenta
             );
         }
 
-        public int InsertarUsuario(string dni, string nombre, string password, string rol)
+        public int InsertarUsuario(string dni, string nombre, string apellido,
+                            string password, string rol, string email,
+                            DateTime? fechaNacimiento)
         {
             SqlParameter[] parametros =
             {
         conexion.crearParametro("@DNI", dni),     
         conexion.crearParametro("@Nombre", nombre),
+        conexion.crearParametro("@Apellido", apellido),
         conexion.crearParametro("@Password", password),
-        conexion.crearParametro("@Rol", rol)
+        conexion.crearParametro("@Email", email),
+        conexion.crearParametro("@Rol", rol),
+        conexion.crearParametro("@FechaNacimiento", (object)fechaNacimiento ?? DBNull.Value)
             };
 
             return conexion.EscribirPorStoreProcedure("SP_InsertarUsuario", parametros);
+        }
+
+        public DataTable ObtenerUsuarios(string filtro)
+        {
+            SqlParameter[] parametros =
+            {
+        conexion.crearParametro("@Filtro", filtro ?? "")
+    };
+            return conexion.LeerPorStoreProcedure("SP_ObtenerUsuarios", parametros);
+        }
+
+        public int ModificarUsuario(string dni, string nombre, string apellido,
+                            string password, string rol, string email,
+                            DateTime? fechaNacimiento)
+        {
+            SqlParameter[] parametros =
+            {
+        conexion.crearParametro("@DNI", dni),
+        conexion.crearParametro("@Nombre", nombre),
+        conexion.crearParametro("@Apellido", apellido),
+        conexion.crearParametro("@Email", email),
+        conexion.crearParametro("@Password", password),
+        conexion.crearParametro("@Rol", rol),
+        conexion.crearParametro("@FechaNacimiento", (object)fechaNacimiento ?? DBNull.Value)
+
+    };
+            return conexion.EscribirPorStoreProcedure("SP_ModificarUsuario", parametros);
+        }
+
+        public int EliminarUsuario(string dni)
+        {
+            SqlParameter[] parametros =
+            {
+        conexion.crearParametro("@DNI", dni)
+    };
+            return conexion.EscribirPorStoreProcedure("SP_EliminarUsuario", parametros);
         }
 
     }

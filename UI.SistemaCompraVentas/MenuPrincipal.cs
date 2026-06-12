@@ -45,6 +45,7 @@ namespace UI.SistemaCompraVentas
                 btnVentas.Visible = arbolPermisos.TienePermiso("RegistrarVentas");
                 btnProductos.Visible = arbolPermisos.TienePermiso("GestionarProductos");
                 btnReportes.Visible = arbolPermisos.TienePermiso("VerReportes");
+                btnClientes.Visible = arbolPermisos.TienePermiso("GestionarClientes");
             }
             else
             {
@@ -53,6 +54,7 @@ namespace UI.SistemaCompraVentas
                 btnVentas.Visible = false;
                 btnProductos.Visible = false;
                 btnReportes.Visible = false;
+                btnClientes.Visible = false;
             }
         }
 
@@ -66,7 +68,8 @@ namespace UI.SistemaCompraVentas
                 btnUsuarios,
                 btnReportes,
                 btnVentas,
-                btnProductos
+                btnProductos,
+                btnClientes
             };
 
             int yInicial = 119; // misma Y que tenía btnUsuarios en el Designer
@@ -110,6 +113,13 @@ namespace UI.SistemaCompraVentas
             vistaGerente.ShowDialog();
         }
 
+        private void btnClientes_Click(object sender, EventArgs e)
+        {
+            FormCrearCliente vistaClientes = new FormCrearCliente();
+            vistaClientes.StartPosition = FormStartPosition.CenterScreen;
+            vistaClientes.ShowDialog();
+        }
+
         private void btnLogout_Click(object sender, EventArgs e)
         {
             Sesion.ObtenerInstancia().Logout();
@@ -118,6 +128,6 @@ namespace UI.SistemaCompraVentas
             this.Close();
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e) { }
+        //private void panel1_Paint(object sender, PaintEventArgs e) { }
     }
 }

@@ -22,6 +22,7 @@
             this.btnVentas = new System.Windows.Forms.Button();
             this.btnProductos = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
+            this.btnClientes = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblUsuario
@@ -108,13 +109,27 @@
             this.btnLogout.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
             this.btnLogout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLogout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btnLogout.Location = new System.Drawing.Point(266, 342);
+            this.btnLogout.Location = new System.Drawing.Point(266, 368);
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Size = new System.Drawing.Size(90, 32);
             this.btnLogout.TabIndex = 6;
             this.btnLogout.Text = "Log Out";
             this.btnLogout.UseVisualStyleBackColor = false;
             this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
+            // 
+            // btnClientes
+            // 
+            this.btnClientes.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnClientes.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
+            this.btnClientes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClientes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btnClientes.Location = new System.Drawing.Point(56, 303);
+            this.btnClientes.Name = "btnClientes";
+            this.btnClientes.Size = new System.Drawing.Size(300, 36);
+            this.btnClientes.TabIndex = 7;
+            this.btnClientes.Text = "Gestionar Clientes";
+            this.btnClientes.UseVisualStyleBackColor = false;
+            this.btnClientes.Click += new System.EventHandler(this.btnClientes_Click);
             // 
             // MenuPrincipal
             // 
@@ -129,6 +144,7 @@
             this.Controls.Add(this.btnReportes);
             this.Controls.Add(this.btnVentas);
             this.Controls.Add(this.btnProductos);
+            this.Controls.Add(this.btnClientes);
             this.Controls.Add(this.btnLogout);
             this.Name = "MenuPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -147,5 +163,6 @@
         private System.Windows.Forms.Button btnVentas;
         private System.Windows.Forms.Button btnProductos;
         private System.Windows.Forms.Button btnLogout;
+        private System.Windows.Forms.Button btnClientes;
     }
 }

@@ -38,6 +38,18 @@ namespace DAL.SistemaCompraVenta
             return conexion.EscribirPorStoreProcedure("SP_InsertarCliente", parametros);
         }
 
+        public bool ExisteCliente(string dni)
+        {
+            SqlParameter[] parametros =
+            {
+        conexion.crearParametro("@DNI", dni)
+    };
+
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ExisteCliente", parametros);
+
+            return dt != null && dt.Rows.Count > 0;
+        }
+
         public List<Cliente> ListarTodo()
         {
             List<Cliente> lista = new List<Cliente>();
@@ -57,5 +69,36 @@ namespace DAL.SistemaCompraVenta
             }
             return lista;
         }
+                public DataTable ObtenerClientes(string filtro)
+                {
+                    SqlParameter[] parametros =
+                    {
+                conexion.crearParametro("@Filtro", filtro ?? "")
+            };
+                    return conexion.LeerPorStoreProcedure("SP_ObtenerClientes", parametros);
+                }
+
+                public int ModificarCliente(Cliente c)
+                {
+                    SqlParameter[] parametros =
+                    {
+                conexion.crearParametro("@DNI", c.Dni),
+                conexion.crearParametro("@Nombre", c.Nombre),
+                conexion.crearParametro("@Apellido", c.Apellido),
+                conexion.crearParametro("@Telefono", c.Telefono),
+                conexion.crearParametro("@Email", c.Email),
+                conexion.crearParametro("@Direccion", c.Direccion)
+            };
+                    return conexion.EscribirPorStoreProcedure("SP_ModificarCliente", parametros);
+                }
+
+                public int EliminarCliente(string dni)
+                {
+                    SqlParameter[] parametros =
+                    {
+                conexion.crearParametro("@DNI", dni)
+            };
+                    return conexion.EscribirPorStoreProcedure("SP_EliminarCliente", parametros);
+                }
     }
 }

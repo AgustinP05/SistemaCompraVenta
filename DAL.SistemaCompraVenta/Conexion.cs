@@ -174,7 +174,23 @@ namespace DAL.SistemaCompraVenta
             return filasAfectadas;
         }
 
+        public SqlParameter crearParametro(string pNombre, object pValor)
+        {
+            SqlParameter objParametro = new SqlParameter();
+            objParametro.ParameterName = pNombre;
 
+            // Si el valor es nulo (o DBNull), lo asignamos correctamente para SQL
+            if (pValor == null)
+            {
+                objParametro.Value = DBNull.Value;
+            }
+            else
+            {
+                objParametro.Value = pValor;
+            }
+
+            return objParametro;
+        }
         public int EscribirPorStoreProcedure(string pTexto, SqlParameter[] pParametrosSql)
         {
             //Instanció una variable filasAfectadas que va a terminar devolviendo la cantidad de filas afectadas.

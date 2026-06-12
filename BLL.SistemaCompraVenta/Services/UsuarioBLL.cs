@@ -34,6 +34,7 @@ namespace BLL.SistemaCompraVenta.Services
                 }
             }
 
+
             // =================================================================
             // 2. CONEXIÓN REAL CON SQL SERVER (Base de Datos Local)
             // =================================================================
@@ -72,6 +73,37 @@ namespace BLL.SistemaCompraVenta.Services
         {
             return oUsuarioDAL.ObtenerUsuarios();
         }
+
+        public DataTable ObtenerUsuarios(string filtro)
+        {
+            return oUsuarioDAL.ObtenerUsuarios(filtro);
+        }
+
+        public bool ModificarUsuario(string dni, string nombre, string apellido,
+                          string password, string rol, string email,
+                          DateTime? fechaNacimiento)
+        {
+            if (string.IsNullOrWhiteSpace(dni) || string.IsNullOrWhiteSpace(nombre))
+            {
+                throw new Exception("Complete todos los datos obligatorios");
+            }
+
+            int resultado = oUsuarioDAL.ModificarUsuario(dni, nombre, apellido,
+                                                      password, rol, email,
+                                                      fechaNacimiento);
+            return resultado > 0;
+        }
+
+        public bool EliminarUsuario(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni))
+            {
+                throw new Exception("DNI inválido");
+            }
+
+            int resultado = oUsuarioDAL.EliminarUsuario(dni);
+            return resultado > 0;
+        }
         /*
           public bool CrearUsuario(string nombre, string password, string rol)
           {
@@ -103,10 +135,14 @@ namespace BLL.SistemaCompraVenta.Services
             return filasAfectadas > 0;
         }
         */
-        public bool CrearUsuario(string dni, string nombre, string password, string rol)
+        public bool CrearUsuario(string dni, string nombre, string apellido,
+                          string password, string rol, string email,
+                          DateTime? fechaNacimiento)
         {
             // Asegurate que la llamada a la DAL incluya el 'dni'
-            int filasAfectadas = oUsuarioDAL.InsertarUsuario(dni, nombre, password, rol);
+            int filasAfectadas = oUsuarioDAL.InsertarUsuario(dni, nombre, apellido,
+                                                      password, rol, email,
+                                                      fechaNacimiento);
             return filasAfectadas > 0;
         }
     }

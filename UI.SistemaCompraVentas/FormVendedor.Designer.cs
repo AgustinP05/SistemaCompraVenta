@@ -66,7 +66,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(90, 16);
             this.label1.TabIndex = 0;
-            this.label1.Text = "ID / DNI Cliente";
+            this.label1.Text = "DNI Cliente";
             // 
             // cboCliente
             // 
@@ -234,7 +234,7 @@
             this.btnCancelarVenta.Name = "btnCancelarVenta";
             this.btnCancelarVenta.Size = new System.Drawing.Size(130, 32);
             this.btnCancelarVenta.TabIndex = 2;
-            this.btnCancelarVenta.Text = "Cancelar Venta";
+            this.btnCancelarVenta.Text = "Vaciar Carrito";
             this.btnCancelarVenta.UseVisualStyleBackColor = false;
             this.btnCancelarVenta.Click += new System.EventHandler(this.btnCancelarVenta_Click);
             // 

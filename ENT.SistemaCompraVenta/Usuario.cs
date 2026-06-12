@@ -14,7 +14,9 @@ namespace ENT.SistemaCompraVenta
 
         public DateTime FechaHoraLogin { get; set; }
 
-        
+        public string Apellido { get; set; }
+        public string Email { get; set; }
+        public DateTime? FechaNacimiento { get; set; }
 
         // guarda toda la estructura Compositecon sus permisos
         public Componente Permisos { get; set; }

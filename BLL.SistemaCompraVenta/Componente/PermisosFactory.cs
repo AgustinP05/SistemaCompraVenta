@@ -16,21 +16,45 @@ namespace BLL.SistemaCompraVenta.Componentes
             Permiso registrarVentas = new Permiso { Nombre = "RegistrarVentas" };
             Permiso verReportes = new Permiso { Nombre = "VerReportes" };
             Permiso gestionarProductos = new Permiso { Nombre = "GestionarProductos" };
+            Permiso gestionarClientes = new Permiso { Nombre = "GestionarClientes" };
+
+
+            // Sub-árboles reutilizables por rol
+            FamiliaPermisos rolVendedor = new FamiliaPermisos { Nombre = "Vendedor" };
+            rolVendedor.AgregarHijo(login);
+            rolVendedor.AgregarHijo(registrarVentas);
+            rolVendedor.AgregarHijo(gestionarClientes);
+
+            FamiliaPermisos rolGerente = new FamiliaPermisos { Nombre = "Gerente" };
+            rolGerente.AgregarHijo(login);
+            rolGerente.AgregarHijo(verReportes);
+
+            FamiliaPermisos rolStock = new FamiliaPermisos { Nombre = "Stock" };
+            rolStock.AgregarHijo(login);
+            rolStock.AgregarHijo(gestionarProductos);
+
+            FamiliaPermisos rolSuperGerente = new FamiliaPermisos { Nombre = "SuperGerente" };
+            rolSuperGerente.AgregarHijo(login);
+            rolSuperGerente.AgregarHijo(verReportes);
+            rolSuperGerente.AgregarHijo(gestionarUsuarios);
+
 
             // Rol de la base de datos
             switch (nombreRol)
             {
                 case "Administrador":
-                    rolComposite.AgregarHijo(login);
-                    rolComposite.AgregarHijo(gestionarUsuarios);
-                    rolComposite.AgregarHijo(registrarVentas);
-                    rolComposite.AgregarHijo(verReportes);
-                    rolComposite.AgregarHijo(gestionarProductos);
+                    rolComposite.AgregarHijo(rolVendedor);
+                    rolComposite.AgregarHijo(rolGerente);
+                    rolComposite.AgregarHijo(rolStock);
+                    rolComposite.AgregarHijo(rolSuperGerente);
+     
                     break;
 
                 case "Vendedor":
                     rolComposite.AgregarHijo(login);
                     rolComposite.AgregarHijo(registrarVentas);
+                    rolComposite.AgregarHijo(gestionarClientes);
+
                     break;
 
                 case "Gerente":
@@ -53,3 +77,5 @@ namespace BLL.SistemaCompraVenta.Componentes
         }
     }
 }
+
+
