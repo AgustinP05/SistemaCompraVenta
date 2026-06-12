@@ -1,5 +1,6 @@
 using ENT.SistemaCompraVenta;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace UI.SistemaCompraVentas
@@ -7,6 +8,8 @@ namespace UI.SistemaCompraVentas
     public partial class FormCrearCliente : Form
     {
         private bool _cargando = false;
+        private readonly List<ENT.SistemaCompraVenta.Cliente> _clientesCargados =
+            new List<ENT.SistemaCompraVenta.Cliente>();
 
         public FormCrearCliente()
         {
@@ -15,6 +18,14 @@ namespace UI.SistemaCompraVentas
 
         private void FormCrearCliente_Load(object sender, EventArgs e)
         {
+            dgvClientesCargados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvClientesCargados.Columns.Add("DNI",       "DNI");
+            dgvClientesCargados.Columns.Add("Nombre",    "Nombre");
+            dgvClientesCargados.Columns.Add("Apellido",  "Apellido");
+            dgvClientesCargados.Columns.Add("Telefono",  "Teléfono");
+            dgvClientesCargados.Columns.Add("Email",     "Email");
+            dgvClientesCargados.Columns.Add("Direccion", "Dirección");
+
             LimpiarEdicion();
         }
 
@@ -48,6 +59,15 @@ namespace UI.SistemaCompraVentas
                 if (exito)
                 {
                     MessageBox.Show("Cliente creado con éxito.");
+                    _clientesCargados.Add(new ENT.SistemaCompraVenta.Cliente
+                    {
+                        Dni       = txtDni.Text,
+                        Nombre    = txtNombre.Text,
+                        Apellido  = txtApellido.Text,
+                        Direccion = txtDireccion.Text,
+                        Telefono  = txtTelefono.Text,
+                        Email     = txtEmail.Text
+                    });
                     LimpiarCarga();
                     CargarGrillaClientes();
                 }
@@ -80,15 +100,10 @@ namespace UI.SistemaCompraVentas
 
         private void CargarGrillaClientes()
         {
-            try
-            {
-                BLL.SistemaCompraVenta.ClienteBLL bll = new BLL.SistemaCompraVenta.ClienteBLL();
-                dgvClientesCargados.DataSource = bll.ObtenerClientes("");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar clientes: " + ex.Message, "Error DAL");
-            }
+            dgvClientesCargados.Rows.Clear();
+
+            foreach (ENT.SistemaCompraVenta.Cliente c in _clientesCargados)
+                dgvClientesCargados.Rows.Add(c.Dni, c.Nombre, c.Apellido, c.Telefono, c.Email, c.Direccion);
         }
 
         // ── Tab 2: Buscar / Editar ────────────────────────────────────────
@@ -103,14 +118,7 @@ namespace UI.SistemaCompraVentas
                 dgvClientes.DataSource = resultado;
                 LimpiarEdicion();
 
-                // Diagnóstico temporal: muestra nombres reales de columnas
-                if (dgvClientes.Columns.Count > 0)
-                {
-                    var cols = new System.Text.StringBuilder();
-                    foreach (DataGridViewColumn col in dgvClientes.Columns)
-                        cols.AppendLine(col.Name);
-                    MessageBox.Show("Columnas del SP:\n" + cols.ToString(), "Diagnóstico");
-                }
+               
             }
             catch (Exception ex)
             {

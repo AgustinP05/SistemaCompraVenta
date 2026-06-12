@@ -45,16 +45,18 @@ namespace UI.SistemaCompraVentas
                 btnVentas.Visible = arbolPermisos.TienePermiso("RegistrarVentas");
                 btnProductos.Visible = arbolPermisos.TienePermiso("GestionarProductos");
                 btnReportes.Visible = arbolPermisos.TienePermiso("VerReportes");
-                btnClientes.Visible = arbolPermisos.TienePermiso("GestionarClientes");
+                btnClientes.Visible     = arbolPermisos.TienePermiso("GestionarClientes");
+                btnProveedores.Visible  = arbolPermisos.TienePermiso("GestionarProveedores");
             }
             else
             {
                 // Por seguridad, si ocurre un fallo o no hay usuario, ocultamos los accesos
-                btnUsuarios.Visible = false;
-                btnVentas.Visible = false;
-                btnProductos.Visible = false;
-                btnReportes.Visible = false;
-                btnClientes.Visible = false;
+                btnUsuarios.Visible    = false;
+                btnVentas.Visible      = false;
+                btnProductos.Visible   = false;
+                btnReportes.Visible    = false;
+                btnClientes.Visible    = false;
+                btnProveedores.Visible = false;
             }
         }
 
@@ -69,7 +71,8 @@ namespace UI.SistemaCompraVentas
                 btnReportes,
                 btnVentas,
                 btnProductos,
-                btnClientes
+                btnClientes,
+                btnProveedores
             };
 
             int yInicial = 119; // misma Y que tenía btnUsuarios en el Designer
@@ -118,6 +121,13 @@ namespace UI.SistemaCompraVentas
             FormCrearCliente vistaClientes = new FormCrearCliente();
             vistaClientes.StartPosition = FormStartPosition.CenterScreen;
             vistaClientes.ShowDialog();
+        }
+
+        private void btnProveedores_Click(object sender, EventArgs e)
+        {
+            FormCrearProveedor vistaProveedores = new FormCrearProveedor();
+            vistaProveedores.StartPosition = FormStartPosition.CenterScreen;
+            vistaProveedores.ShowDialog();
         }
 
         private void btnLogout_Click(object sender, EventArgs e)

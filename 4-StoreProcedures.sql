@@ -270,3 +270,69 @@ BEGIN
     WHERE Stock < 5;
 END;
 GO
+
+-- SP de Proveedor (Insertar / Existe / Obtener / Modificar / Eliminar)
+
+IF OBJECT_ID('SP_InsertarProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarProveedor;
+GO
+CREATE PROCEDURE SP_InsertarProveedor (
+    @CUIT        VARCHAR(20),
+    @RazonSocial VARCHAR(100),
+    @Telefono    VARCHAR(100),
+    @Email       VARCHAR(100),
+    @Direccion   VARCHAR(100)
+)
+AS BEGIN
+    INSERT INTO tProveedor (CUIT, RazonSocial, Telefono, Email, Direccion)
+    VALUES (@CUIT, @RazonSocial, @Telefono, @Email, @Direccion);
+    SELECT SCOPE_IDENTITY() AS ID_Proveedor;
+END;
+GO
+
+IF OBJECT_ID('SP_ExisteProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_ExisteProveedor;
+GO
+CREATE PROCEDURE SP_ExisteProveedor (@CUIT VARCHAR(20))
+AS BEGIN
+    SELECT ID_Proveedor FROM tProveedor WHERE CUIT = @CUIT;
+END;
+GO
+
+IF OBJECT_ID('SP_ObtenerProveedores', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerProveedores;
+GO
+CREATE PROCEDURE SP_ObtenerProveedores (@Filtro VARCHAR(100))
+AS BEGIN
+    SELECT ID_Proveedor, CUIT, RazonSocial, Telefono, Email, Direccion
+    FROM tProveedor
+    WHERE CUIT        LIKE '%' + @Filtro + '%'
+       OR RazonSocial LIKE '%' + @Filtro + '%'
+    ORDER BY RazonSocial;
+END;
+GO
+
+IF OBJECT_ID('SP_ModificarProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_ModificarProveedor;
+GO
+CREATE PROCEDURE SP_ModificarProveedor (
+    @CUIT        VARCHAR(20),
+    @RazonSocial VARCHAR(100),
+    @Telefono    VARCHAR(100),
+    @Email       VARCHAR(100),
+    @Direccion   VARCHAR(100)
+)
+AS BEGIN
+    UPDATE tProveedor
+    SET RazonSocial = @RazonSocial,
+        Telefono    = @Telefono,
+        Email       = @Email,
+        Direccion   = @Direccion
+    WHERE CUIT = @CUIT;
+END;
+GO
+
+IF OBJECT_ID('SP_EliminarProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_EliminarProveedor;
+GO
+CREATE PROCEDURE SP_EliminarProveedor (@CUIT VARCHAR(20))
+AS BEGIN
+    DELETE FROM tProveedor WHERE CUIT = @CUIT;
+END;
+GO
+

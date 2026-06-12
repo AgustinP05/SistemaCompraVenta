@@ -196,10 +196,6 @@ namespace UI.SistemaCompraVentas
                 ventaActual.Fecha = DateTime.Now;
 
                 oVentaBLL.FinalizarVenta(ventaActual);
-                ventaActual.Cliente = cli;
-                ventaActual.Fecha = DateTime.Now;
-
-                oVentaBLL.FinalizarVenta(ventaActual);
                 MessageBox.Show("¡Venta registrada con éxito!");
 
                 ventaActual = new Venta();

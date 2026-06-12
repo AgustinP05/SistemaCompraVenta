@@ -54,6 +54,12 @@
     <Compile Include="FormCrearCliente.Designer.cs">
       <DependentUpon>FormCrearCliente.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormCrearProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCrearProveedor.Designer.cs">
+      <DependentUpon>FormCrearProveedor.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormStock.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,6 +100,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormCrearCliente.resx">
       <DependentUpon>FormCrearCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCrearProveedor.resx">
+      <DependentUpon>FormCrearProveedor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormStock.resx">
       <DependentUpon>FormStock.cs</DependentUpon>

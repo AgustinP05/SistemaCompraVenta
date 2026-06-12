@@ -23,6 +23,7 @@
             this.btnProductos = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
             this.btnClientes = new System.Windows.Forms.Button();
+            this.btnProveedores = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblUsuario
@@ -109,7 +110,7 @@
             this.btnLogout.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
             this.btnLogout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLogout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btnLogout.Location = new System.Drawing.Point(266, 368);
+            this.btnLogout.Location = new System.Drawing.Point(266, 414);
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Size = new System.Drawing.Size(90, 32);
             this.btnLogout.TabIndex = 6;
@@ -130,14 +131,28 @@
             this.btnClientes.Text = "Gestionar Clientes";
             this.btnClientes.UseVisualStyleBackColor = false;
             this.btnClientes.Click += new System.EventHandler(this.btnClientes_Click);
-            // 
+            //
+            // btnProveedores
+            //
+            this.btnProveedores.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnProveedores.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
+            this.btnProveedores.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnProveedores.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btnProveedores.Location = new System.Drawing.Point(56, 349);
+            this.btnProveedores.Name = "btnProveedores";
+            this.btnProveedores.Size = new System.Drawing.Size(300, 36);
+            this.btnProveedores.TabIndex = 8;
+            this.btnProveedores.Text = "Gestionar Proveedores";
+            this.btnProveedores.UseVisualStyleBackColor = false;
+            this.btnProveedores.Click += new System.EventHandler(this.btnProveedores_Click);
+            //
             // MenuPrincipal
             // 
             this.AccessibleName = "Sistema SCV - Panel de Control";
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(418, 435);
+            this.ClientSize = new System.Drawing.Size(418, 481);
             this.Controls.Add(this.lblUsuario);
             this.Controls.Add(this.lblSesion);
             this.Controls.Add(this.btnUsuarios);
@@ -145,6 +160,7 @@
             this.Controls.Add(this.btnVentas);
             this.Controls.Add(this.btnProductos);
             this.Controls.Add(this.btnClientes);
+            this.Controls.Add(this.btnProveedores);
             this.Controls.Add(this.btnLogout);
             this.Name = "MenuPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -164,5 +180,6 @@
         private System.Windows.Forms.Button btnProductos;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnClientes;
+        private System.Windows.Forms.Button btnProveedores;
     }
 }

@@ -17,6 +17,7 @@ namespace BLL.SistemaCompraVenta.Componentes
             Permiso verReportes = new Permiso { Nombre = "VerReportes" };
             Permiso gestionarProductos = new Permiso { Nombre = "GestionarProductos" };
             Permiso gestionarClientes = new Permiso { Nombre = "GestionarClientes" };
+            Permiso gestionarProveedores = new Permiso { Nombre = "GestionarProveedores" };
 
 
             // Sub-árboles reutilizables por rol
@@ -32,6 +33,7 @@ namespace BLL.SistemaCompraVenta.Componentes
             FamiliaPermisos rolStock = new FamiliaPermisos { Nombre = "Stock" };
             rolStock.AgregarHijo(login);
             rolStock.AgregarHijo(gestionarProductos);
+            rolStock.AgregarHijo(gestionarProveedores);
 
             FamiliaPermisos rolSuperGerente = new FamiliaPermisos { Nombre = "SuperGerente" };
             rolSuperGerente.AgregarHijo(login);
@@ -65,6 +67,7 @@ namespace BLL.SistemaCompraVenta.Componentes
                 case "Stock":
                     rolComposite.AgregarHijo(login);
                     rolComposite.AgregarHijo(gestionarProductos);
+                    rolComposite.AgregarHijo(gestionarProveedores);
                     break;
            
                  case "SuperGerente":

@@ -88,3 +88,16 @@ CREATE TABLE tDetalleVenta (
     FOREIGN KEY (ID_Producto) REFERENCES tProducto(ID_Producto)
 );
 GO
+
+-- TABLA PROVEEDOR --
+IF OBJECT_ID('tProveedor', 'U') IS NOT NULL DROP TABLE tProveedor;
+GO
+CREATE TABLE tProveedor (
+    ID_Proveedor INT PRIMARY KEY IDENTITY(1,1),
+    CUIT         VARCHAR(20)  NOT NULL UNIQUE,
+    RazonSocial  VARCHAR(100) NOT NULL,
+    Telefono     VARCHAR(100) NOT NULL,
+    Email        VARCHAR(100) NOT NULL,
+    Direccion    VARCHAR(100) NOT NULL
+);
+GO

@@ -9,6 +9,9 @@ namespace UI.SistemaCompraVentas
         private static readonly List<string> roles = new List<string>
             { "Administrador", "Vendedor", "Stock", "Gerente" };
 
+        // filas cargadas en esta sesión: [DNI, Nombre, Apellido, Rol]
+        private readonly List<string[]> _usuariosCargados = new List<string[]>();
+
         public FormGestionUsuarios()
         {
             InitializeComponent();
@@ -20,6 +23,13 @@ namespace UI.SistemaCompraVentas
             cboEditRoles.DataSource = new List<string>(roles);
 
             dgvUsuariosCargados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvUsuariosCargados.Columns.Add("DNI",             "DNI");
+            dgvUsuariosCargados.Columns.Add("Nombre",          "Nombre");
+            dgvUsuariosCargados.Columns.Add("Apellido",        "Apellido");
+            dgvUsuariosCargados.Columns.Add("Rol",             "Rol");
+            dgvUsuariosCargados.Columns.Add("Email",           "Email");
+            dgvUsuariosCargados.Columns.Add("FechaNacimiento", "Fecha Nac.");
+
             dgvUsuarios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             LimpiarEdicion();
@@ -52,6 +62,15 @@ namespace UI.SistemaCompraVentas
                 {
                     MessageBox.Show("Usuario " + txtNombre.Text + " " + txtApellido.Text +
                                     " registrado correctamente en la base de datos.");
+                    _usuariosCargados.Add(new string[]
+                    {
+                        txtDni.Text,
+                        txtNombre.Text,
+                        txtApellido.Text,
+                        cboRoles.SelectedItem.ToString(),
+                        txtEmail.Text,
+                        dtpFechaNacimiento.Value.ToShortDateString()
+                    });
                     LimpiarCarga();
                     CargarGrillaUsuarios();
                 }
@@ -84,15 +103,10 @@ namespace UI.SistemaCompraVentas
 
         private void CargarGrillaUsuarios()
         {
-            try
-            {
-                BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
-                dgvUsuariosCargados.DataSource = bll.ObtenerUsuarios();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar usuarios: " + ex.Message, "Error DAL");
-            }
+            dgvUsuariosCargados.Rows.Clear();
+
+            foreach (string[] u in _usuariosCargados)
+                dgvUsuariosCargados.Rows.Add(u[0], u[1], u[2], u[3], u[4], u[5]);
         }
 
         // ── Tab 2: Buscar / Editar ────────────────────────────────────────
@@ -119,10 +133,23 @@ namespace UI.SistemaCompraVentas
             txtEditDni.Text      = fila.Cells["DNI"].Value?.ToString() ?? "";
             txtEditNombre.Text   = fila.Cells["Nombre"].Value?.ToString() ?? "";
             txtEditApellido.Text = fila.Cells["Apellido"].Value?.ToString() ?? "";
+            txtEditEmail.Text    = LeerCelda(fila, "Email", "email", "Mail");
 
             string rolFila = fila.Cells["Rol"].Value?.ToString() ?? "";
             int idx = cboEditRoles.Items.IndexOf(rolFila);
             cboEditRoles.SelectedIndex = idx >= 0 ? idx : 0;
+
+            string fechaStr = LeerCelda(fila, "FechaNacimiento", "Fecha_Nacimiento", "FechaNac");
+            if (DateTime.TryParse(fechaStr, out DateTime fecha))
+                dtpEditFechaNacimiento.Value = fecha;
+        }
+
+        private string LeerCelda(DataGridViewRow fila, params string[] nombres)
+        {
+            foreach (var nombre in nombres)
+                if (dgvUsuarios.Columns.Contains(nombre))
+                    return fila.Cells[nombre].Value?.ToString() ?? "";
+            return "";
         }
 
         private void dgvUsuarios_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
