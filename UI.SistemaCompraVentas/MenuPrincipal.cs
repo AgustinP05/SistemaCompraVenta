@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ENT.SistemaCompraVenta;       // <--- Aquí viven ahora Usuario, Rol y Permisos
+using ENT.SistemaCompraVenta;       //  Usuario, Rol y Permisos
 using BLL.SistemaCompraVenta.Sesion; // Aquí vive el Singleton (Sesion)
 
 namespace UI.SistemaCompraVentas
@@ -13,33 +13,76 @@ namespace UI.SistemaCompraVentas
         {
             InitializeComponent();
         }
-
         private void MenuPrincipal_Load(object sender, EventArgs e)
         {
+            // 1. Configuramos las visibilidades de los botones usando el patrón Composite
             ConfigurarPermisos();
+            ReordenarBotones();   
 
-            // Verificamos si hay alguien logueado usando el Singleton de la BLL
-            if (Sesion.ObtenerInstancia().UsuarioActual != null)
+            // 2. Verificamos si hay alguien logueado usando el Singleton de la BLL
+            var usuarioLogueado = Sesion.ObtenerInstancia().UsuarioActual;
+            if (usuarioLogueado != null)
             {
-                lblUsuario.Text = "Hola usuario " + Sesion.ObtenerInstancia().UsuarioActual.Nombre;
-                lblSesion.Text = "Sesion iniciada: " + Sesion.ObtenerInstancia().UsuarioActual.FechaHoraLogin.ToString("dd/MM/yyyy HH:mm:ss"); 
+                // Usamos la propiedad calculada 'NombreMostrar' que configuramos en la entidad
+                lblUsuario.Text = "Hola usuario " + usuarioLogueado.NombreMostrar;
+                lblSesion.Text = "Sesion iniciada: " + usuarioLogueado.FechaHoraLogin.ToString("dd/MM/yyyy HH:mm:ss");
             }
         }
 
         private void ConfigurarPermisos()
         {
-            // Usamos el objeto Usuario que ahora viene de la capa ENT
+            // Recuperamos el usuario activo de la sesión
             var usuario = Sesion.ObtenerInstancia().UsuarioActual;
 
-            if (usuario != null && usuario.Rol != null)
+            // Verificamos que el usuario y su árbol de permisos existan
+            if (usuario != null && usuario.Permisos != null)
             {
-                var rol = usuario.Rol;
+                var arbolPermisos = usuario.Permisos;
 
-                // Estos nombres de permisos deben coincidir con los que pusiste en UsuarioBLL
-                btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
-                btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
-                btnProductos.Visible = rol.TienePermiso("GestionarProductos");
-                btnReportes.Visible = rol.TienePermiso("VerReportes");
+                // Evalua en cascada de forma recursiva gracias al patrón Composite
+                // Los nombres de cadenas coinciden exactamente con PermisosFactory
+                btnUsuarios.Visible = arbolPermisos.TienePermiso("GestionarUsuarios");
+                btnVentas.Visible = arbolPermisos.TienePermiso("RegistrarVentas");
+                btnProductos.Visible = arbolPermisos.TienePermiso("GestionarProductos");
+                btnReportes.Visible = arbolPermisos.TienePermiso("VerReportes");
+                btnClientes.Visible = arbolPermisos.TienePermiso("GestionarClientes");
+            }
+            else
+            {
+                // Por seguridad, si ocurre un fallo o no hay usuario, ocultamos los accesos
+                btnUsuarios.Visible = false;
+                btnVentas.Visible = false;
+                btnProductos.Visible = false;
+                btnReportes.Visible = false;
+                btnClientes.Visible = false;
+            }
+        }
+
+
+
+        private void ReordenarBotones()
+        {
+            // Lista de botones en el orden lógico que querés mostrarlos
+            var botones = new List<System.Windows.Forms.Button>
+            {
+                btnUsuarios,
+                btnReportes,
+                btnVentas,
+                btnProductos,
+                btnClientes
+            };
+
+            int yInicial = 119; // misma Y que tenía btnUsuarios en el Designer
+            int separacion = 46;
+            int contador = 0;
+
+            foreach (var btn in botones)
+            {
+                if (btn.Visible)
+                {
+                    btn.Location = new System.Drawing.Point(btn.Location.X, yInicial + (contador * separacion));
+                    contador++;
+                }
             }
         }
 
@@ -70,6 +113,13 @@ namespace UI.SistemaCompraVentas
             vistaGerente.ShowDialog();
         }
 
+        private void btnClientes_Click(object sender, EventArgs e)
+        {
+            FormCrearCliente vistaClientes = new FormCrearCliente();
+            vistaClientes.StartPosition = FormStartPosition.CenterScreen;
+            vistaClientes.ShowDialog();
+        }
+
         private void btnLogout_Click(object sender, EventArgs e)
         {
             Sesion.ObtenerInstancia().Logout();
@@ -78,6 +128,6 @@ namespace UI.SistemaCompraVentas
             this.Close();
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e) { }
+        //private void panel1_Paint(object sender, PaintEventArgs e) { }
     }
 }

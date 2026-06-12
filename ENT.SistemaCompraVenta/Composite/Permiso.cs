@@ -8,6 +8,13 @@ namespace ENT.SistemaCompraVenta
         {
             return "- " + Nombre + Environment.NewLine;
         }
+
+        // REQUERIDO: Compara su propio nombre
+        public override bool TienePermiso(string nombrePermiso)
+        {
+            // Me llamo igual al permiso que me estan pidiendo??
+            return this.Nombre.Equals(nombrePermiso, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }
 

@@ -25,7 +25,10 @@ namespace DAL.SistemaCompraVenta
         private void Conectar()
         {   // HACK: Cadena de conexión hardcodeada. Luego ponerla como parametro de configuración del proyecto u otra alternativa.
             strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=AgusPC";
-
+            //cadena de compu sofi,
+            //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=SOFI\SQLEXPRESS";
+            //cadena de compu agos,
+            //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=DESKTOP-31EJQH0\SQLEXPRESS";
             //Instanció un objeto del tipo SqlConnection
             objConexion = new SqlConnection();
             objConexion.ConnectionString = strCadenaDeConexion;
@@ -171,7 +174,23 @@ namespace DAL.SistemaCompraVenta
             return filasAfectadas;
         }
 
+        public SqlParameter crearParametro(string pNombre, object pValor)
+        {
+            SqlParameter objParametro = new SqlParameter();
+            objParametro.ParameterName = pNombre;
 
+            // Si el valor es nulo (o DBNull), lo asignamos correctamente para SQL
+            if (pValor == null)
+            {
+                objParametro.Value = DBNull.Value;
+            }
+            else
+            {
+                objParametro.Value = pValor;
+            }
+
+            return objParametro;
+        }
         public int EscribirPorStoreProcedure(string pTexto, SqlParameter[] pParametrosSql)
         {
             //Instanció una variable filasAfectadas que va a terminar devolviendo la cantidad de filas afectadas.

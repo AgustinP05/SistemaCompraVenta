@@ -53,7 +53,16 @@ namespace ENT.SistemaCompraVenta
             get { return _stock; }
             set { _stock = value; }
         }
-
+        // Propiedad "Puente" para que la grilla vea el número y no el objeto
+        public int CantidadStock
+        {
+            get { return Stock != null ? Stock.Cantidad : 0; }
+            set
+            {
+                if (Stock == null) Stock = new Stock();
+                Stock.Cantidad = value;
+            }
+        }
         public abstract string DevolverTalle();
 
     }

@@ -49,12 +49,16 @@ namespace UI.SistemaCompraVentas
             if (cboProducto.SelectedItem is Producto prod)
             {
                 lblProductoNombre.Text = $"Producto: {prod.Nombre}";
+                lblProductoMarca.Text = $"Marca: {prod.Marca}";      
+                lblProductoColor.Text = $"Color: {prod.Color}";       
                 lblProductoPrecio.Text = $"Precio: {prod.PrecioVenta.ToString("N2")}";
                 lblProductoStock.Text = $"Stock Disp: {prod.Stock.Cantidad}";
             }
             else
             {
                 lblProductoNombre.Text = "Producto: -";
+                lblProductoMarca.Text = "Marca: -";                  
+                lblProductoColor.Text = "Color: -";                  
                 lblProductoPrecio.Text = "Precio: -";
                 lblProductoStock.Text = "Stock Disp: -";
             }
@@ -67,6 +71,12 @@ namespace UI.SistemaCompraVentas
                 if (!(cboProducto.SelectedItem is Producto prodSeleccionado))
                 {
                     MessageBox.Show("Seleccioná un producto.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (nmCantidad.Value == 0)
+                {
+                    MessageBox.Show("La cantidad debe ser mayor a cero.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -96,6 +106,8 @@ namespace UI.SistemaCompraVentas
             dgvCarrito.Columns.Clear();
             dgvCarrito.Columns.Add("Codigo", "Código");
             dgvCarrito.Columns.Add("Nombre", "Nombre");
+            dgvCarrito.Columns.Add("Marca", "Marca");       
+            dgvCarrito.Columns.Add("Color", "Color");      
             dgvCarrito.Columns.Add("Cantidad", "Cantidad");
             dgvCarrito.Columns.Add("Precio", "Precio Unit.");
             dgvCarrito.Columns.Add("Subtotal", "Subtotal");
@@ -105,6 +117,8 @@ namespace UI.SistemaCompraVentas
                 dgvCarrito.Rows.Add(
                     d.Producto.Id,
                     d.Producto.Nombre,
+                    d.Producto.Marca,        
+                    d.Producto.Color,        
                     d.Cantidad,
                     d.PrecioUnitario.ToString("N2"),
                     d.DevolverSubtotal().ToString("N2")
@@ -122,6 +136,10 @@ namespace UI.SistemaCompraVentas
                 ventaActual.Detalles.RemoveAt(fila);
                 ActualizarGrilla();
             }
+            else
+            {
+                MessageBox.Show("No hay ningún item seleccionado para eliminar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void btnCancelarVenta_Click(object sender, EventArgs e)
@@ -134,7 +152,7 @@ namespace UI.SistemaCompraVentas
             cboCliente.Enabled = true;
         }
 
-        private void btnConfirmar_Click(object sender, EventArgs e)
+        /*private void btnConfirmar_Click(object sender, EventArgs e)
         {
             try
             {
@@ -153,10 +171,54 @@ namespace UI.SistemaCompraVentas
                 ActualizarGrilla();
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }*/
+        private void btnConfirmar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (ventaActual.Detalles.Count == 0)
+                {
+                    MessageBox.Show("El carrito está vacío. Agregá productos antes de confirmar.");
+                    return;
+                }
+
+                // Si el combo está vacío o no seleccionaste a nadie
+                if (cboCliente.SelectedItem == null)
+                {
+                    MessageBox.Show("Por favor, seleccioná un cliente antes de confirmar la venta.");
+                    return;
+                }
+
+                Cliente cli = (Cliente)cboCliente.SelectedItem;
+                // Asegúrate de asignar un usuario, aunque sea uno por defecto para probar
+                ventaActual.Usuario = new Usuario { ID = 1 }; // O el usuario que esté logueado
+                ventaActual.Cliente = cli;
+                ventaActual.Fecha = DateTime.Now;
+
+                oVentaBLL.FinalizarVenta(ventaActual);
+                ventaActual.Cliente = cli;
+                ventaActual.Fecha = DateTime.Now;
+
+                oVentaBLL.FinalizarVenta(ventaActual);
+                MessageBox.Show("¡Venta registrada con éxito!");
+
+                ventaActual = new Venta();
+                cboCliente.SelectedIndex = -1;
+                ActualizarGrilla();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al confirmar: " + ex.Message);
+            }
         }
 
         private void btnSalir_Click(object sender, EventArgs e) => this.Close();
 
         private void nmCantidad_ValueChanged(object sender, EventArgs e) { }
+
+        private void lblClienteNombre_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

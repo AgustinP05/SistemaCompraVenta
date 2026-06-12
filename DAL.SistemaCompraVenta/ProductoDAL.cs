@@ -1,49 +1,72 @@
-﻿using System.Collections.Generic;
+﻿using DAL.SistemaCompraVenta;
 using ENT.SistemaCompraVenta;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 
-namespace DAL.SistemaCompraVenta
+public class ProductoDAL
 {
-    public class ProductoDAL
+    private Conexion conexion = new Conexion();
+
+    private Producto MapearProducto(DataRow fila)
     {
-        private static List<Producto> baseDeDatos = new List<Producto>()
-{
-    new Calzado {
-        Id = 45000, Nombre = "Zapatillas Air Max", Marca = "Nike", PrecioVenta = 120000, PrecioCosto = 70000, Talle = 42,
-        Stock = new Stock { IdProducto = 45000, Cantidad = 50 }
-    },
-    new Vestimenta {
-        Id = 45003, Nombre = "Remera Dry-Fit", Marca = "Adidas", PrecioVenta = 45000, PrecioCosto = 20000, Talle = "L",
-        Stock = new Stock { IdProducto = 45003, Cantidad = 10 }
+        // Determinamos el tipo según una columna (ej. "Tipo")
+        string tipo = fila["Tipo"].ToString();
+        Producto p;
+
+        if (tipo == "Calzado") p = new Calzado();
+        else p = new Vestimenta(); // O el tipo por defecto
+
+        p.Id = Convert.ToInt32(fila["ID_Producto"]);
+        p.Nombre = fila["Nombre"].ToString();
+        p.Marca = fila["Marca"].ToString();
+        p.Color = fila["Color"].ToString();
+        p.PrecioVenta = (double)Convert.ToDecimal(fila["PrecioVenta"]);
+        p.PrecioCosto = (double)Convert.ToDecimal(fila["PrecioCosto"]);
+        p.Stock = new Stock { Cantidad = Convert.ToInt32(fila["Stock"]) };
+
+        return p;
     }
-};
-        // Creamos un contador que empiece en 1
-        private static int proximoId = 45004;
-        public Stock BuscarStockPorId(int id)
-        {
-            // Recorremos la lista simulada a mano usando un bucle clásico (¡SIN LINQ!)
-            // CAMBIO: Ahora recorre 'baseDeDatos' que es el nombre real de tu lista
-            foreach (Producto p in baseDeDatos)
-            {
-                if (p.Id == id)
-                {
-                    // Si encontramos el producto, devolvemos su objeto Stock
-                    return p.Stock;
-                }
-            }
 
-            // Si el producto no existe, devolvemos null (o podrías lanzar una excepción)
-            return null;
-        }
-        public void Guardar(Producto p)
-        {
-            // Le asignamos el ID actual y después sumamos 1 para el próximo
-            p.Id = proximoId++;
-            baseDeDatos.Add(p);
-        }
+    public List<Producto> ListarTodo()
+    {
+        List<Producto> lista = new List<Producto>();
+        DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarProductos", null);
+        foreach (DataRow fila in dt.Rows) lista.Add(MapearProducto(fila));
+        return lista;
+    }
 
-        public List<Producto> ListarTodo()
-        {
-            return baseDeDatos;
-        }
+    public Stock BuscarStockPorId(int id)
+    {
+        SqlParameter[] param = { conexion.crearParametro("@ID_Producto", id) };
+        DataTable dt = conexion.LeerPorStoreProcedure("SP_BuscarStock", param);
+
+        if (dt.Rows.Count > 0)
+            return new Stock { Cantidad = Convert.ToInt32(dt.Rows[0]["Stock"]) };
+        return null;
+    }
+
+    public void ActualizarStock(int idProducto, int cantidadVendida)
+    {
+        SqlParameter[] param = {
+            conexion.crearParametro("@ID_Producto", idProducto),
+            conexion.crearParametro("@Cantidad", cantidadVendida)
+        };
+        conexion.EscribirPorStoreProcedure("SP_ActualizarStock", param);
+    }
+    public void Guardar(Producto p)
+    {
+        // Asegurate de tener un SP_InsertarProducto en tu SQL
+        SqlParameter[] param = {
+        conexion.crearParametro("@Nombre", p.Nombre),
+        conexion.crearParametro("@Marca", p.Marca),
+        conexion.crearParametro("@Color", p.Color), // ¡Agregado!
+        conexion.crearParametro("@PrecioVenta", p.PrecioVenta),
+        conexion.crearParametro("@PrecioCosto", p.PrecioCosto),
+        conexion.crearParametro("@Stock", p.Stock.Cantidad),
+        conexion.crearParametro("@Tipo", p.GetType().Name) // Calzado o Vestimenta
+    };
+        conexion.EscribirPorStoreProcedure("SP_InsertarProducto", param);
     }
 }

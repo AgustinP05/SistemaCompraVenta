@@ -3,123 +3,147 @@ using System.Collections.Generic;
 using System.Data;
 using ENT.SistemaCompraVenta; // Capa de Entidades
 using DAL.SistemaCompraVenta; // Capa de Datos
+using BLL.SistemaCompraVenta.Componentes; // Espacio de nombres de la Fábrica del Composite
 
 namespace BLL.SistemaCompraVenta.Services
 {
-
     public class UsuarioBLL
     {
-        
+        private UsuarioDAL oUsuarioDAL = new UsuarioDAL(); // Nexo con la capa de datos
+
         public Usuario Login(string nombre, string password)
         {
-            // --- ROL: ADMINISTRADOR --- Hardcodeado
-            if (nombre == "admin" && password == "123")
+            // =================================================================
+            // 1. BLOQUES DE PRUEBA (Hardcodeado) - Adaptados al nuevo Composite
+            // =================================================================
+            if (password == "123")
             {
-                Permiso permisoUsuarios = new Permiso { Nombre = "GestionarUsuarios" };
-                Rol rolAdmin = new Rol();
-                rolAdmin.NombreRol = "Administrador";
-                rolAdmin.Permisos.Add(permisoUsuarios);
+                if (nombre == "admin" || nombre == "vendedor" || nombre == "gerente" || nombre == "stock")
+                {
+                    // Convertimos la primera letra en mayúscula para que coincida con la Fábrica
+                    string rolSimulado = char.ToUpper(nombre[0]) + nombre.Substring(1);
 
-                return new Usuario { Nombre = "admin", Rol = rolAdmin };
+                    return new Usuario
+                    {
+                        ID = 999,
+                        Nombre = nombre,
+                        Password = password,
+                        FechaHoraLogin = DateTime.Now,
+                        Permisos = PermisosFactory.CrearArbolPermisos(rolSimulado) // Asigna el árbol Composite a Permisos
+                    };
+                }
             }
 
 
-            // --- ROL: VENDEDOR ---
-            if (nombre == "vendedor" && password == "123")
-            {
-                Permiso permisoVentas = new Permiso { Nombre = "RegistrarVentas" };
-                Rol rolVendedor = new Rol();
-                rolVendedor.NombreRol = "Vendedor";
-                rolVendedor.Permisos.Add(permisoVentas);
+            // =================================================================
+            // 2. CONEXIÓN REAL CON SQL SERVER (Base de Datos Local)
+            // =================================================================
+            DataTable tabla = oUsuarioDAL.LoginUsuario(nombre, password);
 
-                return new Usuario { Nombre = "vendedor", Rol = rolVendedor };
-            }
-
-            // --- ROL: GERENTE ---
-            if (nombre == "gerente" && password == "123")
-            {
-                Permiso permisoReportes = new Permiso { Nombre = "VerReportes" };
-                Rol rolGerente = new Rol();
-                rolGerente.NombreRol = "Gerente";
-                rolGerente.Permisos.Add(permisoReportes);
-
-                return new Usuario { Nombre = "gerente", Rol = rolGerente };
-            }
-
-            // --- ROL: STOCK ---
-            if (nombre == "stock" && password == "123")
-            {
-                Permiso permisoProductos = new Permiso { Nombre = "GestionarProductos" };
-                Rol rolStock = new Rol();
-                rolStock.NombreRol = "Stock";
-                rolStock.Permisos.Add(permisoProductos);
-
-                return new Usuario { Nombre = "stock", Rol = rolStock };
-            }
-
-            //----------------------------------------------------------------
-            ////---Con SQL Server
-            DataTable tabla = oUsuarioDAL.LoginUsuario(nombre, password);//Funcion de UsuarioDAL para generar una tabla con el usuario que coincida
-
-            //Si no econtro usuario
-            if (tabla.Rows.Count == 0)
+            // Si las credenciales no existen en tUsuario, el flujo retorna null (Alternativa 1)
+            if (tabla == null || tabla.Rows.Count == 0)
             {
                 return null;
             }
 
-            DataRow fila = tabla.Rows[0]; //Tomamos la primera fila
-            
-            //Creamos el Rol
-            Rol rol = new Rol();                    //Nueva instancia de un Rol (Viene de ENT)
-            rol.NombreRol = fila["Rol"].ToString(); //Le asignamos a NombreRol (del nuevo Rol) el valor en string de la columna "Rol" de la fila tomada previamente
+            // Tomamos el registro encontrado en la primera fila
+            DataRow fila = tabla.Rows[0];
+            string nombreRolBD = fila["Rol"].ToString();
 
-            //Asignar permisos segun el rol
-            switch (rol.NombreRol)
-            {
-                case "Administrador":
-                    rol.Permisos.Add(new Permiso { Nombre = "GestionarUsuarios" }); //Creamos una instancia de Permiso (de Composite) y le queremos asignar un Nombre. Esta nueva instancia se agrega al atributo Permisos de la clase Rol
-                    break;
-                case "Vendedor":
-                    rol.Permisos.Add(new Permiso { Nombre = "RegistrarVentas" });
-                    break;
+            // LÓGICA COMPOSITE: Invocamos a la fábrica para armar la estructura jerárquica de permisos
+            Componente arbolDePermisos = PermisosFactory.CrearArbolPermisos(nombreRolBD);
 
-                case "Gerente":
-                    rol.Permisos.Add(new Permiso { Nombre = "VerReportes" });
-                    break;
-
-                case "Stock":
-                    rol.Permisos.Add(new Permiso { Nombre = "GestionarProductos" });
-                    break;
-            }
-
-            //Crear nueva instancia de Usuario
+            // Mapeamos nuestra entidad de negocio Usuario con la nueva estructura
             Usuario usuario = new Usuario
             {
                 ID = Convert.ToInt32(fila["ID"]),
                 Nombre = fila["Nombre"].ToString(),
                 Password = fila["Password"].ToString(),
-                Rol = rol,
-                FechaHoraLogin= DateTime.Now
+                Permisos = arbolDePermisos, // Guardamos toda la estructura Composite con sus permisos
+                FechaHoraLogin = DateTime.Now
             };
 
-            //Guardamos en la base de datos la fecha y hora del login con el usuario asociado para tLogLogin
-            oUsuarioDAL.RegistrarLogin(usuario.ID,usuario.FechaHoraLogin);//El ID y FechaHoraLogin tomadas en la instancia Usuario, se pasan a esta funcion que hace que el UsuarioDAL lo guarde en la base de datos
+            // Guardamos en la base de datos la fecha y hora del login (Poscondición en tLogLogin)
+            oUsuarioDAL.RegistrarLogin(usuario.ID, usuario.FechaHoraLogin);
 
             return usuario;
         }
 
-
-
-        
-        private UsuarioDAL oUsuarioDAL = new UsuarioDAL();//Nexo con UsuarioDAL para poder utilizar las fuciones de ahi
-
-        
         public DataTable ObtenerUsuarios()
         {
             return oUsuarioDAL.ObtenerUsuarios();
         }
 
-     
+        public DataTable ObtenerUsuarios(string filtro)
+        {
+            return oUsuarioDAL.ObtenerUsuarios(filtro);
+        }
 
-    } 
-} 
+        public bool ModificarUsuario(string dni, string nombre, string apellido,
+                          string password, string rol, string email,
+                          DateTime? fechaNacimiento)
+        {
+            if (string.IsNullOrWhiteSpace(dni) || string.IsNullOrWhiteSpace(nombre))
+            {
+                throw new Exception("Complete todos los datos obligatorios");
+            }
+
+            int resultado = oUsuarioDAL.ModificarUsuario(dni, nombre, apellido,
+                                                      password, rol, email,
+                                                      fechaNacimiento);
+            return resultado > 0;
+        }
+
+        public bool EliminarUsuario(string dni)
+        {
+            if (string.IsNullOrWhiteSpace(dni))
+            {
+                throw new Exception("DNI inválido");
+            }
+
+            int resultado = oUsuarioDAL.EliminarUsuario(dni);
+            return resultado > 0;
+        }
+        /*
+          public bool CrearUsuario(string nombre, string password, string rol)
+          {
+              // 1. Validación básica de negocio antes de tocar la DAL
+              if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(password))
+              {
+                  return false;
+              }
+
+              // 2. Llamamos a la DAL para ejecutar el INSERT en la tabla tUsuario
+              int filasAfectadas = oUsuarioDAL.InsertarUsuario(nombre, password, rol);
+
+              // 3. Retornamos true si la base de datos respondió correctamente
+              return filasAfectadas > 0;
+          }
+        */
+        /*
+        public bool CrearUsuario(string dni, string nombre, string password, string rol)
+        {
+            // Validación: que el DNI no esté vacío
+            if (string.IsNullOrWhiteSpace(dni) || string.IsNullOrWhiteSpace(nombre))
+            {
+                return false;
+            }
+
+            // Llamamos a la DAL incluyendo el DNI
+            int filasAfectadas = oUsuarioDAL.InsertarUsuario(dni, nombre, password, rol);
+
+            return filasAfectadas > 0;
+        }
+        */
+        public bool CrearUsuario(string dni, string nombre, string apellido,
+                          string password, string rol, string email,
+                          DateTime? fechaNacimiento)
+        {
+            // Asegurate que la llamada a la DAL incluya el 'dni'
+            int filasAfectadas = oUsuarioDAL.InsertarUsuario(dni, nombre, apellido,
+                                                      password, rol, email,
+                                                      fechaNacimiento);
+            return filasAfectadas > 0;
+        }
+    }
+}

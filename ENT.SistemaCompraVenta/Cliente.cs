@@ -4,13 +4,18 @@ namespace ENT.SistemaCompraVenta
 {
     public class Cliente
     {
-        private int dni;
+
+        private string dni;
         private string nombre;
         private string apellido;
         private string telefono;
         private string email;
+        private string direccion;
 
-        public int Dni
+        // Propiedad IdCliente auto-implementada
+        public int IdCliente { get; set; }
+
+        public string Dni
         {
             get { return dni; }
             set { dni = value; }
@@ -40,9 +45,16 @@ namespace ENT.SistemaCompraVenta
             set { email = value; }
         }
 
+        public string Direccion
+        {
+            get { return direccion; }
+            set { direccion = value; }
+        }
+
+        // Propiedad de solo lectura para el Nombre Completo
         public string NombreCompleto
         {
-            get { return nombre + " " + apellido; }
+            get { return (nombre + " " + apellido).Trim(); }
         }
     }
 }
