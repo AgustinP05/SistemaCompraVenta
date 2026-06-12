@@ -5,63 +5,53 @@
 
 USE SistemaCompraVenta;
 GO
----- TABLA USUARIO ACTUALIZADA ----
-CREATE TABLE tUsuario(
-    ID INT PRIMARY KEY IDENTITY(1,1),
-    DNI VARCHAR(20) NOT NULL UNIQUE, -- Agregamos DNI como campo clave y único
-    Nombre VARCHAR(50) NOT NULL,
-    Password VARCHAR(50) NOT NULL,
-    Rol VARCHAR(50) NOT NULL
-);
+
+--  ELIMINACIÓN DE TABLAS (En orden de dependencia inverso)
+IF OBJECT_ID('tDetalleVenta', 'U') IS NOT NULL DROP TABLE tDetalleVenta;
+IF OBJECT_ID('tVenta', 'U') IS NOT NULL DROP TABLE tVenta;
+IF OBJECT_ID('tLogLogin', 'U') IS NOT NULL DROP TABLE tLogLogin;
+IF OBJECT_ID('tProducto', 'U') IS NOT NULL DROP TABLE tProducto;
+IF OBJECT_ID('tCliente', 'U') IS NOT NULL DROP TABLE tCliente;
+IF OBJECT_ID('tUsuario', 'U') IS NOT NULL DROP TABLE tUsuario;
 GO
 
 
+---- TABLA USUARIO ----
+CREATE TABLE tUsuario(
+    ID INT PRIMARY KEY IDENTITY(1,1),
+    DNI VARCHAR(20) NOT NULL UNIQUE, 
+    Nombre VARCHAR(50) NOT NULL,
+    Apellido VARCHAR(100) NULL,
+    Password VARCHAR(50) NOT NULL,
+    Rol VARCHAR(50) NOT NULL,
+    Email VARCHAR(150) NULL,
+    FechaNacimiento DATE NULL
+);
+GO
 
 ---- TABLA LOGLOGIN ----
 CREATE TABLE tLogLogin
 (
     ID INT IDENTITY(1,1) PRIMARY KEY,
-
     ID_Usuario INT NOT NULL,
-
     FechaHoraLogin DATETIME NOT NULL,
-
-    FOREIGN KEY (ID_Usuario)
-        REFERENCES tUsuario(ID)
+    FOREIGN KEY (ID_Usuario) REFERENCES tUsuario(ID)
 );
 GO
 
-
--- tCliente
+-- CLIENTE --
 CREATE TABLE tCliente (
     ID_Cliente INT PRIMARY KEY IDENTITY(1,1),
-    DNI VARCHAR(20) NOT NULL,
+    DNI VARCHAR(20) NOT NULL UNIQUE,
     Nombre VARCHAR(100) NOT NULL,
     Apellido VARCHAR(100) NOT NULL,
     Telefono VARCHAR(100) NOT NULL,
     Email VARCHAR(100) NOT NULL,
-    Direccion VARCHAR(100) NOT NULL,
-
+    Direccion VARCHAR(100) NOT NULL
 );
 GO
 
--- tProducto
-CREATE TABLE tProducto (
-    ID_Producto INT PRIMARY KEY IDENTITY(1,1),
-    Nombre VARCHAR(100) NOT NULL,
-    Marca VARCHAR(100) NOT NULL,
-    Color VARCHAR(50),
-    PrecioVenta DECIMAL(10,2) NOT NULL,
-    PrecioCosto DECIMAL(10,2) NOT NULL,
-    Stock INT NOT NULL,
-    Tipo VARCHAR(100) NOT NULL,
-);
-GO
---si ya tienen la tabla creada, ahora yo la edite. le agregué color.--- ver cual de ambas ejecutar. OJO
--- tProducto (Estructura final unificada)
-IF OBJECT_ID('tProducto', 'U') IS NOT NULL DROP TABLE tProducto;
-GO
-
+-- PRODUCTO --
 CREATE TABLE tProducto (
     ID_Producto INT PRIMARY KEY IDENTITY(1,1),
     Nombre VARCHAR(100) NOT NULL,
@@ -74,19 +64,19 @@ CREATE TABLE tProducto (
 );
 GO
 
--- tVenta
+-- tVenta --
 CREATE TABLE tVenta (
     ID_Venta INT PRIMARY KEY IDENTITY(1,1),
     Fecha DATETIME NOT NULL,
     ID_Cliente INT NOT NULL,
-    ID_Usuario INT NOT NULL,
+    ID_Usuario INT NOT NULL, 
     Total DECIMAL(18,2) NOT NULL,
     FOREIGN KEY (ID_Cliente) REFERENCES tCliente(ID_Cliente),
-    FOREIGN KEY (ID_Usuario) REFERENCES tUsuario(ID)
+    FOREIGN KEY (ID_Usuario) REFERENCES tUsuario(ID)          
 );
 GO
 
--- ya que tVenta y tProducto existen
+--- DETALLE VENTA ---
 CREATE TABLE tDetalleVenta (
     ID_DetalleVenta INT PRIMARY KEY IDENTITY(1,1),
     ID_Venta INT NOT NULL,
