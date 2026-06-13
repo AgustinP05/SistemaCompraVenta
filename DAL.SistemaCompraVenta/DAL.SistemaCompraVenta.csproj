@@ -49,6 +49,7 @@
     <Compile Include="ProveedorDAL.cs" />
     <Compile Include="ReporteDAL.cs" />
     <Compile Include="UsuarioDAL.cs" />
+    <Compile Include="VarianteDAL.cs" />
     <Compile Include="VentaDAL.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,6 @@
-﻿using DAL.SistemaCompraVenta;
-using ENT.SistemaCompraVenta; // Referencia a las entidades
+using DAL.SistemaCompraVenta;
+using ENT.SistemaCompraVenta;
 using System;
-using System.Collections.Generic;
 
 namespace BLL.SistemaCompraVenta
 {
@@ -12,39 +11,29 @@ namespace BLL.SistemaCompraVenta
 
         public void FinalizarVenta(Venta nuevaVenta)
         {
-            // 1. Validaciones previas de stock (las que ya tenías)
+            // 1. Validar stock para todos los ítems antes de persistir
+            foreach (var detalle in nuevaVenta.Detalles)
+                ValidarStockDisponible(detalle.Variante, detalle.Cantidad);
+
+            // 2. Registrar cabecera (sin Total — lo calcula la BLL/vista)
+            int idVenta = oVentaDAL.RegistrarVenta(nuevaVenta);
+
+            // 3. Guardar detalles y descontar stock
             foreach (var detalle in nuevaVenta.Detalles)
             {
-                ValidarStockDisponible(detalle.Producto, detalle.Cantidad);
-            }
-
-            // 2. Registramos la cabecera UNA SOLA VEZ antes de entrar al bucle
-            int idVentaGenerado = oVentaDAL.RegistrarVenta(nuevaVenta);
-
-            // 3. Ahora sí, iteramos para guardar detalles y actualizar stock
-            foreach (var detalle in nuevaVenta.Detalles)
-            {
-                // Guardamos el detalle asociado al ID que obtuvimos arriba
-                oVentaDAL.InsertarDetalle(idVentaGenerado, detalle);
-
-                // Descontamos el stock
-                oProductoBLL.ActualizarStock(detalle.Producto.Id, detalle.Cantidad);
+                oVentaDAL.InsertarDetalle(idVenta, detalle);
+                oProductoBLL.ActualizarStock(detalle.Variante.ID_ProductoVariante, detalle.Cantidad);
             }
         }
 
-        public void ValidarStockDisponible(Producto prod, int cant)
+        public void ValidarStockDisponible(ProductoVariante variante, int cantidad)
         {
-            Stock stockDelProducto = oProductoBLL.BuscarStockPorId(prod.Id);
+            int stockActual = oProductoBLL.BuscarStockPorVariante(variante.ID_ProductoVariante);
 
-            if (stockDelProducto == null)
-            {
-                throw new InvalidOperationException("Error: No existe un registro de inventario para el producto " + prod.Nombre);
-            }
-
-            if (cant > stockDelProducto.Cantidad)
-            {
-                throw new InvalidOperationException("Stock insuficiente para el producto: " + prod.Nombre);
-            }
+            if (cantidad > stockActual)
+                throw new InvalidOperationException(
+                    $"Stock insuficiente para {variante.Nombre} ({variante.Color}, {variante.Talle}). " +
+                    $"Disponible: {stockActual}");
         }
     }
 }

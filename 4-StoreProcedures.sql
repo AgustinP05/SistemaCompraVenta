@@ -40,7 +40,8 @@ CREATE PROCEDURE SP_ObtenerUsuarios
     @Filtro VARCHAR(20) = ''
 AS
 BEGIN
-    SELECT u.DNI, u.Nombre, u.Apellido, u.Email, r.NombreRol AS Rol, u.FechaNacimiento
+    SELECT u.DNI, u.Nombre, u.Apellido, u.Email, r.NombreRol AS Rol,
+           u.ID_Rol, u.FechaNacimiento
     FROM tUsuario u
     JOIN tRol r ON r.ID_Rol = u.ID_Rol
     WHERE @Filtro = '' OR u.DNI LIKE '%' + @Filtro + '%'
@@ -69,20 +70,20 @@ GO
 ---
 IF OBJECT_ID('SP_EliminarUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_EliminarUsuario;
 GO
--- SIN CAMBIOS
+-- Opera por DNI (key natural siempre disponible en pantalla)
 CREATE PROCEDURE SP_EliminarUsuario
-    @ID INT
+    @DNI VARCHAR(20)
 AS
 BEGIN
-    DELETE FROM tUsuario WHERE ID = @ID;
+    DELETE FROM tUsuario WHERE DNI = @DNI;
 END;
 GO
 ---
 IF OBJECT_ID('SP_ModificarUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_ModificarUsuario;
 GO
--- CAMBIO: @Rol VARCHAR -> @ID_Rol INT ; Password 256
+-- CAMBIO: @Rol VARCHAR -> @ID_Rol INT ; opera por DNI (key natural disponible en pantalla)
 CREATE PROCEDURE SP_ModificarUsuario
-    @ID INT, @Nombre VARCHAR(50), @Apellido VARCHAR(100),
+    @DNI VARCHAR(20), @Nombre VARCHAR(50), @Apellido VARCHAR(100),
     @Password VARCHAR(256), @ID_Rol INT, @Email VARCHAR(150),
     @FechaNacimiento DATE
 AS
@@ -90,7 +91,7 @@ BEGIN
     UPDATE tUsuario
     SET Nombre = @Nombre, Apellido = @Apellido, Password = @Password,
         ID_Rol = @ID_Rol, Email = @Email, FechaNacimiento = @FechaNacimiento
-    WHERE ID = @ID;
+    WHERE DNI = @DNI;
 END;
 GO
 
@@ -339,6 +340,17 @@ BEGIN
     JOIN tColor    c ON c.ID_Color    = pv.ID_Color
     JOIN tTalle    t ON t.ID_Talle    = pv.ID_Talle
     WHERE pv.Cantidad < 5;
+END;
+GO
+
+
+-- ROL (necesario para poblar el combo de roles en la UI) --------------------
+IF OBJECT_ID('SP_ListarRoles', 'P') IS NOT NULL DROP PROCEDURE SP_ListarRoles;
+GO
+CREATE PROCEDURE SP_ListarRoles
+AS
+BEGIN
+    SELECT ID_Rol, NombreRol FROM tRol ORDER BY NombreRol;
 END;
 GO
 

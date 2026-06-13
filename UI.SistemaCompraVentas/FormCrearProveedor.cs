@@ -24,6 +24,9 @@ namespace UI.SistemaCompraVentas
             dgvProveedoresCargados.Columns.Add("Email",       "Email");
             dgvProveedoresCargados.Columns.Add("Direccion",   "Dirección");
 
+            // El CUIT es la clave del proveedor y no puede modificarse desde la edición
+            txtEditCuit.ReadOnly = true;
+
             LimpiarEdicion();
         }
 

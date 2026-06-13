@@ -9,50 +9,61 @@
 USE SistemaCompraVenta;
 GO
 
----- ROL ----
+---- ROL (refleja los cases del PermisosFactory) ----
 INSERT INTO tRol (NombreRol) VALUES
-('Administrador'),        -- 1
-('Vendedor'),             -- 2
-('Encargado de Stock'),   -- 3
-('Supervisor'),           -- 4
-('Cajero'),               -- 5
-('Auditor');              -- 6
+('Administrador'),   -- 1
+('Vendedor'),        -- 2
+('Gerente'),         -- 3
+('Stock'),           -- 4
+('Compras');          -- 5
 GO
 
----- PERMISO ----
+---- PERMISO (refleja los Permiso instanciados en la Factory) ----
 INSERT INTO tPermiso (Nombre) VALUES
-('GestionarUsuarios'),    -- 1
-('RegistrarVenta'),       -- 2
-('RegistrarCompra'),      -- 3
-('GestionarProductos'),   -- 4
-('GestionarStock'),       -- 5
-('VerReportes'),          -- 6
-('GestionarClientes'),    -- 7
-('GestionarProveedores'); -- 8
+('LogIn'),               -- 1
+('GestionarUsuarios'),   -- 2
+('RegistrarVentas'),     -- 3
+('VerReportes'),         -- 4
+('GestionarProductos'),  -- 5
+('GestionarClientes'),   -- 6
+('GestionarProveedores'),-- 7
+('RegistrarCompras');-- 8
 GO
 
----- ROL_PERMISO (asignación coherente de permisos por rol) ----
+---- ROL_PERMISO (refleja los AgregarHijo de cada case en la Factory) ----
 INSERT INTO tRolPermiso (ID_Rol, ID_Permiso) VALUES
-(1, 1),  -- Administrador: gestionar usuarios
-(1, 2),  -- Administrador: registrar venta
-(1, 4),  -- Administrador: gestionar productos
-(2, 2),  -- Vendedor: registrar venta
-(2, 7),  -- Vendedor: gestionar clientes
-(3, 3),  -- Encargado de Stock: registrar compra
-(3, 4),  -- Encargado de Stock: gestionar productos
-(3, 5),  -- Encargado de Stock: gestionar stock
-(4, 6),  -- Supervisor: ver reportes
-(5, 2);  -- Cajero: registrar venta
+-- Administrador: hereda todo (Vendedor + Gerente + Stock + SuperGerente)
+(1, 1),  -- LogIn
+(1, 2),  -- GestionarUsuarios
+(1, 3),  -- RegistrarVentas
+(1, 4),  -- VerReportes
+(1, 5),  -- GestionarProductos
+(1, 6),  -- GestionarClientes
+(1, 7),  -- GestionarProveedores
+-- Vendedor
+(2, 1),  -- LogIn
+(2, 3),  -- RegistrarVentas
+(2, 6),  -- GestionarClientes
+-- Gerente
+(3, 1),  -- LogIn
+(3, 4),  -- VerReportes
+-- Stock
+(4, 1),  -- LogIn
+(4, 5),  -- GestionarProductos
+-- Compras
+(5, 1),  -- LogIn
+(5, 8),  -- Gestionar Compras
+(5, 7);  -- GestionarUProveedores
 GO
 
 ---- USUARIO (Password de ejemplo, en producción debería ir hasheada) ----
 INSERT INTO tUsuario (DNI, Nombre, Apellido, Password, ID_Rol, Email, FechaNacimiento) VALUES
-('30111222', 'Lucia',  'Gomez',     'demo_hash_01', 1, 'lgomez@sportstyle.com',    '1985-03-12'),  -- 1
-('28999111', 'Martin', 'Pereyra',   'demo_hash_02', 2, 'mpereyra@sportstyle.com',  '1990-07-21'),  -- 2
-('33444555', 'Sofia',  'Romero',    'demo_hash_03', 3, 'sromero@sportstyle.com',   '1993-11-05'),  -- 3
-('25666777', 'Diego',  'Fernandez', 'demo_hash_04', 4, 'dfernandez@sportstyle.com','1982-01-30'),  -- 4
-('35888999', 'Camila', 'Diaz',      'demo_hash_05', 5, 'cdiaz@sportstyle.com',     '1996-09-18'),  -- 5
-('27333444', 'Javier', 'Lopez',     'demo_hash_06', 2, 'jlopez@sportstyle.com',    '1988-05-02');  -- 6
+('11111111', 'Agustin',  'Perea',      '123', 1, 'agustin@sportupe.com',   '1985-03-12'),  -- Administrador
+('22222222', 'Julieta',  'Lazaro',     '123', 2, 'julieta@sportupe.com',   '1990-07-21'),  -- Vendedor
+('33333333', 'Sofia',    'Schenone',   '123', 3, 'sofia@sportupe.com',     '1993-11-05'),  -- Gerente
+('44444444', 'Agostina', 'Villamayor', '123', 4, 'agostina@sportupe.com',  '1982-01-30'),  -- Stock
+('35888999', 'Camila',   'Diaz',       '123', 5, 'camila@sportupe.com',    '1996-09-18'),  -- Compras
+('27333444', 'Javier',   'Lopez',      '123', 2, 'javier@sportupe.com',    '1988-05-02');  -- Vendedor
 GO
 
 ---- LOGLOGIN ----

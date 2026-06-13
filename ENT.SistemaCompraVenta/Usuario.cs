@@ -18,10 +18,11 @@ namespace ENT.SistemaCompraVenta
         public string Email { get; set; }
         public DateTime? FechaNacimiento { get; set; }
 
-        // guarda toda la estructura Compositecon sus permisos
+        public int ID_Rol { get; set; }
+
+        // guarda toda la estructura Composite con sus permisos
         public Componente Permisos { get; set; }
 
-        
-        public string NombreMostrar => $"{Nombre} ({Permisos.Nombre})";
+        public string NombreMostrar => $"{Nombre} ({Permisos?.Nombre})";
     }
 }

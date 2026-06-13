@@ -47,13 +47,14 @@ namespace UI.SistemaCompraVentas
                     nuevoProducto = oVestimenta; // Upcasting automático
                 }
 
-                // 2. Llenamos los atributos COMUNES que heredaron de 'Producto'
-                nuevoProducto.Nombre = txtNombre.Text;
-                nuevoProducto.Marca = txtMarca.Text;
-                nuevoProducto.Color = txtColor.Text;
+                // 2. Llenamos los atributos comunes
+                nuevoProducto.Nombre      = txtNombre.Text;
+                nuevoProducto.Marca       = txtMarca.Text;
                 nuevoProducto.PrecioVenta = (double)nmPrecioVenta.Value;
                 nuevoProducto.PrecioCosto = (double)nmPrecioCosto.Value;
-                nuevoProducto.Stock = new Stock { Cantidad = (int)nmStockActual.Value };
+                // ID_Categoria: VESTIMENTA=1, CALZADO=2 (orden del INSERT en 2-Tablas.sql)
+                nuevoProducto.ID_Categoria = cboCategoria.Text == "Calzado" ? 2 : 1;
+                nuevoProducto.Categoria    = cboCategoria.Text;
 
 
                 oProductoBLL.GuardarProducto(nuevoProducto);
@@ -80,18 +81,10 @@ namespace UI.SistemaCompraVentas
             var lista = oProductoBLL.ListarProductos();
 
             dgvProductos.DataSource = lista;
-            //pongo en null para que no muestre la entidad compleja de Stock, 
-            if (dgvProductos.Columns["Stock"] != null)
-            {
-                dgvProductos.Columns["Stock"].Visible = false;
-            }
-
-            //accedemos a la propiedad stock 
-            if (dgvProductos.Columns["CantidadStock"] != null)
-            {
-                dgvProductos.Columns["CantidadStock"].HeaderText = "Stock";
-                dgvProductos.Columns["CantidadStock"].DisplayIndex = 5;
-            }
+            // Ocultar columnas internas no relevantes para el usuario
+            foreach (string col in new[] { "Id", "ID_Categoria" })
+                if (dgvProductos.Columns[col] != null)
+                    dgvProductos.Columns[col].Visible = false;
         }
 
 

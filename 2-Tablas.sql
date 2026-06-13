@@ -4,8 +4,7 @@
    Incluye: ROL/PERMISO, CATEGORIA, COLOR/TALLE/VARIANTE/STOCK,
             circuito de COMPRA. Correr una vez, crea todo desde cero.
 ========================================================= */
-CREATE DATABASE SistemaCompraVenta;
-GO
+
 USE SistemaCompraVenta;
 GO
 

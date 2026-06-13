@@ -10,6 +10,7 @@ namespace UI.SistemaCompraVentas
         private bool _cargando = false;
         private readonly List<ENT.SistemaCompraVenta.Cliente> _clientesCargados =
             new List<ENT.SistemaCompraVenta.Cliente>();
+        private int _idClienteSeleccionado = 0;
 
         public FormCrearCliente()
         {
@@ -135,10 +136,13 @@ namespace UI.SistemaCompraVentas
             if (_cargando || dgvClientes.CurrentRow == null || dgvClientes.Columns.Count == 0) return;
 
             var fila = dgvClientes.CurrentRow;
-            txtEditDni.Text       = ObtenerCelda(fila, "DNI", "Dni", "Id_Cliente", "ID");
+            string idStr = ObtenerCelda(fila, "ID_Cliente", "IdCliente", "ID");
+            _idClienteSeleccionado = int.TryParse(idStr, out int idP) ? idP : 0;
+
+            txtEditDni.Text       = ObtenerCelda(fila, "DNI", "Dni");
             txtEditNombre.Text    = ObtenerCelda(fila, "Nombre", "nombre");
             txtEditApellido.Text  = ObtenerCelda(fila, "Apellido", "apellido");
-            txtEditDireccion.Text = ObtenerCelda(fila, "Direccion", "Dirección", "Direccion");
+            txtEditDireccion.Text = ObtenerCelda(fila, "Direccion", "Dirección");
             txtEditTelefono.Text  = ObtenerCelda(fila, "Telefono", "Teléfono", "Tel");
             txtEditEmail.Text     = ObtenerCelda(fila, "Email", "email", "Mail");
         }
@@ -178,12 +182,13 @@ namespace UI.SistemaCompraVentas
 
                 Cliente c = new Cliente
                 {
-                    Dni = txtEditDni.Text,
-                    Nombre = txtEditNombre.Text,
-                    Apellido = txtEditApellido.Text,
+                    IdCliente = _idClienteSeleccionado,
+                    Dni       = txtEditDni.Text,
+                    Nombre    = txtEditNombre.Text,
+                    Apellido  = txtEditApellido.Text,
                     Direccion = txtEditDireccion.Text,
-                    Telefono = txtEditTelefono.Text,
-                    Email = txtEditEmail.Text
+                    Telefono  = txtEditTelefono.Text,
+                    Email     = txtEditEmail.Text
                 };
 
                 bool exito = bll.ModificarCliente(c);
@@ -206,7 +211,7 @@ namespace UI.SistemaCompraVentas
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtEditDni.Text))
+            if (_idClienteSeleccionado == 0)
             {
                 MessageBox.Show("Seleccione un cliente de la lista antes de eliminar.");
                 return;
@@ -223,7 +228,7 @@ namespace UI.SistemaCompraVentas
             try
             {
                 BLL.SistemaCompraVenta.ClienteBLL bll = new BLL.SistemaCompraVenta.ClienteBLL();
-                bool exito = bll.EliminarCliente(txtEditDni.Text);
+                bool exito = bll.EliminarCliente(_idClienteSeleccionado);
 
                 if (exito)
                 {
