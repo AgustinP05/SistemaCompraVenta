@@ -1,12 +1,41 @@
-﻿namespace ENT.SistemaCompraVenta
+using System;
+
+namespace ENT.SistemaCompraVenta
 {
     public class DetalleCompra
     {
-        public int IdDetalleCompra { get; set; }
-        public ProductoVariante Variante { get; set; }
-        public int Cantidad { get; set; }
-        public double PrecioUnitario { get; set; }
+        private int idDetalleCompra;
+        private ProductoVariante variante;
+        private int cantidad;
+        private double precioUnitario;
 
-        public double DevolverSubtotal() => Cantidad * PrecioUnitario;
+        public int IdDetalleCompra
+        {
+            get { return idDetalleCompra; }
+            set { idDetalleCompra = value; }
+        }
+
+        public ProductoVariante Variante
+        {
+            get { return variante; }
+            set { variante = value; }
+        }
+
+        public int Cantidad
+        {
+            get { return cantidad; }
+            set { cantidad = value; }
+        }
+
+        public double PrecioUnitario
+        {
+            get { return precioUnitario; }
+            set { precioUnitario = value; }
+        }
+
+        public double DevolverSubtotal()
+        {
+            return cantidad * precioUnitario;
+        }
     }
 }
