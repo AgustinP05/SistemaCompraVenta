@@ -1,53 +1,181 @@
-﻿/* =========================================================
-   INSERTAR DATOS DE PRUEBA (En orden de jerarquía)
+/* =========================================================
+   SistemaCompraVenta - Datos de prueba
+   Correr DESPUÉS de 2-Tablas-Final.sql, sobre la base recién creada
+   (las IDENTITY arrancan en 1, así los IDs quedan predecibles).
+   NOTA: tCategoria ya viene cargada por el script de tablas
+         (ID 1 = VESTIMENTA, ID 2 = CALZADO), por eso no se inserta acá.
 ========================================================= */
+
 USE SistemaCompraVenta;
 GO
 
----- USUARIOS DE PRUEBA ----
-INSERT INTO tUsuario (DNI, Nombre, Apellido, Password, Rol, Email, FechaNacimiento)
-VALUES 
-('11111111', 'Agustin', 'Pérez', '123', 'Administrador', 'agustin@sistema.com', '1995-05-15'),
-('22222222', 'Agostina', 'Gómez', '123', 'Vendedor', 'agostina@sistema.com', '1998-09-22'),
-('33333333', 'Juli', 'López', '123', 'Stock', 'juli@sistema.com', '1997-08-20');
+---- ROL ----
+INSERT INTO tRol (NombreRol) VALUES
+('Administrador'),        -- 1
+('Vendedor'),             -- 2
+('Encargado de Stock'),   -- 3
+('Supervisor'),           -- 4
+('Cajero'),               -- 5
+('Auditor');              -- 6
 GO
 
----- CLIENTES DE PRUEBA ----
-INSERT INTO tCliente (DNI, Nombre, Apellido, Telefono, Email, Direccion)
-VALUES 
-('20123456', 'Juan', 'Pérez', '11-4444-5555', 'juan@mail.com', 'Calle Falsa 123'),
-('25987654', 'María', 'Rodríguez', '11-5555-6666', 'maria@mail.com', 'Av. Siempreviva 742');
+---- PERMISO ----
+INSERT INTO tPermiso (Nombre) VALUES
+('GestionarUsuarios'),    -- 1
+('RegistrarVenta'),       -- 2
+('RegistrarCompra'),      -- 3
+('GestionarProductos'),   -- 4
+('GestionarStock'),       -- 5
+('VerReportes'),          -- 6
+('GestionarClientes'),    -- 7
+('GestionarProveedores'); -- 8
 GO
 
----- CARGA DE PRODUCTOS DE PRUEBA ----
-INSERT INTO tProducto (Nombre, Marca, Color, Tipo, PrecioVenta, PrecioCosto, Stock)
-VALUES 
-('Zapatillas Air Max', 'Nike', 'Blanco', 'Calzado', 120000.00, 70000.00, 50),
-('Zapatos Formales', 'Gucci', 'Negro', 'Calzado', 250000.00, 150000.00, 20),
-('Remera Dry-Fit', 'Adidas', 'Azul', 'Vestimenta', 45000.00, 20000.00, 100),
-('Campera Impermeable', 'North Face', 'Gris', 'Vestimenta', 180000.00, 95000.00, 30),
-('Pelota Fútbol AFA', 'Adidas', 'Blanca/Negra', 'Accesorio', 30000.00, 15000.00, 20),
-('Medias Deportivas', 'Nike', 'Negro', 'Accesorio', 8000.00, 3000.00, 200);
+---- ROL_PERMISO (asignación coherente de permisos por rol) ----
+INSERT INTO tRolPermiso (ID_Rol, ID_Permiso) VALUES
+(1, 1),  -- Administrador: gestionar usuarios
+(1, 2),  -- Administrador: registrar venta
+(1, 4),  -- Administrador: gestionar productos
+(2, 2),  -- Vendedor: registrar venta
+(2, 7),  -- Vendedor: gestionar clientes
+(3, 3),  -- Encargado de Stock: registrar compra
+(3, 4),  -- Encargado de Stock: gestionar productos
+(3, 5),  -- Encargado de Stock: gestionar stock
+(4, 6),  -- Supervisor: ver reportes
+(5, 2);  -- Cajero: registrar venta
 GO
 
----- VENTAS DE PRUEBA ----
--- ID_Cliente 1 = Juan Pérez, ID_Usuario 2 = Agostina (Vendedor)
-INSERT INTO tVenta (Fecha, ID_Cliente, ID_Usuario, Total)
-VALUES 
-(GETDATE(), 1, 2, 165000.00), -- Venta 1
-(GETDATE(), 2, 2, 38000.00);  -- Venta 2
+---- USUARIO (Password de ejemplo, en producción debería ir hasheada) ----
+INSERT INTO tUsuario (DNI, Nombre, Apellido, Password, ID_Rol, Email, FechaNacimiento) VALUES
+('30111222', 'Lucia',  'Gomez',     'demo_hash_01', 1, 'lgomez@sportstyle.com',    '1985-03-12'),  -- 1
+('28999111', 'Martin', 'Pereyra',   'demo_hash_02', 2, 'mpereyra@sportstyle.com',  '1990-07-21'),  -- 2
+('33444555', 'Sofia',  'Romero',    'demo_hash_03', 3, 'sromero@sportstyle.com',   '1993-11-05'),  -- 3
+('25666777', 'Diego',  'Fernandez', 'demo_hash_04', 4, 'dfernandez@sportstyle.com','1982-01-30'),  -- 4
+('35888999', 'Camila', 'Diaz',      'demo_hash_05', 5, 'cdiaz@sportstyle.com',     '1996-09-18'),  -- 5
+('27333444', 'Javier', 'Lopez',     'demo_hash_06', 2, 'jlopez@sportstyle.com',    '1988-05-02');  -- 6
 GO
 
----- DETALLE DE VENTAS DE PRUEBA ----
--- Venta 1: 1 Zapatillas Air Max ($120000) + 1 Remera Dry-Fit ($45000) = $165000
-INSERT INTO tDetalleVenta (ID_Venta, ID_Producto, Cantidad, PrecioUnitario, Subtotal)
-VALUES 
-(1, 1, 1, 120000.00, 120000.00),
-(1, 3, 1, 45000.00, 45000.00);
+---- LOGLOGIN ----
+INSERT INTO tLogLogin (ID_Usuario, FechaHoraLogin) VALUES
+(2, '2026-06-01 08:30:00'),
+(5, '2026-06-01 09:00:00'),
+(2, '2026-06-02 08:45:00'),
+(3, '2026-06-02 10:15:00'),
+(1, '2026-06-03 11:00:00'),
+(6, '2026-06-03 14:20:00'),
+(5, '2026-06-04 08:10:00');
+GO
 
--- Venta 2: 1 Pelota Fútbol ($30000) + 1 Medias ($8000) = $38000
-INSERT INTO tDetalleVenta (ID_Venta, ID_Producto, Cantidad, PrecioUnitario, Subtotal)
-VALUES 
-(2, 5, 1, 30000.00, 30000.00),
-(2, 6, 1, 8000.00, 8000.00);
+---- CLIENTE ----
+INSERT INTO tCliente (DNI, Nombre, Apellido, Telefono, Email, Direccion) VALUES
+('34123456', 'Ana',      'Torres',  '1145678901', 'ana.torres@mail.com',     'Av. Rivadavia 1234, CABA'),       -- 1
+('29876543', 'Bruno',    'Sosa',    '1156789012', 'bruno.sosa@mail.com',     'Calle Falsa 742, Lanus'),         -- 2
+('31654987', 'Carla',    'Mendez',  '1167890123', 'carla.mendez@mail.com',   'Mitre 555, Avellaneda'),          -- 3
+('27345678', 'Damian',   'Ruiz',    '1178901234', 'damian.ruiz@mail.com',    'San Martin 2020, Quilmes'),       -- 4
+('36789123', 'Elena',    'Vega',    '1189012345', 'elena.vega@mail.com',     'Belgrano 88, Lomas de Zamora'),   -- 5
+('30246813', 'Federico', 'Castro',  '1190123456', 'fede.castro@mail.com',    'Las Heras 1500, CABA'),           -- 6
+('33112233', 'Gabriela', 'Ibarra',  '1101234567', 'gabriela.ibarra@mail.com','Corrientes 3300, CABA');          -- 7
+GO
+
+---- PROVEEDOR ----
+INSERT INTO tProveedor (CUIT, RazonSocial, Telefono, Email, Direccion) VALUES
+('30712345678', 'Distribuidora Deportiva SA',   '1143210001', 'ventas@distdeportiva.com', 'Parque Industrial Pilar'),   -- 1
+('30698765432', 'Nike Argentina SRL',           '1143210002', 'mayorista@nikearg.com',    'Au. Panamericana km 30'),    -- 2
+('33765432109', 'Adidas Mayorista SA',          '1143210003', 'b2b@adidasmay.com',        'Ruta 8 km 25, Malvinas'),    -- 3
+('30555666778', 'Puma Sports SRL',              '1143210004', 'ventas@pumasports.com',    'Av. del Trabajo 4500, CABA'),-- 4
+('27888999001', 'Importadora Atletica SA',      '1143210005', 'compras@impatletica.com',  'Dock Sud, Avellaneda'),      -- 5
+('30444555667', 'Mayorista Indumentaria SRL',   '1143210006', 'info@mayindumentaria.com', 'Once 1200, CABA');           -- 6
+GO
+
+---- PRODUCTO (ID_Categoria: 1 = VESTIMENTA, 2 = CALZADO) ----
+INSERT INTO tProducto (Nombre, Marca, ID_Categoria, PrecioVenta, PrecioCosto) VALUES
+('Zapatilla Running Air',  'Nike',   2, 120000.00, 70000.00),  -- 1  CALZADO
+('Zapatilla Ultraboost',   'Adidas', 2, 150000.00, 90000.00),  -- 2  CALZADO
+('Botin de futbol Predator','Adidas',2, 135000.00, 80000.00),  -- 3  CALZADO
+('Remera Dry-Fit',         'Nike',   1,  32000.00, 15000.00),  -- 4  VESTIMENTA
+('Campera rompeviento',    'Puma',   1,  85000.00, 48000.00),  -- 5  VESTIMENTA
+('Short deportivo',        'Adidas', 1,  28000.00, 13000.00),  -- 6  VESTIMENTA
+('Buzo con capucha',       'Puma',   1,  60000.00, 32000.00),  -- 7  VESTIMENTA
+('Zapatilla Urbana RS-X',  'Puma',   2, 110000.00, 65000.00);  -- 8  CALZADO
+GO
+
+---- COLOR ----
+INSERT INTO tColor (Nombre) VALUES
+('Negro'),    -- 1
+('Blanco'),   -- 2
+('Rojo'),     -- 3
+('Azul'),     -- 4
+('Gris'),     -- 5
+('Verde'),    -- 6
+('Amarillo'); -- 7
+GO
+
+---- TALLE (ID_Categoria: 1 = VESTIMENTA, 2 = CALZADO) ----
+INSERT INTO tTalle (Valor, ID_Categoria) VALUES
+('39', 2),  -- 1  CALZADO
+('40', 2),  -- 2  CALZADO
+('41', 2),  -- 3  CALZADO
+('42', 2),  -- 4  CALZADO
+('43', 2),  -- 5  CALZADO
+('XS', 1),  -- 6  VESTIMENTA
+('S',  1),  -- 7  VESTIMENTA
+('M',  1),  -- 8  VESTIMENTA
+('L',  1),  -- 9  VESTIMENTA
+('XL', 1);  -- 10 VESTIMENTA
+GO
+
+---- PRODUCTO_VARIANTE (talle siempre de la misma categoría que el producto) ----
+INSERT INTO tProductoVariante (ID_Producto, ID_Color, ID_Talle, Cantidad) VALUES
+(1, 1, 2, 12),  -- 1  Zap Running, Negro, 40
+(1, 1, 3,  8),  -- 2  Zap Running, Negro, 41
+(1, 2, 3,  5),  -- 3  Zap Running, Blanco, 41
+(2, 1, 4, 10),  -- 4  Ultraboost, Negro, 42
+(3, 3, 2,  6),  -- 5  Botin Predator, Rojo, 40
+(4, 2, 8, 25),  -- 6  Remera Dry-Fit, Blanco, M
+(4, 1, 9, 18),  -- 7  Remera Dry-Fit, Negro, L
+(5, 4, 9,  7),  -- 8  Campera, Azul, L
+(6, 1, 7, 20),  -- 9  Short, Negro, S
+(8, 5, 5,  9);  -- 10 Zap Urbana RS-X, Gris, 43
+GO
+
+---- VENTA (sin Total: se calcula en la BLL) ----
+INSERT INTO tVenta (Fecha, ID_Cliente, ID_Usuario) VALUES
+('2026-05-02 10:15:00', 1, 2),  -- 1
+('2026-05-05 16:40:00', 3, 5),  -- 2
+('2026-05-10 11:20:00', 2, 2),  -- 3
+('2026-05-15 18:05:00', 4, 6),  -- 4
+('2026-05-20 09:50:00', 5, 5),  -- 5
+('2026-06-01 13:30:00', 7, 2);  -- 6
+GO
+
+---- DETALLE_VENTA (PrecioUnitario tomado del precio de venta del producto) ----
+INSERT INTO tDetalleVenta (ID_Venta, ID_ProductoVariante, Cantidad, PrecioUnitario) VALUES
+(1,  1, 1, 120000.00),  -- Zap Running 40
+(1,  6, 2,  32000.00),  -- Remera M
+(2,  4, 1, 150000.00),  -- Ultraboost 42
+(3,  9, 3,  28000.00),  -- Short S
+(4,  5, 1, 135000.00),  -- Botin 40
+(5,  7, 1,  32000.00),  -- Remera L
+(6, 10, 1, 110000.00),  -- Zap Urbana 43
+(6,  8, 1,  85000.00);  -- Campera L
+GO
+
+---- COMPRA ----
+INSERT INTO tCompra (Fecha, ID_Usuario, ID_Proveedor) VALUES
+('2026-04-10 09:00:00', 3, 1),  -- 1
+('2026-04-15 10:30:00', 3, 2),  -- 2
+('2026-04-20 14:00:00', 3, 3),  -- 3
+('2026-04-25 11:45:00', 1, 1),  -- 4
+('2026-05-01 16:20:00', 3, 4);  -- 5
+GO
+
+---- DETALLE_COMPRA (PrecioUnitario tomado del precio de costo del producto) ----
+INSERT INTO tDetalleCompra (ID_Compra, ID_ProductoVariante, Cantidad, PrecioUnitario) VALUES
+(1,  1, 10, 70000.00),  -- Zap Running 40
+(1,  2,  8, 70000.00),  -- Zap Running 41
+(2,  4, 10, 90000.00),  -- Ultraboost 42
+(3,  5,  6, 80000.00),  -- Botin 40
+(4,  6, 25, 15000.00),  -- Remera M
+(5,  9, 20, 13000.00),  -- Short S
+(5, 10,  9, 65000.00);  -- Zap Urbana 43
 GO
