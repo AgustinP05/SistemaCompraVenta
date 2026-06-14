@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace ENT.SistemaCompraVenta
 {
@@ -9,10 +9,10 @@ namespace ENT.SistemaCompraVenta
         private int id;
         private string nombre;
         private string marca;
-        private string color;
+        private int idCategoria;
+        private string categoria;
         private double precioVenta;
         private double precioCosto;
-        private Stock _stock;
 
 
         public int Id
@@ -32,37 +32,31 @@ namespace ENT.SistemaCompraVenta
             get { return marca; }
             set { marca = value; }
         }
-        public string Color
+
+        public int ID_Categoria
         {
-            get { return color; }
-            set { color = value; }
+            get { return idCategoria; }
+            set { idCategoria = value; }
         }
+
+        public string Categoria
+        {
+            get { return categoria; }
+            set { categoria = value; }
+        }
+
         public double PrecioVenta
         {
             get { return precioVenta; }
             set { precioVenta = value; }
         }
+
         public double PrecioCosto
         {
             get { return precioCosto; }
             set { precioCosto = value; }
         }
 
-        public Stock Stock
-        {
-            get { return _stock; }
-            set { _stock = value; }
-        }
-        // Propiedad "Puente" para que la grilla vea el número y no el objeto
-        public int CantidadStock
-        {
-            get { return Stock != null ? Stock.Cantidad : 0; }
-            set
-            {
-                if (Stock == null) Stock = new Stock();
-                Stock.Cantidad = value;
-            }
-        }
         public abstract string DevolverTalle();
 
     }

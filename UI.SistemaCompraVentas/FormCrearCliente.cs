@@ -1,5 +1,6 @@
 using ENT.SistemaCompraVenta;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace UI.SistemaCompraVentas
@@ -7,6 +8,9 @@ namespace UI.SistemaCompraVentas
     public partial class FormCrearCliente : Form
     {
         private bool _cargando = false;
+        private readonly List<ENT.SistemaCompraVenta.Cliente> _clientesCargados =
+            new List<ENT.SistemaCompraVenta.Cliente>();
+        private int _idClienteSeleccionado = 0;
 
         public FormCrearCliente()
         {
@@ -15,6 +19,14 @@ namespace UI.SistemaCompraVentas
 
         private void FormCrearCliente_Load(object sender, EventArgs e)
         {
+            dgvClientesCargados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvClientesCargados.Columns.Add("DNI",       "DNI");
+            dgvClientesCargados.Columns.Add("Nombre",    "Nombre");
+            dgvClientesCargados.Columns.Add("Apellido",  "Apellido");
+            dgvClientesCargados.Columns.Add("Telefono",  "Teléfono");
+            dgvClientesCargados.Columns.Add("Email",     "Email");
+            dgvClientesCargados.Columns.Add("Direccion", "Dirección");
+
             LimpiarEdicion();
         }
 
@@ -48,6 +60,15 @@ namespace UI.SistemaCompraVentas
                 if (exito)
                 {
                     MessageBox.Show("Cliente creado con éxito.");
+                    _clientesCargados.Add(new ENT.SistemaCompraVenta.Cliente
+                    {
+                        Dni       = txtDni.Text,
+                        Nombre    = txtNombre.Text,
+                        Apellido  = txtApellido.Text,
+                        Direccion = txtDireccion.Text,
+                        Telefono  = txtTelefono.Text,
+                        Email     = txtEmail.Text
+                    });
                     LimpiarCarga();
                     CargarGrillaClientes();
                 }
@@ -80,15 +101,10 @@ namespace UI.SistemaCompraVentas
 
         private void CargarGrillaClientes()
         {
-            try
-            {
-                BLL.SistemaCompraVenta.ClienteBLL bll = new BLL.SistemaCompraVenta.ClienteBLL();
-                dgvClientesCargados.DataSource = bll.ObtenerClientes("");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar clientes: " + ex.Message, "Error DAL");
-            }
+            dgvClientesCargados.Rows.Clear();
+
+            foreach (ENT.SistemaCompraVenta.Cliente c in _clientesCargados)
+                dgvClientesCargados.Rows.Add(c.Dni, c.Nombre, c.Apellido, c.Telefono, c.Email, c.Direccion);
         }
 
         // ── Tab 2: Buscar / Editar ────────────────────────────────────────
@@ -103,14 +119,7 @@ namespace UI.SistemaCompraVentas
                 dgvClientes.DataSource = resultado;
                 LimpiarEdicion();
 
-                // Diagnóstico temporal: muestra nombres reales de columnas
-                if (dgvClientes.Columns.Count > 0)
-                {
-                    var cols = new System.Text.StringBuilder();
-                    foreach (DataGridViewColumn col in dgvClientes.Columns)
-                        cols.AppendLine(col.Name);
-                    MessageBox.Show("Columnas del SP:\n" + cols.ToString(), "Diagnóstico");
-                }
+               
             }
             catch (Exception ex)
             {
@@ -127,10 +136,13 @@ namespace UI.SistemaCompraVentas
             if (_cargando || dgvClientes.CurrentRow == null || dgvClientes.Columns.Count == 0) return;
 
             var fila = dgvClientes.CurrentRow;
-            txtEditDni.Text       = ObtenerCelda(fila, "DNI", "Dni", "Id_Cliente", "ID");
+            string idStr = ObtenerCelda(fila, "ID_Cliente", "IdCliente", "ID");
+            _idClienteSeleccionado = int.TryParse(idStr, out int idP) ? idP : 0;
+
+            txtEditDni.Text       = ObtenerCelda(fila, "DNI", "Dni");
             txtEditNombre.Text    = ObtenerCelda(fila, "Nombre", "nombre");
             txtEditApellido.Text  = ObtenerCelda(fila, "Apellido", "apellido");
-            txtEditDireccion.Text = ObtenerCelda(fila, "Direccion", "Dirección", "Direccion");
+            txtEditDireccion.Text = ObtenerCelda(fila, "Direccion", "Dirección");
             txtEditTelefono.Text  = ObtenerCelda(fila, "Telefono", "Teléfono", "Tel");
             txtEditEmail.Text     = ObtenerCelda(fila, "Email", "email", "Mail");
         }
@@ -170,12 +182,13 @@ namespace UI.SistemaCompraVentas
 
                 Cliente c = new Cliente
                 {
-                    Dni = txtEditDni.Text,
-                    Nombre = txtEditNombre.Text,
-                    Apellido = txtEditApellido.Text,
+                    IdCliente = _idClienteSeleccionado,
+                    Dni       = txtEditDni.Text,
+                    Nombre    = txtEditNombre.Text,
+                    Apellido  = txtEditApellido.Text,
                     Direccion = txtEditDireccion.Text,
-                    Telefono = txtEditTelefono.Text,
-                    Email = txtEditEmail.Text
+                    Telefono  = txtEditTelefono.Text,
+                    Email     = txtEditEmail.Text
                 };
 
                 bool exito = bll.ModificarCliente(c);
@@ -198,7 +211,7 @@ namespace UI.SistemaCompraVentas
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtEditDni.Text))
+            if (_idClienteSeleccionado == 0)
             {
                 MessageBox.Show("Seleccione un cliente de la lista antes de eliminar.");
                 return;
@@ -215,7 +228,7 @@ namespace UI.SistemaCompraVentas
             try
             {
                 BLL.SistemaCompraVenta.ClienteBLL bll = new BLL.SistemaCompraVenta.ClienteBLL();
-                bool exito = bll.EliminarCliente(txtEditDni.Text);
+                bool exito = bll.EliminarCliente(_idClienteSeleccionado);
 
                 if (exito)
                 {

@@ -85,14 +85,12 @@ namespace BLL.SistemaCompraVenta
             return resultado > 0;
         }
 
-        public bool EliminarCliente(string dni)
+        public bool EliminarCliente(int idCliente)
         {
-            if (string.IsNullOrWhiteSpace(dni))
-            {
-                throw new Exception("DNI inválido");
-            }
+            if (idCliente <= 0)
+                throw new Exception("Cliente inválido.");
 
-            int resultado = oClienteDAL.EliminarCliente(dni);
+            int resultado = oClienteDAL.EliminarCliente(idCliente);
             return resultado > 0;
         }
 

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 
 namespace ENT.SistemaCompraVenta
 {
     public class DetalleVenta
     {
         private int idDetalleVenta;
-        private Producto _producto; 
+        private ProductoVariante variante;
         private int cantidad;
         private double precioUnitario;
 
@@ -15,10 +15,10 @@ namespace ENT.SistemaCompraVenta
             set { idDetalleVenta = value; }
         }
 
-        public Producto Producto
+        public ProductoVariante Variante
         {
-            get { return _producto; }
-            set { _producto = value; }
+            get { return variante; }
+            set { variante = value; }
         }
 
         public int Cantidad

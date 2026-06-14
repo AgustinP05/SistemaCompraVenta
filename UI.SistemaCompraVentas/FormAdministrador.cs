@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Windows.Forms;
 
 namespace UI.SistemaCompraVentas
 {
     public partial class FormGestionUsuarios : Form
     {
-        private static readonly List<string> roles = new List<string>
-            { "Administrador", "Vendedor", "Stock", "Gerente" };
+        // filas cargadas en esta sesión: [DNI, Nombre, Apellido, Rol, Email, FechaNac]
+        private readonly List<string[]> _usuariosCargados = new List<string[]>();
+
+        // DNI del usuario seleccionado en la grilla (key natural del SP)
+        private string _dniUsuarioSeleccionado = "";
 
         public FormGestionUsuarios()
         {
@@ -16,13 +20,51 @@ namespace UI.SistemaCompraVentas
 
         private void FormGestionUsuarios_Load(object sender, EventArgs e)
         {
-            cboRoles.DataSource = new List<string>(roles);
-            cboEditRoles.DataSource = new List<string>(roles);
+            CargarCombosRoles();
 
             dgvUsuariosCargados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvUsuariosCargados.Columns.Add("DNI",             "DNI");
+            dgvUsuariosCargados.Columns.Add("Nombre",          "Nombre");
+            dgvUsuariosCargados.Columns.Add("Apellido",        "Apellido");
+            dgvUsuariosCargados.Columns.Add("Rol",             "Rol");
+            dgvUsuariosCargados.Columns.Add("Email",           "Email");
+            dgvUsuariosCargados.Columns.Add("FechaNacimiento", "Fecha Nac.");
+
             dgvUsuarios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             LimpiarEdicion();
+        }
+
+        private void CargarCombosRoles()
+        {
+            try
+            {
+                BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
+                DataTable dt = bll.ObtenerRoles();
+                cboRoles.DisplayMember    = "NombreRol";
+                cboRoles.ValueMember      = "ID_Rol";
+                cboRoles.DataSource       = dt;
+                cboEditRoles.DisplayMember = "NombreRol";
+                cboEditRoles.ValueMember   = "ID_Rol";
+                cboEditRoles.DataSource    = dt.Copy();
+            }
+            catch
+            {
+                // Si la DB no está disponible, usa lista hardcodeada como fallback
+                var fallback = new DataTable();
+                fallback.Columns.Add("ID_Rol",    typeof(int));
+                fallback.Columns.Add("NombreRol", typeof(string));
+                fallback.Rows.Add(1, "Administrador");
+                fallback.Rows.Add(2, "Vendedor");
+                fallback.Rows.Add(3, "Stock");
+                fallback.Rows.Add(4, "Gerente");
+                cboRoles.DisplayMember    = "NombreRol";
+                cboRoles.ValueMember      = "ID_Rol";
+                cboRoles.DataSource       = fallback;
+                cboEditRoles.DisplayMember = "NombreRol";
+                cboEditRoles.ValueMember   = "ID_Rol";
+                cboEditRoles.DataSource    = fallback.Copy();
+            }
         }
 
         // ── Tab 1: Cargar ────────────────────────────────────────────────
@@ -39,19 +81,29 @@ namespace UI.SistemaCompraVentas
             {
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
 
+                int idRol = (int)cboRoles.SelectedValue;
                 bool exito = bll.CrearUsuario(
                     txtDni.Text,
                     txtNombre.Text,
-                    txtApellido.Text,        
-                    txtPassword.Text,       
-                    cboRoles.SelectedItem.ToString(),
-                    txtEmail.Text,           
-                    dtpFechaNacimiento.Value 
+                    txtApellido.Text,
+                    txtPassword.Text,
+                    idRol,
+                    txtEmail.Text,
+                    dtpFechaNacimiento.Value
                 );
                 if (exito)
                 {
                     MessageBox.Show("Usuario " + txtNombre.Text + " " + txtApellido.Text +
                                     " registrado correctamente en la base de datos.");
+                    _usuariosCargados.Add(new string[]
+                    {
+                        txtDni.Text,
+                        txtNombre.Text,
+                        txtApellido.Text,
+                        cboRoles.Text,
+                        txtEmail.Text,
+                        dtpFechaNacimiento.Value.ToShortDateString()
+                    });
                     LimpiarCarga();
                     CargarGrillaUsuarios();
                 }
@@ -79,20 +131,15 @@ namespace UI.SistemaCompraVentas
             txtPassword.Clear();
             txtEmail.Clear();
             dtpFechaNacimiento.Value = System.DateTime.Today;
-            cboRoles.SelectedIndex = 0;
+            if (cboRoles.Items.Count > 0) cboRoles.SelectedIndex = 0;
         }
 
         private void CargarGrillaUsuarios()
         {
-            try
-            {
-                BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
-                dgvUsuariosCargados.DataSource = bll.ObtenerUsuarios();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar usuarios: " + ex.Message, "Error DAL");
-            }
+            dgvUsuariosCargados.Rows.Clear();
+
+            foreach (string[] u in _usuariosCargados)
+                dgvUsuariosCargados.Rows.Add(u[0], u[1], u[2], u[3], u[4], u[5]);
         }
 
         // ── Tab 2: Buscar / Editar ────────────────────────────────────────
@@ -116,20 +163,45 @@ namespace UI.SistemaCompraVentas
             if (dgvUsuarios.CurrentRow == null) return;
 
             var fila = dgvUsuarios.CurrentRow;
-            txtEditDni.Text      = fila.Cells["DNI"].Value?.ToString() ?? "";
-            txtEditNombre.Text   = fila.Cells["Nombre"].Value?.ToString() ?? "";
-            txtEditApellido.Text = fila.Cells["Apellido"].Value?.ToString() ?? "";
 
-            string rolFila = fila.Cells["Rol"].Value?.ToString() ?? "";
-            int idx = cboEditRoles.Items.IndexOf(rolFila);
-            cboEditRoles.SelectedIndex = idx >= 0 ? idx : 0;
+            _dniUsuarioSeleccionado = fila.Cells["DNI"].Value?.ToString() ?? "";
+            txtEditDni.Text         = _dniUsuarioSeleccionado;
+            txtEditNombre.Text      = fila.Cells["Nombre"].Value?.ToString() ?? "";
+            txtEditApellido.Text    = fila.Cells["Apellido"].Value?.ToString() ?? "";
+            txtEditEmail.Text       = LeerCelda(fila, "Email", "email", "Mail");
+
+            // Seleccionar rol: por ID_Rol si el SP lo devuelve, si no por nombre
+            string idRolStr = LeerCelda(fila, "ID_Rol");
+            if (int.TryParse(idRolStr, out int idRol) && idRol > 0)
+            {
+                cboEditRoles.SelectedValue = idRol;
+            }
+            else
+            {
+                string rolNombre = LeerCelda(fila, "Rol");
+                foreach (DataRow dr in ((System.Data.DataTable)cboEditRoles.DataSource).Rows)
+                    if (dr["NombreRol"].ToString() == rolNombre)
+                    { cboEditRoles.SelectedValue = dr["ID_Rol"]; break; }
+            }
+
+            string fechaStr = LeerCelda(fila, "FechaNacimiento", "Fecha_Nacimiento", "FechaNac");
+            if (DateTime.TryParse(fechaStr, out DateTime fecha))
+                dtpEditFechaNacimiento.Value = fecha;
+        }
+
+        private string LeerCelda(DataGridViewRow fila, params string[] nombres)
+        {
+            foreach (var nombre in nombres)
+                if (dgvUsuarios.Columns.Contains(nombre))
+                    return fila.Cells[nombre].Value?.ToString() ?? "";
+            return "";
         }
 
         private void dgvUsuarios_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
 
         private void btnGuardarCambios_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtEditDni.Text))
+            if (string.IsNullOrEmpty(_dniUsuarioSeleccionado))
             {
                 MessageBox.Show("Seleccione un usuario de la lista antes de guardar.");
                 return;
@@ -145,15 +217,16 @@ namespace UI.SistemaCompraVentas
             {
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
 
-                     bool exito = bll.ModificarUsuario(
-                     txtEditDni.Text,
-                     txtEditNombre.Text,
-                     txtEditApellido.Text,
-                     txtEditPassword.Text,       
-                     cboEditRoles.SelectedItem.ToString(),
-                     txtEditEmail.Text,           
-                     dtpEditFechaNacimiento.Value 
-                 );
+                int idRolEdit = (int)cboEditRoles.SelectedValue;
+                bool exito = bll.ModificarUsuario(
+                    _dniUsuarioSeleccionado,
+                    txtEditNombre.Text,
+                    txtEditApellido.Text,
+                    txtEditPassword.Text,
+                    idRolEdit,
+                    txtEditEmail.Text,
+                    dtpEditFechaNacimiento.Value
+                );
                 if (exito)
                 {
                     MessageBox.Show("Usuario modificado con éxito.");
@@ -173,7 +246,7 @@ namespace UI.SistemaCompraVentas
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtEditDni.Text))
+            if (string.IsNullOrEmpty(_dniUsuarioSeleccionado))
             {
                 MessageBox.Show("Seleccione un usuario de la lista antes de eliminar.");
                 return;
@@ -190,7 +263,7 @@ namespace UI.SistemaCompraVentas
             try
             {
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
-                bool exito = bll.EliminarUsuario(txtEditDni.Text);
+                bool exito = bll.EliminarUsuario(_dniUsuarioSeleccionado);
 
                 if (exito)
                 {
@@ -226,13 +299,14 @@ namespace UI.SistemaCompraVentas
 
         private void LimpiarEdicion()
         {
+            _dniUsuarioSeleccionado = "";
             txtEditDni.Clear();
             txtEditNombre.Clear();
             txtEditApellido.Clear();
             txtEditPassword.Clear();
             txtEditEmail.Clear();
             dtpEditFechaNacimiento.Value = System.DateTime.Today;
-            cboEditRoles.SelectedIndex = 0;
+            if (cboEditRoles.Items.Count > 0) cboEditRoles.SelectedIndex = 0;
         }
 
         // ── Global ───────────────────────────────────────────────────────

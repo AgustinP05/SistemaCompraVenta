@@ -1,72 +1,68 @@
-﻿using DAL.SistemaCompraVenta;
 using ENT.SistemaCompraVenta;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
-public class ProductoDAL
+namespace DAL.SistemaCompraVenta
 {
-    private Conexion conexion = new Conexion();
-
-    private Producto MapearProducto(DataRow fila)
+    public class ProductoDAL
     {
-        // Determinamos el tipo según una columna (ej. "Tipo")
-        string tipo = fila["Tipo"].ToString();
-        Producto p;
+        private Conexion conexion = new Conexion();
 
-        if (tipo == "Calzado") p = new Calzado();
-        else p = new Vestimenta(); // O el tipo por defecto
+        private Producto MapearProducto(DataRow fila)
+        {
+            string categoria = fila["Categoria"].ToString();
+            Producto p = categoria.Equals("CALZADO", StringComparison.OrdinalIgnoreCase)
+                ? (Producto)new Calzado()
+                : new Vestimenta();
 
-        p.Id = Convert.ToInt32(fila["ID_Producto"]);
-        p.Nombre = fila["Nombre"].ToString();
-        p.Marca = fila["Marca"].ToString();
-        p.Color = fila["Color"].ToString();
-        p.PrecioVenta = (double)Convert.ToDecimal(fila["PrecioVenta"]);
-        p.PrecioCosto = (double)Convert.ToDecimal(fila["PrecioCosto"]);
-        p.Stock = new Stock { Cantidad = Convert.ToInt32(fila["Stock"]) };
+            p.Id          = Convert.ToInt32(fila["ID_Producto"]);
+            p.Nombre      = fila["Nombre"].ToString();
+            p.Marca       = fila["Marca"].ToString();
+            p.Categoria   = categoria;
+            p.PrecioVenta = (double)Convert.ToDecimal(fila["PrecioVenta"]);
+            p.PrecioCosto = (double)Convert.ToDecimal(fila["PrecioCosto"]);
+            return p;
+        }
 
-        return p;
-    }
+        public List<Producto> ListarTodo()
+        {
+            List<Producto> lista = new List<Producto>();
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarProductos", null);
+            foreach (DataRow fila in dt.Rows)
+                lista.Add(MapearProducto(fila));
+            return lista;
+        }
 
-    public List<Producto> ListarTodo()
-    {
-        List<Producto> lista = new List<Producto>();
-        DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarProductos", null);
-        foreach (DataRow fila in dt.Rows) lista.Add(MapearProducto(fila));
-        return lista;
-    }
+        public void Guardar(Producto p)
+        {
+            SqlParameter[] param = {
+                conexion.crearParametro("@Nombre",       p.Nombre),
+                conexion.crearParametro("@Marca",        p.Marca),
+                conexion.crearParametro("@ID_Categoria", p.ID_Categoria),
+                conexion.crearParametro("@PrecioVenta",  p.PrecioVenta),
+                conexion.crearParametro("@PrecioCosto",  p.PrecioCosto)
+            };
+            conexion.EscribirPorStoreProcedure("SP_InsertarProducto", param);
+        }
 
-    public Stock BuscarStockPorId(int id)
-    {
-        SqlParameter[] param = { conexion.crearParametro("@ID_Producto", id) };
-        DataTable dt = conexion.LeerPorStoreProcedure("SP_BuscarStock", param);
+        public int BuscarStockPorVariante(int idVariante)
+        {
+            SqlParameter[] param = { conexion.crearParametro("@ID_ProductoVariante", idVariante) };
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_BuscarStock", param);
+            if (dt.Rows.Count > 0)
+                return Convert.ToInt32(dt.Rows[0]["Cantidad"]);
+            return 0;
+        }
 
-        if (dt.Rows.Count > 0)
-            return new Stock { Cantidad = Convert.ToInt32(dt.Rows[0]["Stock"]) };
-        return null;
-    }
-
-    public void ActualizarStock(int idProducto, int cantidadVendida)
-    {
-        SqlParameter[] param = {
-            conexion.crearParametro("@ID_Producto", idProducto),
-            conexion.crearParametro("@Cantidad", cantidadVendida)
-        };
-        conexion.EscribirPorStoreProcedure("SP_ActualizarStock", param);
-    }
-    public void Guardar(Producto p)
-    {
-        // Asegurate de tener un SP_InsertarProducto en tu SQL
-        SqlParameter[] param = {
-        conexion.crearParametro("@Nombre", p.Nombre),
-        conexion.crearParametro("@Marca", p.Marca),
-        conexion.crearParametro("@Color", p.Color), // ¡Agregado!
-        conexion.crearParametro("@PrecioVenta", p.PrecioVenta),
-        conexion.crearParametro("@PrecioCosto", p.PrecioCosto),
-        conexion.crearParametro("@Stock", p.Stock.Cantidad),
-        conexion.crearParametro("@Tipo", p.GetType().Name) // Calzado o Vestimenta
-    };
-        conexion.EscribirPorStoreProcedure("SP_InsertarProducto", param);
+        public void ActualizarStock(int idVariante, int cantidadVendida)
+        {
+            SqlParameter[] param = {
+                conexion.crearParametro("@ID_ProductoVariante", idVariante),
+                conexion.crearParametro("@Cantidad",            cantidadVendida)
+            };
+            conexion.EscribirPorStoreProcedure("SP_ActualizarStock", param);
+        }
     }
 }

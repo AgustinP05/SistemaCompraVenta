@@ -82,6 +82,7 @@ namespace DAL.SistemaCompraVenta
                 {
                     SqlParameter[] parametros =
                     {
+                conexion.crearParametro("@ID_Cliente", c.IdCliente),
                 conexion.crearParametro("@DNI", c.Dni),
                 conexion.crearParametro("@Nombre", c.Nombre),
                 conexion.crearParametro("@Apellido", c.Apellido),
@@ -92,11 +93,11 @@ namespace DAL.SistemaCompraVenta
                     return conexion.EscribirPorStoreProcedure("SP_ModificarCliente", parametros);
                 }
 
-                public int EliminarCliente(string dni)
+                public int EliminarCliente(int idCliente)
                 {
                     SqlParameter[] parametros =
                     {
-                conexion.crearParametro("@DNI", dni)
+                conexion.crearParametro("@ID_Cliente", idCliente)
             };
                     return conexion.EscribirPorStoreProcedure("SP_EliminarCliente", parametros);
                 }

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 using ENT.SistemaCompraVenta;
 using BLL.SistemaCompraVenta;
+using BLL.SistemaCompraVenta.Sesion;
 
 namespace UI.SistemaCompraVentas
 {
@@ -19,21 +18,28 @@ namespace UI.SistemaCompraVentas
 
         private void FormVentas_Load(object sender, EventArgs e)
         {
-            ConfigurarBuscador(cboCliente, "DNI");
-            ConfigurarBuscador(cboProducto, "ID");
+            cboCliente.DropDownStyle      = ComboBoxStyle.DropDown;
+            cboCliente.AutoCompleteMode   = AutoCompleteMode.SuggestAppend;
+            cboCliente.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cboCliente.DisplayMember      = "DNI";
 
-            cboCliente.DataSource = oClienteBLL.ListarClientes();
-            cboProducto.DataSource = oProductoBLL.ListarProductos();
+            cboProducto.DropDownStyle      = ComboBoxStyle.DropDown;
+            cboProducto.AutoCompleteMode   = AutoCompleteMode.SuggestAppend;
+            cboProducto.AutoCompleteSource = AutoCompleteSource.ListItems;
+
+            cboCliente.DataSource  = oClienteBLL.ListarClientes();
+            cboProducto.DataSource = oProductoBLL.ListarVariantes();
+
+            dgvCarrito.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvCarrito.Columns.Add("Codigo",   "Código");
+            dgvCarrito.Columns.Add("Nombre",   "Nombre");
+            dgvCarrito.Columns.Add("Color",    "Color");
+            dgvCarrito.Columns.Add("Talle",    "Talle");
+            dgvCarrito.Columns.Add("Cantidad", "Cantidad");
+            dgvCarrito.Columns.Add("Precio",   "Precio Unit.");
+            dgvCarrito.Columns.Add("Subtotal", "Subtotal");
 
             ActualizarGrilla();
-        }
-
-        private void ConfigurarBuscador(ComboBox combo, string miembro)
-        {
-            combo.DropDownStyle = ComboBoxStyle.DropDown;
-            combo.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            combo.AutoCompleteSource = AutoCompleteSource.ListItems;
-            combo.DisplayMember = miembro;
         }
 
         private void cboCliente_SelectedIndexChanged(object sender, EventArgs e)
@@ -46,21 +52,21 @@ namespace UI.SistemaCompraVentas
 
         private void cboProducto_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cboProducto.SelectedItem is Producto prod)
+            if (cboProducto.SelectedItem is ProductoVariante v)
             {
-                lblProductoNombre.Text = $"Producto: {prod.Nombre}";
-                lblProductoMarca.Text = $"Marca: {prod.Marca}";      
-                lblProductoColor.Text = $"Color: {prod.Color}";       
-                lblProductoPrecio.Text = $"Precio: {prod.PrecioVenta.ToString("N2")}";
-                lblProductoStock.Text = $"Stock Disp: {prod.Stock.Cantidad}";
+                lblProductoNombre.Text = $"Producto: {v.Nombre}";
+                lblProductoMarca.Text  = $"Marca: {v.Marca}";
+                lblProductoColor.Text  = $"Color: {v.Color}";
+                lblProductoPrecio.Text = $"Precio: {v.PrecioVenta:N2}";
+                lblProductoStock.Text  = $"Stock Disp: {v.Cantidad}";
             }
             else
             {
                 lblProductoNombre.Text = "Producto: -";
-                lblProductoMarca.Text = "Marca: -";                  
-                lblProductoColor.Text = "Color: -";                  
+                lblProductoMarca.Text  = "Marca: -";
+                lblProductoColor.Text  = "Color: -";
                 lblProductoPrecio.Text = "Precio: -";
-                lblProductoStock.Text = "Stock Disp: -";
+                lblProductoStock.Text  = "Stock Disp: -";
             }
         }
 
@@ -68,30 +74,31 @@ namespace UI.SistemaCompraVentas
         {
             try
             {
-                if (!(cboProducto.SelectedItem is Producto prodSeleccionado))
+                if (!(cboProducto.SelectedItem is ProductoVariante variante))
                 {
-                    MessageBox.Show("Seleccioná un producto.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Seleccioná una variante de producto.", "Atención",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 if (nmCantidad.Value == 0)
                 {
-                    MessageBox.Show("La cantidad debe ser mayor a cero.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("La cantidad debe ser mayor a cero.", "Atención",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                int cantidadSolicitada = (int)nmCantidad.Value;
+                int cantidad = (int)nmCantidad.Value;
+                oVentaBLL.ValidarStockDisponible(variante, cantidad);
 
-                oVentaBLL.ValidarStockDisponible(prodSeleccionado, cantidadSolicitada);
+                ventaActual.Detalles.Add(new DetalleVenta
+                {
+                    Variante       = variante,
+                    Cantidad       = cantidad,
+                    PrecioUnitario = variante.PrecioVenta
+                });
 
-                DetalleVenta detalle = new DetalleVenta();
-                detalle.Producto = prodSeleccionado;
-                detalle.Cantidad = cantidadSolicitada;
-                detalle.PrecioUnitario = prodSeleccionado.PrecioVenta;
-
-                ventaActual.Detalles.Add(detalle);
                 cboCliente.Enabled = false;
-
                 ActualizarGrilla();
             }
             catch (InvalidOperationException ex)
@@ -103,22 +110,14 @@ namespace UI.SistemaCompraVentas
         private void ActualizarGrilla()
         {
             dgvCarrito.Rows.Clear();
-            dgvCarrito.Columns.Clear();
-            dgvCarrito.Columns.Add("Codigo", "Código");
-            dgvCarrito.Columns.Add("Nombre", "Nombre");
-            dgvCarrito.Columns.Add("Marca", "Marca");       
-            dgvCarrito.Columns.Add("Color", "Color");      
-            dgvCarrito.Columns.Add("Cantidad", "Cantidad");
-            dgvCarrito.Columns.Add("Precio", "Precio Unit.");
-            dgvCarrito.Columns.Add("Subtotal", "Subtotal");
 
             foreach (DetalleVenta d in ventaActual.Detalles)
             {
                 dgvCarrito.Rows.Add(
-                    d.Producto.Id,
-                    d.Producto.Nombre,
-                    d.Producto.Marca,        
-                    d.Producto.Color,        
+                    d.Variante.ID_ProductoVariante,
+                    d.Variante.Nombre,
+                    d.Variante.Color,
+                    d.Variante.Talle,
                     d.Cantidad,
                     d.PrecioUnitario.ToString("N2"),
                     d.DevolverSubtotal().ToString("N2")
@@ -132,13 +131,13 @@ namespace UI.SistemaCompraVentas
         {
             if (dgvCarrito.CurrentRow != null)
             {
-                int fila = dgvCarrito.CurrentRow.Index;
-                ventaActual.Detalles.RemoveAt(fila);
+                ventaActual.Detalles.RemoveAt(dgvCarrito.CurrentRow.Index);
                 ActualizarGrilla();
             }
             else
             {
-                MessageBox.Show("No hay ningún item seleccionado para eliminar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("No hay ningún item seleccionado para eliminar.", "Atención",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -146,32 +145,12 @@ namespace UI.SistemaCompraVentas
         {
             if (MessageBox.Show("¿Vaciar carrito?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                ventaActual = new Venta();
-                ActualizarGrilla();
-            }
-            cboCliente.Enabled = true;
-        }
-
-        /*private void btnConfirmar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (ventaActual.Detalles.Count == 0) return;
-                if (!(cboCliente.SelectedItem is Cliente cli)) return;
-
-                ventaActual.Cliente = cli;
-                lblClienteNombre.Text = cli.NombreCompleto;
-                ventaActual.Fecha = DateTime.Now;
-
-                oVentaBLL.FinalizarVenta(ventaActual);
-                MessageBox.Show("Venta registrada con éxito.");
-
-                ventaActual = new Venta();
+                ventaActual        = new Venta();
                 cboCliente.Enabled = true;
                 ActualizarGrilla();
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
-        }*/
+        }
+
         private void btnConfirmar_Click(object sender, EventArgs e)
         {
             try
@@ -182,27 +161,21 @@ namespace UI.SistemaCompraVentas
                     return;
                 }
 
-                // Si el combo está vacío o no seleccionaste a nadie
                 if (cboCliente.SelectedItem == null)
                 {
                     MessageBox.Show("Por favor, seleccioná un cliente antes de confirmar la venta.");
                     return;
                 }
 
-                Cliente cli = (Cliente)cboCliente.SelectedItem;
-                // Asegúrate de asignar un usuario, aunque sea uno por defecto para probar
-                ventaActual.Usuario = new Usuario { ID = 1 }; // O el usuario que esté logueado
-                ventaActual.Cliente = cli;
-                ventaActual.Fecha = DateTime.Now;
-
-                oVentaBLL.FinalizarVenta(ventaActual);
-                ventaActual.Cliente = cli;
-                ventaActual.Fecha = DateTime.Now;
+                ventaActual.Cliente = (Cliente)cboCliente.SelectedItem;
+                ventaActual.Fecha   = DateTime.Now;
+                ventaActual.Usuario = Sesion.ObtenerInstancia().UsuarioActual ?? new Usuario { ID = 1 };
 
                 oVentaBLL.FinalizarVenta(ventaActual);
                 MessageBox.Show("¡Venta registrada con éxito!");
 
-                ventaActual = new Venta();
+                ventaActual              = new Venta();
+                cboCliente.Enabled       = true;
                 cboCliente.SelectedIndex = -1;
                 ActualizarGrilla();
             }
@@ -215,10 +188,6 @@ namespace UI.SistemaCompraVentas
         private void btnSalir_Click(object sender, EventArgs e) => this.Close();
 
         private void nmCantidad_ValueChanged(object sender, EventArgs e) { }
-
-        private void lblClienteNombre_Click(object sender, EventArgs e)
-        {
-
-        }
+        private void lblClienteNombre_Click(object sender, EventArgs e) { }
     }
 }
