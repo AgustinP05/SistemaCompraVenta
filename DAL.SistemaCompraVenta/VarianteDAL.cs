@@ -24,7 +24,8 @@ namespace DAL.SistemaCompraVenta
                     Marca               = fila["Marca"].ToString(),
                     Color               = fila["Color"].ToString(),
                     Talle               = fila["Talle"].ToString(),
-                    Cantidad            = Convert.ToInt32(fila["Cantidad"])
+                    Cantidad            = Convert.ToInt32(fila["Cantidad"]),
+                    PrecioVenta         = Convert.ToDouble(fila["PrecioVenta"]),
                 });
             }
 

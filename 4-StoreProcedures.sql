@@ -251,7 +251,7 @@ GO
 IF OBJECT_ID('SP_ListarVariantes', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVariantes;
 GO
 CREATE PROCEDURE SP_ListarVariantes AS BEGIN
-    SELECT pv.ID_ProductoVariante, p.Nombre, p.Marca,
+    SELECT pv.ID_ProductoVariante, p.Nombre, p.Marca, p.PrecioVenta,
            c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
     FROM tProductoVariante pv
     JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
