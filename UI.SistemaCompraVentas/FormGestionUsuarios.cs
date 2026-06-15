@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using ENT.SistemaCompraVenta;
+using BLL.SistemaCompraVenta;
 
 namespace UI.SistemaCompraVentas
 {
@@ -13,6 +15,12 @@ namespace UI.SistemaCompraVentas
         // DNI del usuario seleccionado en la grilla (key natural del SP)
         private string _dniUsuarioSeleccionado = "";
 
+        // Solapa "Permisos por rol": nodos (familias + permisos) que NO tiene el rol y los que SÍ.
+        private readonly PermisoBLL oPermisoBLL = new PermisoBLL();
+        private readonly FamiliaBLL oFamiliaBLL = new FamiliaBLL();
+        private List<Componente> _permisosDisponibles = new List<Componente>();
+        private List<Componente> _permisosOtorgados = new List<Componente>();
+
         public FormGestionUsuarios()
         {
             InitializeComponent();
@@ -20,6 +28,9 @@ namespace UI.SistemaCompraVentas
 
         private void FormGestionUsuarios_Load(object sender, EventArgs e)
         {
+            lstPermDisponibles.SelectionMode = SelectionMode.MultiExtended;
+            lstPermOtorgados.SelectionMode = SelectionMode.MultiExtended;
+
             CargarCombosRoles();
 
             dgvUsuariosCargados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -47,6 +58,9 @@ namespace UI.SistemaCompraVentas
                 cboEditRoles.DisplayMember = "NombreRol";
                 cboEditRoles.ValueMember   = "ID_Rol";
                 cboEditRoles.DataSource    = dt.Copy();
+                cboRolPermisos.DisplayMember = "NombreRol";
+                cboRolPermisos.ValueMember   = "ID_Rol";
+                cboRolPermisos.DataSource    = dt.Copy();
             }
             catch
             {
@@ -64,6 +78,9 @@ namespace UI.SistemaCompraVentas
                 cboEditRoles.DisplayMember = "NombreRol";
                 cboEditRoles.ValueMember   = "ID_Rol";
                 cboEditRoles.DataSource    = fallback.Copy();
+                cboRolPermisos.DisplayMember = "NombreRol";
+                cboRolPermisos.ValueMember   = "ID_Rol";
+                cboRolPermisos.DataSource    = fallback.Copy();
             }
         }
 
@@ -308,6 +325,126 @@ namespace UI.SistemaCompraVentas
         }
 
         // ── Global ───────────────────────────────────────────────────────
+
+        // ── Tab 3: Permisos por rol ───────────────────────────────────────
+
+        private void cboRolPermisos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CargarPermisos();
+        }
+
+        private void CargarPermisos()
+        {
+            if (!int.TryParse(cboRolPermisos.SelectedValue?.ToString(), out int idRol))
+                return;
+
+            try
+            {
+                // Catálogo completo: familias (nodos compuestos) + permisos (hojas).
+                List<FamiliaPermisos> todasFamilias = oFamiliaBLL.ListarTodas();
+                List<Permiso> todosPermisos = oPermisoBLL.ListarTodos();
+
+                // Lo que ya tiene el rol.
+                List<FamiliaPermisos> familiasDelRol = oFamiliaBLL.ListarPorRol(idRol);
+                List<Permiso> permisosDelRol = oPermisoBLL.ListarPorRol(idRol);
+
+                HashSet<int> idsFamiliasRol = new HashSet<int>();
+                foreach (FamiliaPermisos f in familiasDelRol) idsFamiliasRol.Add(f.ID_Familia);
+
+                HashSet<int> idsPermisosRol = new HashSet<int>();
+                foreach (Permiso p in permisosDelRol) idsPermisosRol.Add(p.ID_Permiso);
+
+                _permisosDisponibles = new List<Componente>();
+                _permisosOtorgados = new List<Componente>();
+
+                foreach (FamiliaPermisos f in todasFamilias)
+                {
+                    if (idsFamiliasRol.Contains(f.ID_Familia)) _permisosOtorgados.Add(f);
+                    else _permisosDisponibles.Add(f);
+                }
+                foreach (Permiso p in todosPermisos)
+                {
+                    if (idsPermisosRol.Contains(p.ID_Permiso)) _permisosOtorgados.Add(p);
+                    else _permisosDisponibles.Add(p);
+                }
+
+                RefrescarListasPermisos();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudieron cargar los permisos: " + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void RefrescarListasPermisos()
+        {
+            // Sin DisplayMember: cada nodo se muestra con su ToString()
+            // ("[Familia] ..." para familias, el nombre para permisos).
+            lstPermDisponibles.DataSource = null;
+            lstPermDisponibles.DataSource = _permisosDisponibles;
+
+            lstPermOtorgados.DataSource = null;
+            lstPermOtorgados.DataSource = _permisosOtorgados;
+        }
+
+        private void btnAgregarPermiso_Click(object sender, EventArgs e)
+        {
+            MoverPermisos(lstPermDisponibles, _permisosDisponibles, _permisosOtorgados);
+        }
+
+        private void btnQuitarPermiso_Click(object sender, EventArgs e)
+        {
+            MoverPermisos(lstPermOtorgados, _permisosOtorgados, _permisosDisponibles);
+        }
+
+        private void MoverPermisos(ListBox origen, List<Componente> listaOrigen, List<Componente> listaDestino)
+        {
+            if (origen.SelectedItems.Count == 0) return;
+
+            List<Componente> seleccionados = new List<Componente>();
+            foreach (object item in origen.SelectedItems)
+                seleccionados.Add((Componente)item);
+
+            foreach (Componente c in seleccionados)
+            {
+                listaOrigen.Remove(c);
+                listaDestino.Add(c);
+            }
+
+            RefrescarListasPermisos();
+        }
+
+        private void btnGuardarPermisos_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(cboRolPermisos.SelectedValue?.ToString(), out int idRol))
+            {
+                MessageBox.Show("Seleccioná un rol.", "Atención",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Separa lo otorgado en familias y permisos sueltos.
+            List<FamiliaPermisos> familias = new List<FamiliaPermisos>();
+            List<Permiso> permisos = new List<Permiso>();
+            foreach (Componente c in _permisosOtorgados)
+            {
+                if (c is FamiliaPermisos f) familias.Add(f);
+                else if (c is Permiso p) permisos.Add(p);
+            }
+
+            try
+            {
+                oFamiliaBLL.GuardarFamiliasDeRol(idRol, familias);
+                oPermisoBLL.GuardarPermisosDeRol(idRol, permisos);
+                MessageBox.Show("Permisos del rol actualizados con éxito.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error al guardar: " + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         private void btnSalir_Click(object sender, EventArgs e)
         {

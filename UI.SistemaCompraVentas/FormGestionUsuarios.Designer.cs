@@ -59,6 +59,16 @@ namespace UI.SistemaCompraVentas
             this.btnGuardarCambios = new System.Windows.Forms.Button();
             this.btnEliminar = new System.Windows.Forms.Button();
             this.btnSalir = new System.Windows.Forms.Button();
+            this.tabPermisos = new System.Windows.Forms.TabPage();
+            this.lblRolPermisos = new System.Windows.Forms.Label();
+            this.cboRolPermisos = new System.Windows.Forms.ComboBox();
+            this.lblPermDisponibles = new System.Windows.Forms.Label();
+            this.lstPermDisponibles = new System.Windows.Forms.ListBox();
+            this.lblPermOtorgados = new System.Windows.Forms.Label();
+            this.lstPermOtorgados = new System.Windows.Forms.ListBox();
+            this.btnAgregarPermiso = new System.Windows.Forms.Button();
+            this.btnQuitarPermiso = new System.Windows.Forms.Button();
+            this.btnGuardarPermisos = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabCargar.SuspendLayout();
             this.datosDelUsuario.SuspendLayout();
@@ -67,12 +77,14 @@ namespace UI.SistemaCompraVentas
             this.grpBuscar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).BeginInit();
             this.grpEditar.SuspendLayout();
+            this.tabPermisos.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabCargar);
             this.tabControl.Controls.Add(this.tabEditar);
+            this.tabControl.Controls.Add(this.tabPermisos);
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -572,9 +584,110 @@ namespace UI.SistemaCompraVentas
             this.btnSalir.Text = "Salir";
             this.btnSalir.UseVisualStyleBackColor = false;
             this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
-            // 
+            //
+            // tabPermisos
+            //
+            this.tabPermisos.Controls.Add(this.lblRolPermisos);
+            this.tabPermisos.Controls.Add(this.cboRolPermisos);
+            this.tabPermisos.Controls.Add(this.lblPermDisponibles);
+            this.tabPermisos.Controls.Add(this.lstPermDisponibles);
+            this.tabPermisos.Controls.Add(this.lblPermOtorgados);
+            this.tabPermisos.Controls.Add(this.lstPermOtorgados);
+            this.tabPermisos.Controls.Add(this.btnAgregarPermiso);
+            this.tabPermisos.Controls.Add(this.btnQuitarPermiso);
+            this.tabPermisos.Controls.Add(this.btnGuardarPermisos);
+            this.tabPermisos.Location = new System.Drawing.Point(4, 22);
+            this.tabPermisos.Name = "tabPermisos";
+            this.tabPermisos.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPermisos.Size = new System.Drawing.Size(776, 387);
+            this.tabPermisos.TabIndex = 2;
+            this.tabPermisos.Text = "Permisos por rol";
+            this.tabPermisos.UseVisualStyleBackColor = true;
+            //
+            // lblRolPermisos
+            //
+            this.lblRolPermisos.AutoSize = true;
+            this.lblRolPermisos.Location = new System.Drawing.Point(8, 15);
+            this.lblRolPermisos.Name = "lblRolPermisos";
+            this.lblRolPermisos.Size = new System.Drawing.Size(28, 13);
+            this.lblRolPermisos.TabIndex = 0;
+            this.lblRolPermisos.Text = "Rol:";
+            //
+            // cboRolPermisos
+            //
+            this.cboRolPermisos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboRolPermisos.Location = new System.Drawing.Point(50, 12);
+            this.cboRolPermisos.Name = "cboRolPermisos";
+            this.cboRolPermisos.Size = new System.Drawing.Size(300, 21);
+            this.cboRolPermisos.TabIndex = 1;
+            this.cboRolPermisos.SelectedIndexChanged += new System.EventHandler(this.cboRolPermisos_SelectedIndexChanged);
+            //
+            // lblPermDisponibles
+            //
+            this.lblPermDisponibles.AutoSize = true;
+            this.lblPermDisponibles.Location = new System.Drawing.Point(8, 48);
+            this.lblPermDisponibles.Name = "lblPermDisponibles";
+            this.lblPermDisponibles.Size = new System.Drawing.Size(115, 13);
+            this.lblPermDisponibles.TabIndex = 2;
+            this.lblPermDisponibles.Text = "Permisos disponibles:";
+            //
+            // lstPermDisponibles
+            //
+            this.lstPermDisponibles.FormattingEnabled = true;
+            this.lstPermDisponibles.Location = new System.Drawing.Point(8, 65);
+            this.lstPermDisponibles.Name = "lstPermDisponibles";
+            this.lstPermDisponibles.Size = new System.Drawing.Size(290, 277);
+            this.lstPermDisponibles.TabIndex = 3;
+            //
+            // lblPermOtorgados
+            //
+            this.lblPermOtorgados.AutoSize = true;
+            this.lblPermOtorgados.Location = new System.Drawing.Point(478, 48);
+            this.lblPermOtorgados.Name = "lblPermOtorgados";
+            this.lblPermOtorgados.Size = new System.Drawing.Size(94, 13);
+            this.lblPermOtorgados.TabIndex = 4;
+            this.lblPermOtorgados.Text = "Otorgados al rol:";
+            //
+            // lstPermOtorgados
+            //
+            this.lstPermOtorgados.FormattingEnabled = true;
+            this.lstPermOtorgados.Location = new System.Drawing.Point(478, 65);
+            this.lstPermOtorgados.Name = "lstPermOtorgados";
+            this.lstPermOtorgados.Size = new System.Drawing.Size(290, 277);
+            this.lstPermOtorgados.TabIndex = 5;
+            //
+            // btnAgregarPermiso
+            //
+            this.btnAgregarPermiso.Location = new System.Drawing.Point(330, 150);
+            this.btnAgregarPermiso.Name = "btnAgregarPermiso";
+            this.btnAgregarPermiso.Size = new System.Drawing.Size(116, 30);
+            this.btnAgregarPermiso.TabIndex = 6;
+            this.btnAgregarPermiso.Text = ">>";
+            this.btnAgregarPermiso.UseVisualStyleBackColor = true;
+            this.btnAgregarPermiso.Click += new System.EventHandler(this.btnAgregarPermiso_Click);
+            //
+            // btnQuitarPermiso
+            //
+            this.btnQuitarPermiso.Location = new System.Drawing.Point(330, 195);
+            this.btnQuitarPermiso.Name = "btnQuitarPermiso";
+            this.btnQuitarPermiso.Size = new System.Drawing.Size(116, 30);
+            this.btnQuitarPermiso.TabIndex = 7;
+            this.btnQuitarPermiso.Text = "<<";
+            this.btnQuitarPermiso.UseVisualStyleBackColor = true;
+            this.btnQuitarPermiso.Click += new System.EventHandler(this.btnQuitarPermiso_Click);
+            //
+            // btnGuardarPermisos
+            //
+            this.btnGuardarPermisos.Location = new System.Drawing.Point(628, 350);
+            this.btnGuardarPermisos.Name = "btnGuardarPermisos";
+            this.btnGuardarPermisos.Size = new System.Drawing.Size(140, 30);
+            this.btnGuardarPermisos.TabIndex = 8;
+            this.btnGuardarPermisos.Text = "Guardar permisos";
+            this.btnGuardarPermisos.UseVisualStyleBackColor = true;
+            this.btnGuardarPermisos.Click += new System.EventHandler(this.btnGuardarPermisos_Click);
+            //
             // FormGestionUsuarios
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
@@ -596,6 +709,8 @@ namespace UI.SistemaCompraVentas
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).EndInit();
             this.grpEditar.ResumeLayout(false);
             this.grpEditar.PerformLayout();
+            this.tabPermisos.ResumeLayout(false);
+            this.tabPermisos.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -649,5 +764,16 @@ namespace UI.SistemaCompraVentas
         private System.Windows.Forms.Button btnEliminar;
         // Global
         private System.Windows.Forms.Button btnSalir;
+        // Tab 3
+        private System.Windows.Forms.TabPage tabPermisos;
+        private System.Windows.Forms.Label lblRolPermisos;
+        private System.Windows.Forms.ComboBox cboRolPermisos;
+        private System.Windows.Forms.Label lblPermDisponibles;
+        private System.Windows.Forms.ListBox lstPermDisponibles;
+        private System.Windows.Forms.Label lblPermOtorgados;
+        private System.Windows.Forms.ListBox lstPermOtorgados;
+        private System.Windows.Forms.Button btnAgregarPermiso;
+        private System.Windows.Forms.Button btnQuitarPermiso;
+        private System.Windows.Forms.Button btnGuardarPermisos;
     }
 }

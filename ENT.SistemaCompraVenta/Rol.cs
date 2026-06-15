@@ -1,20 +1,16 @@
-﻿using System.Collections.Generic;
-
 namespace ENT.SistemaCompraVenta
 {
     public class Rol
     {
+        public int ID_Rol { get; set; }
         public string NombreRol { get; set; }
-        public List<Componente> Permisos { get; set; } = new List<Componente>();
 
-        // ESTE MÉTODO DEBE SER PUBLIC
+        // Raíz del árbol Composite con los permisos del rol (cargados desde la base).
+        public Componente Permisos { get; set; }
+
         public bool TienePermiso(string nombrePermiso)
         {
-            foreach (var p in Permisos)
-            {
-                if (p.Nombre == nombrePermiso) return true;
-            }
-            return false;
+            return Permisos != null && Permisos.TienePermiso(nombrePermiso);
         }
     }
 }

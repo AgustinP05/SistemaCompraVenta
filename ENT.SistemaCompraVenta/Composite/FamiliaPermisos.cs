@@ -5,6 +5,8 @@ namespace ENT.SistemaCompraVenta
 {
     public class FamiliaPermisos : Componente
     {
+        public int ID_Familia { get; set; }
+
         private List<Componente> hijos = new List<Componente>();
 
         public void AgregarHijo(Componente componente)
@@ -35,6 +37,9 @@ namespace ENT.SistemaCompraVenta
             }
             return false;
         }
+
+        // Etiqueta para mostrarse en listas (la distingue de un permiso individual).
+        public override string ToString() => "[Familia] " + Nombre;
     }
 }
 

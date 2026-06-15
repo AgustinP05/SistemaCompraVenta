@@ -35,18 +35,18 @@ namespace UI.SistemaCompraVentas
             var usuario = Sesion.ObtenerInstancia().UsuarioActual;
 
             // Verificamos que el usuario y su árbol de permisos existan
-            if (usuario != null && usuario.Permisos != null)
+            if (usuario != null && usuario.Rol != null)
             {
-                var arbolPermisos = usuario.Permisos;
+                var rol = usuario.Rol;
 
-                // Evalua en cascada de forma recursiva gracias al patrón Composite
-                // Los nombres de cadenas coinciden exactamente con PermisosFactory
-                btnUsuarios.Visible = arbolPermisos.TienePermiso("GestionarUsuarios");
-                btnVentas.Visible = arbolPermisos.TienePermiso("RegistrarVentas");
-                btnProductos.Visible = arbolPermisos.TienePermiso("GestionarProductos");
-                btnReportes.Visible = arbolPermisos.TienePermiso("VerReportes");
-                btnClientes.Visible     = arbolPermisos.TienePermiso("GestionarClientes");
-                btnProveedores.Visible  = arbolPermisos.TienePermiso("GestionarProveedores");
+                // Evalúa en cascada de forma recursiva gracias al patrón Composite.
+                // Los nombres coinciden con los permisos cargados desde la base.
+                btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
+                btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
+                btnProductos.Visible = rol.TienePermiso("GestionarProductos");
+                btnReportes.Visible = rol.TienePermiso("VerReportes");
+                btnClientes.Visible     = rol.TienePermiso("GestionarClientes");
+                btnProveedores.Visible  = rol.TienePermiso("GestionarProveedores");
             }
             else
             {

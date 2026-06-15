@@ -1,84 +1,30 @@
-﻿using System;
-using ENT.SistemaCompraVenta; // Para reconocer Componente, Permiso y FamiliaPermisos
+using System.Collections.Generic;
+using ENT.SistemaCompraVenta;
 
 namespace BLL.SistemaCompraVenta.Componentes
 {
     public static class PermisosFactory
-    {//Factory: Centraliza la logica de creacion para que no haya duplicacion de codigo cada vez que instanciamos un usuario nuevo.
-        public static Componente CrearArbolPermisos(string nombreRol)
+    {
+        // Arma el Rol con su árbol Composite a partir de lo traído de la base:
+        // la raíz contiene las familias otorgadas (nodos compuestos, ya con sus
+        // permisos) y los permisos sueltos (hojas).
+        public static Rol CrearRol(int idRol, string nombreRol,
+                                   List<string> permisosSueltos, List<FamiliaPermisos> familias)
         {
-            // Crea la raíz del Composite (el grupo/rol que contiene a los demás)
-            FamiliaPermisos rolComposite = new FamiliaPermisos { Nombre = nombreRol };
+            FamiliaPermisos raiz = new FamiliaPermisos { Nombre = nombreRol };
 
-            // Instancia los permisos atómicos (Hojas) tal cual los usa el swich
-            Permiso login = new Permiso { Nombre = "LogIn" };
-            Permiso gestionarUsuarios = new Permiso { Nombre = "GestionarUsuarios" };
-            Permiso registrarVentas = new Permiso { Nombre = "RegistrarVentas" };
-            Permiso verReportes = new Permiso { Nombre = "VerReportes" };
-            Permiso gestionarProductos = new Permiso { Nombre = "GestionarProductos" };
-            Permiso gestionarClientes = new Permiso { Nombre = "GestionarClientes" };
-            Permiso gestionarProveedores = new Permiso { Nombre = "GestionarProveedores" };
+            foreach (FamiliaPermisos familia in familias)
+                raiz.AgregarHijo(familia);
 
+            foreach (string nombrePermiso in permisosSueltos)
+                raiz.AgregarHijo(new Permiso { Nombre = nombrePermiso });
 
-            // Sub-árboles reutilizables por rol
-            FamiliaPermisos rolVendedor = new FamiliaPermisos { Nombre = "Vendedor" };
-            rolVendedor.AgregarHijo(login);
-            rolVendedor.AgregarHijo(registrarVentas);
-            rolVendedor.AgregarHijo(gestionarClientes);
-
-            FamiliaPermisos rolGerente = new FamiliaPermisos { Nombre = "Gerente" };
-            rolGerente.AgregarHijo(login);
-            rolGerente.AgregarHijo(verReportes);
-
-            FamiliaPermisos rolStock = new FamiliaPermisos { Nombre = "Stock" };
-            rolStock.AgregarHijo(login);
-            rolStock.AgregarHijo(gestionarProductos);
-            rolStock.AgregarHijo(gestionarProveedores);
-
-            FamiliaPermisos rolSuperGerente = new FamiliaPermisos { Nombre = "SuperGerente" };
-            rolSuperGerente.AgregarHijo(login);
-            rolSuperGerente.AgregarHijo(verReportes);
-            rolSuperGerente.AgregarHijo(gestionarUsuarios);
-
-
-            // Rol de la base de datos
-            switch (nombreRol)
+            return new Rol
             {
-                case "Administrador":
-                    rolComposite.AgregarHijo(rolVendedor);
-                    rolComposite.AgregarHijo(rolGerente);
-                    rolComposite.AgregarHijo(rolStock);
-                    rolComposite.AgregarHijo(rolSuperGerente);
-     
-                    break;
-
-                case "Vendedor":
-                    rolComposite.AgregarHijo(login);
-                    rolComposite.AgregarHijo(registrarVentas);
-                    rolComposite.AgregarHijo(gestionarClientes);
-
-                    break;
-
-                case "Gerente":
-                    rolComposite.AgregarHijo(login);
-                    rolComposite.AgregarHijo(verReportes);
-                    break;
-
-                case "Stock":
-                    rolComposite.AgregarHijo(login);
-                    rolComposite.AgregarHijo(gestionarProductos);
-                    rolComposite.AgregarHijo(gestionarProveedores);
-                    break;
-           
-                 case "SuperGerente":
-                    rolComposite.AgregarHijo(login);
-                    rolComposite.AgregarHijo(verReportes);
-                    rolComposite.AgregarHijo(gestionarUsuarios);
-                break;
-            }
-            return rolComposite;
+                ID_Rol = idRol,
+                NombreRol = nombreRol,
+                Permisos = raiz
+            };
         }
     }
 }
-
-

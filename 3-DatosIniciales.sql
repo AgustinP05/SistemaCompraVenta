@@ -30,30 +30,49 @@ INSERT INTO tPermiso (Nombre) VALUES
 ('RegistrarCompras');-- 8
 GO
 
----- ROL_PERMISO (refleja los AgregarHijo de cada case en la Factory) ----
-INSERT INTO tRolPermiso (ID_Rol, ID_Permiso) VALUES
--- Administrador: hereda todo (Vendedor + Gerente + Stock + SuperGerente)
+---- FAMILIA_PERMISO (nodos compuestos del Composite) ----
+INSERT INTO tFamiliaPermiso (Nombre) VALUES
+('Permisos Vendedor'),  -- 1
+('Permisos Stock'),     -- 2
+('Permisos Gerente'),   -- 3
+('Permisos Compras');   -- 4
+GO
+
+---- FAMILIA_PERMISO_DETALLE (permisos que contiene cada familia) ----
+INSERT INTO tFamiliaPermisoDetalle (ID_Familia, ID_Permiso) VALUES
+-- Permisos Vendedor
 (1, 1),  -- LogIn
-(1, 2),  -- GestionarUsuarios
 (1, 3),  -- RegistrarVentas
-(1, 4),  -- VerReportes
-(1, 5),  -- GestionarProductos
 (1, 6),  -- GestionarClientes
-(1, 7),  -- GestionarProveedores
--- Vendedor
+-- Permisos Stock
 (2, 1),  -- LogIn
-(2, 3),  -- RegistrarVentas
-(2, 6),  -- GestionarClientes
--- Gerente
+(2, 5),  -- GestionarProductos
+-- Permisos Gerente
 (3, 1),  -- LogIn
 (3, 4),  -- VerReportes
--- Stock
+-- Permisos Compras
 (4, 1),  -- LogIn
-(4, 5),  -- GestionarProductos
+(4, 8),  -- RegistrarCompras
+(4, 7);  -- GestionarProveedores
+GO
+
+---- ROL_FAMILIA (familias otorgadas a cada rol) ----
+INSERT INTO tRolFamilia (ID_Rol, ID_Familia) VALUES
+-- Administrador: combinación de todas las familias
+(1, 1), (1, 2), (1, 3), (1, 4),
+-- Vendedor
+(2, 1),
+-- Gerente
+(3, 3),
+-- Stock
+(4, 2),
 -- Compras
-(5, 1),  -- LogIn
-(5, 8),  -- Gestionar Compras
-(5, 7);  -- GestionarUProveedores
+(5, 4);
+GO
+
+---- ROL_PERMISO (permisos sueltos, fuera de familias) ----
+INSERT INTO tRolPermiso (ID_Rol, ID_Permiso) VALUES
+(1, 2);  -- Administrador: GestionarUsuarios (permiso individual)
 GO
 
 ---- USUARIO (Password de ejemplo, en producción debería ir hasheada) ----

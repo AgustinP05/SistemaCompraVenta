@@ -418,6 +418,107 @@ BEGIN
     SELECT ID_Rol, NombreRol FROM tRol ORDER BY NombreRol;
 END;
 GO
+---
+-- Permisos asignados a un rol (alimenta el árbol Composite de permisos)
+IF OBJECT_ID('SP_PermisosPorRol', 'P') IS NOT NULL DROP PROCEDURE SP_PermisosPorRol;
+GO
+CREATE PROCEDURE SP_PermisosPorRol(@ID_Rol INT)
+AS
+BEGIN
+    SELECT p.ID_Permiso, p.Nombre
+    FROM tRolPermiso rp
+    JOIN tPermiso p ON p.ID_Permiso = rp.ID_Permiso
+    WHERE rp.ID_Rol = @ID_Rol;
+END;
+GO
+---
+-- Catálogo completo de permisos
+IF OBJECT_ID('SP_ListarPermisos', 'P') IS NOT NULL DROP PROCEDURE SP_ListarPermisos;
+GO
+CREATE PROCEDURE SP_ListarPermisos
+AS
+BEGIN
+    SELECT ID_Permiso, Nombre FROM tPermiso ORDER BY Nombre;
+END;
+GO
+---
+-- Asigna un permiso a un rol (evita duplicados)
+IF OBJECT_ID('SP_AsignarPermisoRol', 'P') IS NOT NULL DROP PROCEDURE SP_AsignarPermisoRol;
+GO
+CREATE PROCEDURE SP_AsignarPermisoRol(@ID_Rol INT, @ID_Permiso INT)
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM tRolPermiso WHERE ID_Rol = @ID_Rol AND ID_Permiso = @ID_Permiso)
+        INSERT INTO tRolPermiso (ID_Rol, ID_Permiso) VALUES (@ID_Rol, @ID_Permiso);
+END;
+GO
+---
+-- Quita todos los permisos de un rol (se usa para resincronizar al guardar)
+IF OBJECT_ID('SP_QuitarPermisosRol', 'P') IS NOT NULL DROP PROCEDURE SP_QuitarPermisosRol;
+GO
+CREATE PROCEDURE SP_QuitarPermisosRol(@ID_Rol INT)
+AS
+BEGIN
+    DELETE FROM tRolPermiso WHERE ID_Rol = @ID_Rol;
+END;
+GO
+---
+-- Catálogo completo de familias de permisos
+IF OBJECT_ID('SP_ListarFamilias', 'P') IS NOT NULL DROP PROCEDURE SP_ListarFamilias;
+GO
+CREATE PROCEDURE SP_ListarFamilias
+AS
+BEGIN
+    SELECT ID_Familia, Nombre FROM tFamiliaPermiso ORDER BY Nombre;
+END;
+GO
+---
+-- Permisos que contiene una familia (hojas del nodo compuesto)
+IF OBJECT_ID('SP_PermisosDeFamilia', 'P') IS NOT NULL DROP PROCEDURE SP_PermisosDeFamilia;
+GO
+CREATE PROCEDURE SP_PermisosDeFamilia(@ID_Familia INT)
+AS
+BEGIN
+    SELECT p.ID_Permiso, p.Nombre
+    FROM tFamiliaPermisoDetalle fd
+    JOIN tPermiso p ON p.ID_Permiso = fd.ID_Permiso
+    WHERE fd.ID_Familia = @ID_Familia;
+END;
+GO
+---
+-- Familias otorgadas a un rol
+IF OBJECT_ID('SP_FamiliasPorRol', 'P') IS NOT NULL DROP PROCEDURE SP_FamiliasPorRol;
+GO
+CREATE PROCEDURE SP_FamiliasPorRol(@ID_Rol INT)
+AS
+BEGIN
+    SELECT f.ID_Familia, f.Nombre
+    FROM tRolFamilia rf
+    JOIN tFamiliaPermiso f ON f.ID_Familia = rf.ID_Familia
+    WHERE rf.ID_Rol = @ID_Rol;
+END;
+GO
+---
+-- Otorga una familia a un rol (evita duplicados)
+IF OBJECT_ID('SP_AsignarFamiliaRol', 'P') IS NOT NULL DROP PROCEDURE SP_AsignarFamiliaRol;
+GO
+CREATE PROCEDURE SP_AsignarFamiliaRol(@ID_Rol INT, @ID_Familia INT)
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM tRolFamilia WHERE ID_Rol = @ID_Rol AND ID_Familia = @ID_Familia)
+        INSERT INTO tRolFamilia (ID_Rol, ID_Familia) VALUES (@ID_Rol, @ID_Familia);
+END;
+GO
+---
+-- Quita todas las familias de un rol (para resincronizar al guardar)
+IF OBJECT_ID('SP_QuitarFamiliasRol', 'P') IS NOT NULL DROP PROCEDURE SP_QuitarFamiliasRol;
+GO
+CREATE PROCEDURE SP_QuitarFamiliasRol(@ID_Rol INT)
+AS
+BEGIN
+    DELETE FROM tRolFamilia WHERE ID_Rol = @ID_Rol;
+END;
+GO
 
 
 -- PROVEEDOR -----------------------------------------------------------------

@@ -46,6 +46,33 @@ CREATE TABLE tRolPermiso (
 );
 GO
 
+---- FAMILIA_PERMISO (nodo compuesto del Composite: agrupa permisos) ----
+CREATE TABLE tFamiliaPermiso (
+    ID_Familia INT PRIMARY KEY IDENTITY(1,1),
+    Nombre VARCHAR(100) NOT NULL
+);
+GO
+
+---- FAMILIA_PERMISO_DETALLE (permisos que contiene cada familia) ----
+CREATE TABLE tFamiliaPermisoDetalle (
+    ID_Familia INT NOT NULL,
+    ID_Permiso INT NOT NULL,
+    PRIMARY KEY (ID_Familia, ID_Permiso),
+    FOREIGN KEY (ID_Familia) REFERENCES tFamiliaPermiso(ID_Familia),
+    FOREIGN KEY (ID_Permiso) REFERENCES tPermiso(ID_Permiso)
+);
+GO
+
+---- ROL_FAMILIA (N:M: familias de permisos otorgadas a cada rol) ----
+CREATE TABLE tRolFamilia (
+    ID_Rol INT NOT NULL,
+    ID_Familia INT NOT NULL,
+    PRIMARY KEY (ID_Rol, ID_Familia),
+    FOREIGN KEY (ID_Rol) REFERENCES tRol(ID_Rol),
+    FOREIGN KEY (ID_Familia) REFERENCES tFamiliaPermiso(ID_Familia)
+);
+GO
+
 ---- LOGLOGIN (historial de logins) ----
 CREATE TABLE tLogLogin (
     ID INT PRIMARY KEY IDENTITY(1,1),
