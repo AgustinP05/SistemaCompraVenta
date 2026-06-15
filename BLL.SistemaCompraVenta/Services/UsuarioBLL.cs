@@ -12,22 +12,7 @@ namespace BLL.SistemaCompraVenta.Services
 
         public Usuario Login(string dni, string password)
         {
-            // Bloque de prueba (credenciales hardcodeadas)
-            if (password == "123")
-            {
-                if (dni == "admin" || dni == "vendedor" || dni == "gerente" || dni == "stock")
-                {
-                    string rolSimulado = char.ToUpper(dni[0]) + dni.Substring(1);
-                    return new Usuario
-                    {
-                        ID             = 999,
-                        Nombre         = dni,
-                        Password       = password,
-                        FechaHoraLogin = DateTime.Now,
-                        Permisos       = PermisosFactory.CrearArbolPermisos(rolSimulado)
-                    };
-                }
-            }
+
 
             DataTable tabla = oUsuarioDAL.LoginUsuario(dni, password);
             if (tabla == null || tabla.Rows.Count == 0)
@@ -42,6 +27,7 @@ namespace BLL.SistemaCompraVenta.Services
                 ID             = Convert.ToInt32(fila["ID"]),
                 ID_Rol         = Convert.ToInt32(fila["ID_Rol"]),
                 Nombre         = fila["Nombre"].ToString(),
+                Apellido       = fila["Apellido"].ToString(),
                 Password       = fila["Password"].ToString(),
                 Permisos       = arbolPermisos,
                 FechaHoraLogin = DateTime.Now

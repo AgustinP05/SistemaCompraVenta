@@ -10,12 +10,7 @@ namespace BLL.SistemaCompraVenta
 {
     public class ClienteBLL
     {
-        // private ClienteDAL oClienteDAL = new ClienteDAL();
 
-        /*public List<Cliente> ListarClientes()
-        {
-            return oClienteDAL.ListarTodo();
-        }*/
 
         private ClienteDAL oClienteDAL = new ClienteDAL();
 

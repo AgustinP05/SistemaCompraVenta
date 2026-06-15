@@ -14,7 +14,7 @@ GO
 -- CAMBIO: Password 256; ya no existe columna Rol, se trae el nombre con JOIN a tRol
 CREATE PROCEDURE SP_LoginUsuario(@DNI VARCHAR(20), @Password VARCHAR(256))
 AS BEGIN
-    SELECT u.ID, u.Nombre, u.Password, u.ID_Rol, r.NombreRol AS Rol, u.DNI
+    SELECT u.ID, u.Nombre, u.Apellido, u.Password, u.ID_Rol, r.NombreRol AS Rol, u.DNI
     FROM tUsuario u
     JOIN tRol r ON r.ID_Rol = u.ID_Rol
     WHERE u.DNI = @DNI AND u.Password = @Password;
@@ -171,6 +171,16 @@ GO
 
 
 -- VENTAS --------------------------------------------------------------------
+IF OBJECT_ID('SP_ProximoNumeroVenta', 'P') IS NOT NULL DROP PROCEDURE SP_ProximoNumeroVenta;
+GO
+-- Devuelve el número que tendrá la próxima venta (para mostrarlo antes de confirmar)
+CREATE PROCEDURE SP_ProximoNumeroVenta
+AS
+BEGIN
+    SELECT ISNULL(MAX(ID_Venta), 0) + 1 AS ProximoNumero FROM tVenta;
+END;
+GO
+---
 IF OBJECT_ID('SP_RegistrarVenta', 'P') IS NOT NULL DROP PROCEDURE SP_RegistrarVenta;
 GO
 -- CAMBIO: tVenta ya no tiene Total (se calcula en la BLL)
@@ -179,6 +189,60 @@ AS BEGIN
     INSERT INTO tVenta (Fecha, ID_Cliente, ID_Usuario)
     VALUES (@Fecha, @ID_Cliente, @ID_Usuario);
     SELECT SCOPE_IDENTITY() AS ID_Venta;
+END;
+GO
+---
+-- Cabecera de una venta (para reconstruirla y armar el comprobante desde la BD)
+IF OBJECT_ID('SP_ObtenerVentaPorId', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerVentaPorId;
+GO
+CREATE PROCEDURE SP_ObtenerVentaPorId(@ID_Venta INT)
+AS BEGIN
+    SELECT v.ID_Venta, v.Fecha,
+           c.ID_Cliente, c.DNI AS ClienteDNI, c.Nombre AS ClienteNombre, c.Apellido AS ClienteApellido,
+           u.ID AS UsuarioID, u.Nombre AS UsuarioNombre, u.Apellido AS UsuarioApellido
+    FROM tVenta v
+    JOIN tCliente c ON c.ID_Cliente = v.ID_Cliente
+    JOIN tUsuario u ON u.ID = v.ID_Usuario
+    WHERE v.ID_Venta = @ID_Venta;
+END;
+GO
+---
+-- Detalle (ítems) de una venta, con datos del producto/variante
+IF OBJECT_ID('SP_ObtenerDetalleVentaPorId', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerDetalleVentaPorId;
+GO
+CREATE PROCEDURE SP_ObtenerDetalleVentaPorId(@ID_Venta INT)
+AS BEGIN
+    SELECT dv.SKU, p.Nombre, p.Marca, t.Valor AS Talle, col.Nombre AS Color,
+           dv.Cantidad, dv.PrecioUnitario
+    FROM tDetalleVenta dv
+    JOIN tProductoVariante pv ON pv.SKU = dv.SKU
+    JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
+    JOIN tColor col ON col.ID_Color = pv.ID_Color
+    JOIN tTalle t ON t.ID_Talle = pv.ID_Talle
+    WHERE dv.ID_Venta = @ID_Venta;
+END;
+GO
+---
+-- Descuento auditado de una venta (puede no existir)
+IF OBJECT_ID('SP_ObtenerDescuentoVenta', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerDescuentoVenta;
+GO
+CREATE PROCEDURE SP_ObtenerDescuentoVenta(@ID_Venta INT)
+AS BEGIN
+    SELECT Tipo, Monto FROM tDescuentoVenta WHERE ID_Venta = @ID_Venta;
+END;
+GO
+
+
+-- DESCUENTO VENTA (auditoría) -----------------------------------------------
+IF OBJECT_ID('SP_InsertarDescuentoVenta', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarDescuentoVenta;
+GO
+-- Registra el descuento aplicado a una venta (la BLL solo lo llama si hubo descuento)
+CREATE PROCEDURE SP_InsertarDescuentoVenta(
+    @ID_Venta INT, @Tipo VARCHAR(100), @Monto DECIMAL(10,2)
+)
+AS BEGIN
+    INSERT INTO tDescuentoVenta (ID_Venta, Tipo, Monto)
+    VALUES (@ID_Venta, @Tipo, @Monto);
 END;
 GO
 
@@ -257,6 +321,24 @@ CREATE PROCEDURE SP_ListarVariantes AS BEGIN
     JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
     JOIN tColor    c ON c.ID_Color    = pv.ID_Color
     JOIN tTalle    t ON t.ID_Talle    = pv.ID_Talle;
+END;
+GO
+---
+IF OBJECT_ID('SP_ObtenerVariantes', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerVariantes;
+GO
+-- Busca variantes por SKU o por nombre del producto (para la ventana Buscar SKU)
+CREATE PROCEDURE SP_ObtenerVariantes
+    @Filtro VARCHAR(100)
+AS BEGIN
+    SELECT pv.SKU, p.Nombre, p.Marca, t.Valor AS Talle, c.Nombre AS Color,
+           pv.Cantidad, p.PrecioVenta
+    FROM tProductoVariante pv
+    JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
+    JOIN tColor    c ON c.ID_Color    = pv.ID_Color
+    JOIN tTalle    t ON t.ID_Talle    = pv.ID_Talle
+    WHERE CAST(pv.SKU AS VARCHAR(20)) LIKE '%' + @Filtro + '%'
+       OR p.Nombre LIKE '%' + @Filtro + '%'
+    ORDER BY p.Nombre;
 END;
 GO
 ---

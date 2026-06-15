@@ -197,8 +197,6 @@ namespace UI.SistemaCompraVentas
             return "";
         }
 
-        private void dgvUsuarios_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
-
         private void btnGuardarCambios_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(_dniUsuarioSeleccionado))
@@ -314,66 +312,6 @@ namespace UI.SistemaCompraVentas
         private void btnSalir_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void dtpFechaNacimiento_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblFechaNacimiento_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dgvUsuariosCargados_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void txtEditEmail_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEditEmail_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEditFechaNacimiento_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dtpEditFechaNacimiento_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cboEditRoles_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtEditNombre_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEditNombre_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEditRol_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void datosDelUsuario_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 }

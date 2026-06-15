@@ -23,6 +23,6 @@ namespace ENT.SistemaCompraVenta
         // guarda toda la estructura Composite con sus permisos
         public Componente Permisos { get; set; }
 
-        public string NombreMostrar => $"{Nombre} ({Permisos?.Nombre})";
+        public string NombreMostrar => $"{$"{Nombre} {Apellido}".Trim()} ({Permisos?.Nombre})";
     }
 }

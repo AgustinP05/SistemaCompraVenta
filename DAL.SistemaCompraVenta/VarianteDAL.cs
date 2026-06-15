@@ -32,6 +32,12 @@ namespace DAL.SistemaCompraVenta
             return lista;
         }
 
+        public DataTable ObtenerVariantes(string filtro)
+        {
+            SqlParameter[] param = { conexion.crearParametro("@Filtro", filtro ?? "") };
+            return conexion.LeerPorStoreProcedure("SP_ObtenerVariantes", param);
+        }
+
         public int InsertarVariante(int idProducto, int idColor, int idTalle, int cantidad)
         {
             SqlParameter[] param = {

@@ -15,6 +15,8 @@ namespace BLL.SistemaCompraVenta
 
         public List<ProductoVariante> ListarVariantes() => oVarianteDAL.ListarVariantes();
 
+        public System.Data.DataTable ObtenerVariantes(string filtro) => oVarianteDAL.ObtenerVariantes(filtro);
+
         public int BuscarStockPorVariante(int idVariante) => oProductoDAL.BuscarStockPorVariante(idVariante);
 
         public void ActualizarStock(int idVariante, int cantidadVendida) =>

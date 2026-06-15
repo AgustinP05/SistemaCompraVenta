@@ -116,7 +116,6 @@ namespace UI.SistemaCompraVentas
             this.datosDelUsuario.TabIndex = 0;
             this.datosDelUsuario.TabStop = false;
             this.datosDelUsuario.Text = "Datos del Nuevo Usuario";
-            this.datosDelUsuario.Enter += new System.EventHandler(this.datosDelUsuario_Enter);
             // 
             // nombre
             // 
@@ -244,7 +243,6 @@ namespace UI.SistemaCompraVentas
             this.lblFechaNacimiento.TabIndex = 10;
             this.lblFechaNacimiento.Text = "Fecha Nac.";
             this.lblFechaNacimiento.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblFechaNacimiento.Click += new System.EventHandler(this.lblFechaNacimiento_Click);
             // 
             // dtpFechaNacimiento
             // 
@@ -254,7 +252,6 @@ namespace UI.SistemaCompraVentas
             this.dtpFechaNacimiento.Name = "dtpFechaNacimiento";
             this.dtpFechaNacimiento.Size = new System.Drawing.Size(137, 20);
             this.dtpFechaNacimiento.TabIndex = 11;
-            this.dtpFechaNacimiento.ValueChanged += new System.EventHandler(this.dtpFechaNacimiento_ValueChanged);
             // 
             // btnGuardar
             // 
@@ -295,7 +292,6 @@ namespace UI.SistemaCompraVentas
             this.dgvUsuariosCargados.ReadOnly = true;
             this.dgvUsuariosCargados.Size = new System.Drawing.Size(760, 177);
             this.dgvUsuariosCargados.TabIndex = 1;
-            this.dgvUsuariosCargados.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUsuariosCargados_CellContentClick);
             // 
             // tabEditar
             // 
@@ -369,7 +365,6 @@ namespace UI.SistemaCompraVentas
             this.dgvUsuarios.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvUsuarios.Size = new System.Drawing.Size(760, 145);
             this.dgvUsuarios.TabIndex = 1;
-            this.dgvUsuarios.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUsuarios_CellContentClick);
             this.dgvUsuarios.SelectionChanged += new System.EventHandler(this.dgvUsuarios_SelectionChanged);
             // 
             // grpEditar
@@ -429,7 +424,6 @@ namespace UI.SistemaCompraVentas
             this.lblEditNombre.TabIndex = 2;
             this.lblEditNombre.Text = "Nombre";
             this.lblEditNombre.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblEditNombre.Click += new System.EventHandler(this.lblEditNombre_Click);
             // 
             // txtEditNombre
             // 
@@ -438,7 +432,6 @@ namespace UI.SistemaCompraVentas
             this.txtEditNombre.Name = "txtEditNombre";
             this.txtEditNombre.Size = new System.Drawing.Size(137, 20);
             this.txtEditNombre.TabIndex = 3;
-            this.txtEditNombre.TextChanged += new System.EventHandler(this.txtEditNombre_TextChanged);
             // 
             // lblEditApellido
             // 
@@ -469,7 +462,6 @@ namespace UI.SistemaCompraVentas
             this.lblEditRol.TabIndex = 6;
             this.lblEditRol.Text = "Rol";
             this.lblEditRol.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblEditRol.Click += new System.EventHandler(this.lblEditRol_Click);
             // 
             // cboEditRoles
             // 
@@ -479,7 +471,6 @@ namespace UI.SistemaCompraVentas
             this.cboEditRoles.Name = "cboEditRoles";
             this.cboEditRoles.Size = new System.Drawing.Size(137, 21);
             this.cboEditRoles.TabIndex = 7;
-            this.cboEditRoles.SelectedIndexChanged += new System.EventHandler(this.cboEditRoles_SelectedIndexChanged);
             // 
             // lblEditPassword
             // 
@@ -511,7 +502,6 @@ namespace UI.SistemaCompraVentas
             this.lblEditEmail.TabIndex = 12;
             this.lblEditEmail.Text = "Email";
             this.lblEditEmail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblEditEmail.Click += new System.EventHandler(this.lblEditEmail_Click);
             // 
             // txtEditEmail
             // 
@@ -520,7 +510,6 @@ namespace UI.SistemaCompraVentas
             this.txtEditEmail.Name = "txtEditEmail";
             this.txtEditEmail.Size = new System.Drawing.Size(231, 20);
             this.txtEditEmail.TabIndex = 13;
-            this.txtEditEmail.TextChanged += new System.EventHandler(this.txtEditEmail_TextChanged);
             // 
             // lblEditFechaNacimiento
             // 
@@ -532,7 +521,6 @@ namespace UI.SistemaCompraVentas
             this.lblEditFechaNacimiento.TabIndex = 10;
             this.lblEditFechaNacimiento.Text = "Fecha Nac.";
             this.lblEditFechaNacimiento.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lblEditFechaNacimiento.Click += new System.EventHandler(this.lblEditFechaNacimiento_Click);
             // 
             // dtpEditFechaNacimiento
             // 
@@ -542,7 +530,6 @@ namespace UI.SistemaCompraVentas
             this.dtpEditFechaNacimiento.Name = "dtpEditFechaNacimiento";
             this.dtpEditFechaNacimiento.Size = new System.Drawing.Size(137, 20);
             this.dtpEditFechaNacimiento.TabIndex = 11;
-            this.dtpEditFechaNacimiento.ValueChanged += new System.EventHandler(this.dtpEditFechaNacimiento_ValueChanged);
             // 
             // btnGuardarCambios
             // 

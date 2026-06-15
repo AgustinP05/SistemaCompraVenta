@@ -9,7 +9,7 @@ namespace BLL.SistemaCompraVenta
         private ProductoBLL oProductoBLL = new ProductoBLL();
         private VentaDAL oVentaDAL = new VentaDAL();
 
-        public void FinalizarVenta(Venta nuevaVenta)
+        public int FinalizarVenta(Venta nuevaVenta)
         {
             // 1. Validar stock para todos los ítems antes de persistir
             foreach (var detalle in nuevaVenta.Detalles)
@@ -24,7 +24,16 @@ namespace BLL.SistemaCompraVenta
                 oVentaDAL.InsertarDetalle(idVenta, detalle);
                 oProductoBLL.ActualizarStock(detalle.Variante.SKU, detalle.Cantidad);
             }
+
+            // 4. Auditoría de descuento: solo si la venta tuvo descuento (> 0)
+            double montoDescuento = nuevaVenta.DevolverDescuento();
+            if (montoDescuento > 0)
+                oVentaDAL.InsertarDescuento(idVenta, nuevaVenta.Descuento.Descripcion, montoDescuento);
+
+            return idVenta;
         }
+
+        public int ObtenerProximoNumeroVenta() => oVentaDAL.ObtenerProximoNumero();
 
         public void ValidarStockDisponible(ProductoVariante variante, int cantidad)
         {

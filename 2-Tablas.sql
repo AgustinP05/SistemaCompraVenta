@@ -150,6 +150,17 @@ CREATE TABLE tDetalleVenta (
 );
 GO
 
+---- DESCUENTO_VENTA (auditoría: solo se cargan las ventas que tuvieron descuento) ----
+CREATE TABLE tDescuentoVenta (
+    ID_Descuento INT PRIMARY KEY IDENTITY(1,1),
+    ID_Venta INT NOT NULL,
+    Tipo VARCHAR(100) NOT NULL,
+    Monto DECIMAL(10,2) NOT NULL,
+    Fecha DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (ID_Venta) REFERENCES tVenta(ID_Venta)
+);
+GO
+
 ---- COMPRA ----
 CREATE TABLE tCompra (
     ID_Compra INT PRIMARY KEY IDENTITY(1,1),

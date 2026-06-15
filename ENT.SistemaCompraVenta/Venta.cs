@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ENT.SistemaCompraVenta.Descuentos;
 
 namespace ENT.SistemaCompraVenta
 {
@@ -11,6 +12,9 @@ namespace ENT.SistemaCompraVenta
         private Cliente _cliente;
         private Usuario _usuario;
         private List<DetalleVenta> _detalles = new List<DetalleVenta>();
+
+        // Estrategia de descuento (patrón Strategy). Por defecto, sin descuento.
+        private IDescuentoStrategy _descuento = new SinDescuento();
 
         public int IdVenta
         {
@@ -42,7 +46,14 @@ namespace ENT.SistemaCompraVenta
             set { _detalles = value; }
         }
 
-        public double DevolverTotal()
+        public IDescuentoStrategy Descuento
+        {
+            get { return _descuento; }
+            set { _descuento = value ?? new SinDescuento(); }
+        }
+
+        // Suma de los subtotales de cada ítem (sin descuento).
+        public double DevolverSubtotal()
         {
             double total = 0;
             foreach (DetalleVenta detalle in _detalles)
@@ -50,6 +61,18 @@ namespace ENT.SistemaCompraVenta
                 total += detalle.DevolverSubtotal();
             }
             return total;
+        }
+
+        // Monto a descontar según la estrategia actual.
+        public double DevolverDescuento()
+        {
+            return _descuento.CalcularDescuento(this);
+        }
+
+        // Total final: subtotal menos el descuento.
+        public double DevolverTotal()
+        {
+            return DevolverSubtotal() - DevolverDescuento();
         }
     }
 }
