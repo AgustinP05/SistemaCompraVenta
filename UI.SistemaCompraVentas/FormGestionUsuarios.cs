@@ -31,6 +31,17 @@ namespace UI.SistemaCompraVentas
             lstPermDisponibles.SelectionMode = SelectionMode.MultiExtended;
             lstPermOtorgados.SelectionMode = SelectionMode.MultiExtended;
 
+            // Al seleccionar una familia en cualquiera de las listas, se exhiben
+            // sus permisos individuales (hijos del Composite) en la grilla inferior.
+            lstPermDisponibles.SelectedIndexChanged += ListaPermisos_SelectedIndexChanged;
+            lstPermOtorgados.SelectedIndexChanged += ListaPermisos_SelectedIndexChanged;
+
+            dgvPermisosFamilia.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvPermisosFamilia.Columns.Add("colIdPermiso", "ID");
+            dgvPermisosFamilia.Columns.Add("colNombrePermiso", "Permiso");
+            dgvPermisosFamilia.Columns["colIdPermiso"].FillWeight = 20;
+            dgvPermisosFamilia.Columns["colNombrePermiso"].FillWeight = 80;
+
             CargarCombosRoles();
 
             dgvUsuariosCargados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -340,11 +351,18 @@ namespace UI.SistemaCompraVentas
 
             try
             {
-                // Catálogo completo: familias (nodos compuestos) + permisos (hojas).
+                // Catálogo completo de componentes: familias (nodos compuestos) y
+                // permisos sueltos (hojas). Ambos son Componente y se tratan igual.
                 List<FamiliaPermisos> todasFamilias = oFamiliaBLL.ListarTodas();
                 List<Permiso> todosPermisos = oPermisoBLL.ListarTodos();
 
-                // Lo que ya tiene el rol.
+                // Se arma el árbol Composite: cada familia carga sus permisos (hijos),
+                // así se pueden exhibir al seleccionarla sin perder la atomicidad.
+                foreach (FamiliaPermisos f in todasFamilias)
+                    foreach (Permiso hijo in oFamiliaBLL.PermisosDeFamilia(f.ID_Familia))
+                        f.AgregarHijo(hijo);
+
+                // Lo que ya tiene el rol (familias y permisos sueltos).
                 List<FamiliaPermisos> familiasDelRol = oFamiliaBLL.ListarPorRol(idRol);
                 List<Permiso> permisosDelRol = oPermisoBLL.ListarPorRol(idRol);
 
@@ -357,6 +375,7 @@ namespace UI.SistemaCompraVentas
                 _permisosDisponibles = new List<Componente>();
                 _permisosOtorgados = new List<Componente>();
 
+                // Una familia se otorga/quita como una unidad, igual que un permiso suelto.
                 foreach (FamiliaPermisos f in todasFamilias)
                 {
                     if (idsFamiliasRol.Contains(f.ID_Familia)) _permisosOtorgados.Add(f);
@@ -386,6 +405,33 @@ namespace UI.SistemaCompraVentas
 
             lstPermOtorgados.DataSource = null;
             lstPermOtorgados.DataSource = _permisosOtorgados;
+
+            LimpiarGrillaFamilia();
+        }
+
+        // Muestra los permisos individuales de la familia seleccionada (en cualquiera
+        // de las dos listas). Si lo seleccionado es un permiso suelto, limpia la grilla.
+        private void ListaPermisos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ListBox lista = sender as ListBox;
+            if (!(lista?.SelectedItem is FamiliaPermisos familia))
+            {
+                LimpiarGrillaFamilia();
+                return;
+            }
+
+            dgvPermisosFamilia.Rows.Clear();
+            foreach (Componente hijo in familia.ObtenerHijos)
+                if (hijo is Permiso p)
+                    dgvPermisosFamilia.Rows.Add(p.ID_Permiso, p.Nombre);
+
+            lblPermisosFamilia.Text = "Permisos de la familia: " + familia.Nombre;
+        }
+
+        private void LimpiarGrillaFamilia()
+        {
+            dgvPermisosFamilia.Rows.Clear();
+            lblPermisosFamilia.Text = "Permisos de la familia seleccionada:";
         }
 
         private void btnAgregarPermiso_Click(object sender, EventArgs e)

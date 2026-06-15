@@ -69,6 +69,8 @@ namespace UI.SistemaCompraVentas
             this.btnAgregarPermiso = new System.Windows.Forms.Button();
             this.btnQuitarPermiso = new System.Windows.Forms.Button();
             this.btnGuardarPermisos = new System.Windows.Forms.Button();
+            this.lblPermisosFamilia = new System.Windows.Forms.Label();
+            this.dgvPermisosFamilia = new System.Windows.Forms.DataGridView();
             this.tabControl.SuspendLayout();
             this.tabCargar.SuspendLayout();
             this.datosDelUsuario.SuspendLayout();
@@ -78,6 +80,7 @@ namespace UI.SistemaCompraVentas
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).BeginInit();
             this.grpEditar.SuspendLayout();
             this.tabPermisos.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPermisosFamilia)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl
@@ -88,7 +91,7 @@ namespace UI.SistemaCompraVentas
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(784, 413);
+            this.tabControl.Size = new System.Drawing.Size(784, 550);
             this.tabControl.TabIndex = 0;
             // 
             // tabCargar
@@ -577,7 +580,7 @@ namespace UI.SistemaCompraVentas
             this.btnSalir.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
             this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSalir.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btnSalir.Location = new System.Drawing.Point(640, 419);
+            this.btnSalir.Location = new System.Drawing.Point(640, 560);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Size = new System.Drawing.Size(140, 32);
             this.btnSalir.TabIndex = 1;
@@ -596,10 +599,12 @@ namespace UI.SistemaCompraVentas
             this.tabPermisos.Controls.Add(this.btnAgregarPermiso);
             this.tabPermisos.Controls.Add(this.btnQuitarPermiso);
             this.tabPermisos.Controls.Add(this.btnGuardarPermisos);
+            this.tabPermisos.Controls.Add(this.lblPermisosFamilia);
+            this.tabPermisos.Controls.Add(this.dgvPermisosFamilia);
             this.tabPermisos.Location = new System.Drawing.Point(4, 22);
             this.tabPermisos.Name = "tabPermisos";
             this.tabPermisos.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPermisos.Size = new System.Drawing.Size(776, 387);
+            this.tabPermisos.Size = new System.Drawing.Size(776, 524);
             this.tabPermisos.TabIndex = 2;
             this.tabPermisos.Text = "Permisos por rol";
             this.tabPermisos.UseVisualStyleBackColor = true;
@@ -678,7 +683,7 @@ namespace UI.SistemaCompraVentas
             //
             // btnGuardarPermisos
             //
-            this.btnGuardarPermisos.Location = new System.Drawing.Point(628, 350);
+            this.btnGuardarPermisos.Location = new System.Drawing.Point(628, 488);
             this.btnGuardarPermisos.Name = "btnGuardarPermisos";
             this.btnGuardarPermisos.Size = new System.Drawing.Size(140, 30);
             this.btnGuardarPermisos.TabIndex = 8;
@@ -686,12 +691,36 @@ namespace UI.SistemaCompraVentas
             this.btnGuardarPermisos.UseVisualStyleBackColor = true;
             this.btnGuardarPermisos.Click += new System.EventHandler(this.btnGuardarPermisos_Click);
             //
+            // lblPermisosFamilia
+            //
+            this.lblPermisosFamilia.AutoSize = true;
+            this.lblPermisosFamilia.Location = new System.Drawing.Point(8, 352);
+            this.lblPermisosFamilia.Name = "lblPermisosFamilia";
+            this.lblPermisosFamilia.Size = new System.Drawing.Size(212, 13);
+            this.lblPermisosFamilia.TabIndex = 9;
+            this.lblPermisosFamilia.Text = "Permisos de la familia seleccionada:";
+            //
+            // dgvPermisosFamilia
+            //
+            this.dgvPermisosFamilia.AllowUserToAddRows = false;
+            this.dgvPermisosFamilia.AllowUserToDeleteRows = false;
+            this.dgvPermisosFamilia.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvPermisosFamilia.Location = new System.Drawing.Point(8, 372);
+            this.dgvPermisosFamilia.Name = "dgvPermisosFamilia";
+            this.dgvPermisosFamilia.ReadOnly = true;
+            this.dgvPermisosFamilia.RowHeadersVisible = false;
+            this.dgvPermisosFamilia.AllowUserToResizeRows = false;
+            this.dgvPermisosFamilia.MultiSelect = false;
+            this.dgvPermisosFamilia.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvPermisosFamilia.Size = new System.Drawing.Size(760, 108);
+            this.dgvPermisosFamilia.TabIndex = 10;
+            //
             // FormGestionUsuarios
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(784, 463);
+            this.ClientSize = new System.Drawing.Size(784, 600);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.btnSalir);
             this.Name = "FormGestionUsuarios";
@@ -711,6 +740,7 @@ namespace UI.SistemaCompraVentas
             this.grpEditar.PerformLayout();
             this.tabPermisos.ResumeLayout(false);
             this.tabPermisos.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPermisosFamilia)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -775,5 +805,7 @@ namespace UI.SistemaCompraVentas
         private System.Windows.Forms.Button btnAgregarPermiso;
         private System.Windows.Forms.Button btnQuitarPermiso;
         private System.Windows.Forms.Button btnGuardarPermisos;
+        private System.Windows.Forms.Label lblPermisosFamilia;
+        private System.Windows.Forms.DataGridView dgvPermisosFamilia;
     }
 }
