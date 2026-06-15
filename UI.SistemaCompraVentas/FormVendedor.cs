@@ -33,6 +33,7 @@ namespace UI.SistemaCompraVentas
 
             dgvCarrito.Columns.Add("SKU",   "SKU");
             dgvCarrito.Columns.Add("Nombre",   "Nombre");
+            dgvCarrito.Columns.Add("Marca", "Marca");
             dgvCarrito.Columns.Add("Color",    "Color");
             dgvCarrito.Columns.Add("Talle",    "Talle");
             dgvCarrito.Columns.Add("Cantidad", "Cantidad");
@@ -63,6 +64,7 @@ namespace UI.SistemaCompraVentas
                 lblProductoNombre.Text = $"Producto: {v.Nombre}";
                 lblProductoMarca.Text  = $"Marca: {v.Marca}";
                 lblProductoColor.Text  = $"Color: {v.Color}";
+                lblProductoTalle.Text = $"Talle: {v.Talle}";
                 lblProductoPrecio.Text = $"Precio: {v.PrecioVenta:N2}";
                 lblProductoStock.Text  = $"Stock Disp: {v.Cantidad}";
             }
@@ -71,6 +73,7 @@ namespace UI.SistemaCompraVentas
                 lblProductoNombre.Text = "Producto: -";
                 lblProductoMarca.Text  = "Marca: -";
                 lblProductoColor.Text  = "Color: -";
+                lblProductoTalle.Text = "Talle: -";
                 lblProductoPrecio.Text = "Precio: -";
                 lblProductoStock.Text  = "Stock Disp: -";
             }
@@ -122,6 +125,7 @@ namespace UI.SistemaCompraVentas
                 dgvCarrito.Rows.Add(
                     d.Variante.SKU,
                     d.Variante.Nombre,
+                    d.Variante.Marca,
                     d.Variante.Color,
                     d.Variante.Talle,
                     d.Cantidad,
@@ -195,5 +199,42 @@ namespace UI.SistemaCompraVentas
 
         private void nmCantidad_ValueChanged(object sender, EventArgs e) { }
         private void lblClienteNombre_Click(object sender, EventArgs e) { }
+
+        private void lblProductoNombre_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblProductoMarca_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblProductoTalle_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblProductoPrecio_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblProductoStock_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblProductoColor_Click(object sender, EventArgs e)
+        {
+            
+                
+        }
+
     }
 }
