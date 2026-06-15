@@ -22,13 +22,13 @@ namespace BLL.SistemaCompraVenta
             foreach (var detalle in nuevaVenta.Detalles)
             {
                 oVentaDAL.InsertarDetalle(idVenta, detalle);
-                oProductoBLL.ActualizarStock(detalle.Variante.ID_ProductoVariante, detalle.Cantidad);
+                oProductoBLL.ActualizarStock(detalle.Variante.SKU, detalle.Cantidad);
             }
         }
 
         public void ValidarStockDisponible(ProductoVariante variante, int cantidad)
         {
-            int stockActual = oProductoBLL.BuscarStockPorVariante(variante.ID_ProductoVariante);
+            int stockActual = oProductoBLL.BuscarStockPorVariante(variante.SKU);
 
             if (cantidad > stockActual)
                 throw new InvalidOperationException(

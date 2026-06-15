@@ -26,19 +26,25 @@ namespace UI.SistemaCompraVentas
             cboProducto.DropDownStyle      = ComboBoxStyle.DropDown;
             cboProducto.AutoCompleteMode   = AutoCompleteMode.SuggestAppend;
             cboProducto.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cboProducto.DisplayMember      = "SKU";
 
             cboCliente.DataSource  = oClienteBLL.ListarClientes();
             cboProducto.DataSource = oProductoBLL.ListarVariantes();
 
-            dgvCarrito.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvCarrito.Columns.Add("Codigo",   "Código");
+            dgvCarrito.Columns.Add("SKU",   "SKU");
             dgvCarrito.Columns.Add("Nombre",   "Nombre");
             dgvCarrito.Columns.Add("Color",    "Color");
             dgvCarrito.Columns.Add("Talle",    "Talle");
             dgvCarrito.Columns.Add("Cantidad", "Cantidad");
             dgvCarrito.Columns.Add("Precio",   "Precio Unit.");
             dgvCarrito.Columns.Add("Subtotal", "Subtotal");
+            dgvCarrito.Columns["Nombre"].MinimumWidth = 200;
+            dgvCarrito.Columns["Precio"].MinimumWidth = 100;
+            dgvCarrito.Columns["Nombre"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dgvCarrito.Columns["Precio"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
+            //dgvCarrito.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            dgvCarrito.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             ActualizarGrilla();
         }
 
@@ -114,7 +120,7 @@ namespace UI.SistemaCompraVentas
             foreach (DetalleVenta d in ventaActual.Detalles)
             {
                 dgvCarrito.Rows.Add(
-                    d.Variante.ID_ProductoVariante,
+                    d.Variante.SKU,
                     d.Variante.Nombre,
                     d.Variante.Color,
                     d.Variante.Talle,

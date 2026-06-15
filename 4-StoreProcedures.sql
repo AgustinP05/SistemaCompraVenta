@@ -186,13 +186,13 @@ GO
 -- DETALLE VENTAS ------------------------------------------------------------
 IF OBJECT_ID('SP_InsertarDetalleVenta', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarDetalleVenta;
 GO
--- CAMBIO: @ID_Producto -> @ID_ProductoVariante ; sin Subtotal ; decimal(10,2)
+-- CAMBIO: @ID_Producto -> @SKU ; sin Subtotal ; decimal(10,2)
 CREATE PROCEDURE SP_InsertarDetalleVenta(
-    @ID_Venta INT, @ID_ProductoVariante INT, @Cantidad INT, @PrecioUnitario DECIMAL(10,2)
+    @ID_Venta INT, @SKU INT, @Cantidad INT, @PrecioUnitario DECIMAL(10,2)
 )
 AS BEGIN
-    INSERT INTO tDetalleVenta (ID_Venta, ID_ProductoVariante, Cantidad, PrecioUnitario)
-    VALUES (@ID_Venta, @ID_ProductoVariante, @Cantidad, @PrecioUnitario);
+    INSERT INTO tDetalleVenta (ID_Venta, SKU, Cantidad, PrecioUnitario)
+    VALUES (@ID_Venta, @SKU, @Cantidad, @PrecioUnitario);
 END;
 GO
 
@@ -200,12 +200,12 @@ GO
 -- STOCK (ahora vive como Cantidad en la variante) ---------------------------
 IF OBJECT_ID('SP_ActualizarStock', 'P') IS NOT NULL DROP PROCEDURE SP_ActualizarStock;
 GO
--- CAMBIO: opera sobre tProductoVariante por ID_ProductoVariante (resta = venta)
-CREATE PROCEDURE SP_ActualizarStock(@ID_ProductoVariante INT, @Cantidad INT)
+-- CAMBIO: opera sobre tProductoVariante por SKU (resta = venta)
+CREATE PROCEDURE SP_ActualizarStock(@SKU INT, @Cantidad INT)
 AS BEGIN
     UPDATE tProductoVariante
     SET Cantidad = Cantidad - @Cantidad
-    WHERE ID_ProductoVariante = @ID_ProductoVariante;
+    WHERE SKU = @SKU;
 END;
 GO
 ---
@@ -213,9 +213,9 @@ IF OBJECT_ID('SP_BuscarStock', 'P') IS NOT NULL DROP PROCEDURE SP_BuscarStock;
 GO
 -- CAMBIO: busca la cantidad de una variante
 CREATE PROCEDURE SP_BuscarStock
-    @ID_ProductoVariante INT
+    @SKU INT
 AS BEGIN
-    SELECT Cantidad FROM tProductoVariante WHERE ID_ProductoVariante = @ID_ProductoVariante;
+    SELECT Cantidad FROM tProductoVariante WHERE SKU = @SKU;
 END;
 GO
 
@@ -251,7 +251,7 @@ GO
 IF OBJECT_ID('SP_ListarVariantes', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVariantes;
 GO
 CREATE PROCEDURE SP_ListarVariantes AS BEGIN
-    SELECT pv.ID_ProductoVariante, p.Nombre, p.Marca, p.PrecioVenta,
+    SELECT pv.SKU, p.Nombre, p.Marca, p.PrecioVenta,
            c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
     FROM tProductoVariante pv
     JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
@@ -268,7 +268,7 @@ CREATE PROCEDURE SP_InsertarProductoVariante(
 AS BEGIN
     INSERT INTO tProductoVariante (ID_Producto, ID_Color, ID_Talle, Cantidad)
     VALUES (@ID_Producto, @ID_Color, @ID_Talle, @Cantidad);
-    SELECT SCOPE_IDENTITY() AS ID_ProductoVariante;
+    SELECT SCOPE_IDENTITY() AS SKU;
 END;
 GO
 ---
@@ -311,7 +311,7 @@ AS
 BEGIN
     SELECT TOP 5 p.Nombre, SUM(dv.Cantidad) AS TotalVendidos
     FROM tDetalleVenta dv
-    JOIN tProductoVariante pv ON pv.ID_ProductoVariante = dv.ID_ProductoVariante
+    JOIN tProductoVariante pv ON pv.SKU = dv.SKU
     JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
     GROUP BY p.Nombre
     ORDER BY TotalVendidos DESC;
@@ -334,7 +334,7 @@ GO
 CREATE PROCEDURE SP_ProductosStockMinimo
 AS
 BEGIN
-    SELECT pv.ID_ProductoVariante, p.Nombre, c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
+    SELECT pv.SKU, p.Nombre, c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
     FROM tProductoVariante pv
     JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
     JOIN tColor    c ON c.ID_Color    = pv.ID_Color

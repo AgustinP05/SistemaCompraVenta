@@ -160,7 +160,7 @@ INSERT INTO tVenta (Fecha, ID_Cliente, ID_Usuario) VALUES
 GO
 
 ---- DETALLE_VENTA (PrecioUnitario tomado del precio de venta del producto) ----
-INSERT INTO tDetalleVenta (ID_Venta, ID_ProductoVariante, Cantidad, PrecioUnitario) VALUES
+INSERT INTO tDetalleVenta (ID_Venta, SKU, Cantidad, PrecioUnitario) VALUES
 (1,  1, 1, 120000.00),  -- Zap Running 40
 (1,  6, 2,  32000.00),  -- Remera M
 (2,  4, 1, 150000.00),  -- Ultraboost 42
@@ -181,7 +181,7 @@ INSERT INTO tCompra (Fecha, ID_Usuario, ID_Proveedor) VALUES
 GO
 
 ---- DETALLE_COMPRA (PrecioUnitario tomado del precio de costo del producto) ----
-INSERT INTO tDetalleCompra (ID_Compra, ID_ProductoVariante, Cantidad, PrecioUnitario) VALUES
+INSERT INTO tDetalleCompra (ID_Compra, SKU, Cantidad, PrecioUnitario) VALUES
 (1,  1, 10, 70000.00),  -- Zap Running 40
 (1,  2,  8, 70000.00),  -- Zap Running 41
 (2,  4, 10, 90000.00),  -- Ultraboost 42

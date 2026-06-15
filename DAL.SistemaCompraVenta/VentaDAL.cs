@@ -25,7 +25,7 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros = {
                 conexion.crearParametro("@ID_Venta",            idVenta),
-                conexion.crearParametro("@ID_ProductoVariante", d.Variante.ID_ProductoVariante),
+                conexion.crearParametro("@SKU",            d.Variante.SKU),
                 conexion.crearParametro("@Cantidad",            d.Cantidad),
                 conexion.crearParametro("@PrecioUnitario",      d.PrecioUnitario)
             };

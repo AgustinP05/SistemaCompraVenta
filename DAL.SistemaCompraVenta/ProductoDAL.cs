@@ -49,7 +49,7 @@ namespace DAL.SistemaCompraVenta
 
         public int BuscarStockPorVariante(int idVariante)
         {
-            SqlParameter[] param = { conexion.crearParametro("@ID_ProductoVariante", idVariante) };
+            SqlParameter[] param = { conexion.crearParametro("@SKU", idVariante) };
             DataTable dt = conexion.LeerPorStoreProcedure("SP_BuscarStock", param);
             if (dt.Rows.Count > 0)
                 return Convert.ToInt32(dt.Rows[0]["Cantidad"]);
@@ -59,8 +59,8 @@ namespace DAL.SistemaCompraVenta
         public void ActualizarStock(int idVariante, int cantidadVendida)
         {
             SqlParameter[] param = {
-                conexion.crearParametro("@ID_ProductoVariante", idVariante),
-                conexion.crearParametro("@Cantidad",            cantidadVendida)
+                conexion.crearParametro("@SKU",      idVariante),
+                conexion.crearParametro("@Cantidad", cantidadVendida)
             };
             conexion.EscribirPorStoreProcedure("SP_ActualizarStock", param);
         }

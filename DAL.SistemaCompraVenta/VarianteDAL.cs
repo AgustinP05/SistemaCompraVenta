@@ -19,7 +19,7 @@ namespace DAL.SistemaCompraVenta
             {
                 lista.Add(new ProductoVariante
                 {
-                    ID_ProductoVariante = Convert.ToInt32(fila["ID_ProductoVariante"]),
+                    SKU                 = Convert.ToInt32(fila["SKU"]),
                     Nombre              = fila["Nombre"].ToString(),
                     Marca               = fila["Marca"].ToString(),
                     Color               = fila["Color"].ToString(),
@@ -41,7 +41,7 @@ namespace DAL.SistemaCompraVenta
                 conexion.crearParametro("@Cantidad",    cantidad)
             };
             DataTable dt = conexion.LeerPorStoreProcedure("SP_InsertarProductoVariante", param);
-            return Convert.ToInt32(dt.Rows[0]["ID_ProductoVariante"]);
+            return Convert.ToInt32(dt.Rows[0]["SKU"]);
         }
     }
 }

@@ -115,7 +115,7 @@ GO
 
 ---- PRODUCTO_VARIANTE (Cantidad embebida; ID_Color NOT NULL por entrar en el UNIQUE) ----
 CREATE TABLE tProductoVariante (
-    ID_ProductoVariante INT PRIMARY KEY IDENTITY(1,1),
+    SKU INT PRIMARY KEY IDENTITY(1,1),
     ID_Producto INT NOT NULL,
     ID_Color INT NOT NULL,
     ID_Talle INT NOT NULL,
@@ -142,11 +142,11 @@ GO
 CREATE TABLE tDetalleVenta (
     ID_DetalleVenta INT PRIMARY KEY IDENTITY(1,1),
     ID_Venta INT NOT NULL,
-    ID_ProductoVariante INT NOT NULL,
+    SKU INT NOT NULL,
     Cantidad INT NOT NULL,
     PrecioUnitario DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (ID_Venta) REFERENCES tVenta(ID_Venta),
-    FOREIGN KEY (ID_ProductoVariante) REFERENCES tProductoVariante(ID_ProductoVariante)
+    FOREIGN KEY (SKU) REFERENCES tProductoVariante(SKU)
 );
 GO
 
@@ -165,11 +165,11 @@ GO
 CREATE TABLE tDetalleCompra (
     ID_DetalleCompra INT PRIMARY KEY IDENTITY(1,1),
     ID_Compra INT NOT NULL,
-    ID_ProductoVariante INT NOT NULL,
+    SKU INT NOT NULL,
     Cantidad INT NOT NULL,
     PrecioUnitario DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (ID_Compra) REFERENCES tCompra(ID_Compra),
-    FOREIGN KEY (ID_ProductoVariante) REFERENCES tProductoVariante(ID_ProductoVariante)
+    FOREIGN KEY (SKU) REFERENCES tProductoVariante(SKU)
 );
 GO
 
