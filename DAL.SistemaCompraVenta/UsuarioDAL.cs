@@ -42,7 +42,6 @@ namespace DAL.SistemaCompraVenta
             return conexion.LeerPorStoreProcedure("SP_ListarRoles", null);
         }
 
-        // SP_InsertarUsuario ahora recibe @ID_Rol INT (no @Rol VARCHAR)
         public int InsertarUsuario(string dni, string nombre, string apellido,
                                    string password, int idRol, string email,
                                    DateTime? fechaNacimiento)
@@ -59,7 +58,6 @@ namespace DAL.SistemaCompraVenta
             return conexion.EscribirPorStoreProcedure("SP_InsertarUsuario", parametros);
         }
 
-        // SP_ModificarUsuario opera por DNI (key natural disponible en pantalla)
         public int ModificarUsuario(string dni, string nombre, string apellido,
                                     string password, int idRol, string email,
                                     DateTime? fechaNacimiento)
@@ -76,7 +74,6 @@ namespace DAL.SistemaCompraVenta
             return conexion.EscribirPorStoreProcedure("SP_ModificarUsuario", parametros);
         }
 
-        // SP_EliminarUsuario opera por DNI
         public int EliminarUsuario(string dni)
         {
             SqlParameter[] parametros = { conexion.crearParametro("@DNI", dni) };

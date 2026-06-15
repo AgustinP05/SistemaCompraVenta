@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ENT.SistemaCompraVenta;       //  Usuario, Rol y Permisos
-using BLL.SistemaCompraVenta.Sesion; // Aquí vive el Singleton (Sesion)
+using ENT.SistemaCompraVenta;
+using BLL.SistemaCompraVenta.Sesion;
 
 namespace UI.SistemaCompraVentas
 {
@@ -137,7 +137,5 @@ namespace UI.SistemaCompraVentas
             login.Show();
             this.Close();
         }
-
-        //private void panel1_Paint(object sender, PaintEventArgs e) { }
     }
 }

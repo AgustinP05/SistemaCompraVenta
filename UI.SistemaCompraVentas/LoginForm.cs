@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
-// --- CAMBIOS CLAVE AQUÍ ---
-using ENT.SistemaCompraVenta;      // Traemos Usuario, Rol y Permisos de la nueva capa
-using BLL.SistemaCompraVenta.Services; // Para usar UsuarioService
-using BLL.SistemaCompraVenta.Sesion;   // Para usar el Singleton (Sesion)
+using ENT.SistemaCompraVenta;
+using BLL.SistemaCompraVenta.Services;
+using BLL.SistemaCompraVenta.Sesion;
 
 namespace UI.SistemaCompraVentas
 {

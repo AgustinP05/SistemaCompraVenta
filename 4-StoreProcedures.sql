@@ -1,7 +1,5 @@
 /* =========================================================================
-   SISTEMA DE COMPRA Y VENTA - STORED PROCEDURES (esquema final)
-   Adaptados a: rol por FK, categoría por FK, stock/color/talle en la variante,
-   detalle apuntando a la variante, venta sin Total, detalle sin Subtotal.
+   SISTEMA DE COMPRA Y VENTA - STORED PROCEDURES
    ========================================================================= */
 
 USE SistemaCompraVenta;
@@ -11,7 +9,6 @@ GO
 -- LOGIN ---------------------------------------------------------------------
 IF OBJECT_ID('SP_LoginUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_LoginUsuario;
 GO
--- CAMBIO: Password 256; ya no existe columna Rol, se trae el nombre con JOIN a tRol
 CREATE PROCEDURE SP_LoginUsuario(@DNI VARCHAR(20), @Password VARCHAR(256))
 AS BEGIN
     SELECT u.ID, u.Nombre, u.Apellido, u.Password, u.ID_Rol, r.NombreRol AS Rol, u.DNI
@@ -23,7 +20,6 @@ GO
 ---
 IF OBJECT_ID('SP_RegistrarLogin', 'P') IS NOT NULL DROP PROCEDURE SP_RegistrarLogin;
 GO
--- SIN CAMBIOS
 CREATE PROCEDURE SP_RegistrarLogin(@ID_Usuario INT, @FechaHoraLogin DATETIME)
 AS BEGIN
     INSERT INTO tLogLogin(ID_Usuario, FechaHoraLogin)
@@ -35,7 +31,6 @@ GO
 -- USUARIO -------------------------------------------------------------------
 IF OBJECT_ID('SP_ObtenerUsuarios', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerUsuarios;
 GO
--- CAMBIO: Rol sale por JOIN a tRol
 CREATE PROCEDURE SP_ObtenerUsuarios
     @Filtro VARCHAR(20) = ''
 AS
@@ -51,7 +46,6 @@ GO
 ---
 IF OBJECT_ID('SP_InsertarUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarUsuario;
 GO
--- CAMBIO: @Rol VARCHAR -> @ID_Rol INT ; Password 256
 CREATE PROCEDURE SP_InsertarUsuario(
     @DNI VARCHAR(20),
     @Nombre VARCHAR(50),
@@ -81,7 +75,6 @@ GO
 ---
 IF OBJECT_ID('SP_ModificarUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_ModificarUsuario;
 GO
--- CAMBIO: @Rol VARCHAR -> @ID_Rol INT ; opera por DNI (key natural disponible en pantalla)
 CREATE PROCEDURE SP_ModificarUsuario
     @DNI VARCHAR(20), @Nombre VARCHAR(50), @Apellido VARCHAR(100),
     @Password VARCHAR(256), @ID_Rol INT, @Email VARCHAR(150),
@@ -96,7 +89,7 @@ END;
 GO
 
 
--- CLIENTES (sin cambios: tCliente quedó igual) ------------------------------
+-- CLIENTES ------------------------------------------------------------------
 IF OBJECT_ID('SP_ListarClientes', 'P') IS NOT NULL DROP PROCEDURE SP_ListarClientes;
 GO
 CREATE PROCEDURE SP_ListarClientes
@@ -183,7 +176,6 @@ GO
 ---
 IF OBJECT_ID('SP_RegistrarVenta', 'P') IS NOT NULL DROP PROCEDURE SP_RegistrarVenta;
 GO
--- CAMBIO: tVenta ya no tiene Total (se calcula en la BLL)
 CREATE PROCEDURE SP_RegistrarVenta(@Fecha DATETIME, @ID_Cliente INT, @ID_Usuario INT)
 AS BEGIN
     INSERT INTO tVenta (Fecha, ID_Cliente, ID_Usuario)
@@ -250,7 +242,6 @@ GO
 -- DETALLE VENTAS ------------------------------------------------------------
 IF OBJECT_ID('SP_InsertarDetalleVenta', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarDetalleVenta;
 GO
--- CAMBIO: @ID_Producto -> @SKU ; sin Subtotal ; decimal(10,2)
 CREATE PROCEDURE SP_InsertarDetalleVenta(
     @ID_Venta INT, @SKU INT, @Cantidad INT, @PrecioUnitario DECIMAL(10,2)
 )
@@ -261,10 +252,9 @@ END;
 GO
 
 
--- STOCK (ahora vive como Cantidad en la variante) ---------------------------
+-- STOCK ---------------------------------------------------------------------
 IF OBJECT_ID('SP_ActualizarStock', 'P') IS NOT NULL DROP PROCEDURE SP_ActualizarStock;
 GO
--- CAMBIO: opera sobre tProductoVariante por SKU (resta = venta)
 CREATE PROCEDURE SP_ActualizarStock(@SKU INT, @Cantidad INT)
 AS BEGIN
     UPDATE tProductoVariante
@@ -275,7 +265,6 @@ GO
 ---
 IF OBJECT_ID('SP_BuscarStock', 'P') IS NOT NULL DROP PROCEDURE SP_BuscarStock;
 GO
--- CAMBIO: busca la cantidad de una variante
 CREATE PROCEDURE SP_BuscarStock
     @SKU INT
 AS BEGIN
@@ -287,7 +276,6 @@ GO
 -- PRODUCTOS -----------------------------------------------------------------
 IF OBJECT_ID('SP_ListarProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ListarProductos;
 GO
--- CAMBIO: ya no hay Color/Stock en producto; Tipo -> Categoria (por JOIN)
 CREATE PROCEDURE SP_ListarProductos AS BEGIN
     SELECT p.ID_Producto, p.Nombre, p.Marca, c.Nombre AS Categoria,
            p.PrecioVenta, p.PrecioCosto
@@ -298,7 +286,6 @@ GO
 ---
 IF OBJECT_ID('SP_InsertarProducto', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarProducto;
 GO
--- CAMBIO: sin @Color/@Stock ; @Tipo -> @ID_Categoria
 CREATE PROCEDURE SP_InsertarProducto(
     @Nombre VARCHAR(100), @Marca VARCHAR(100), @ID_Categoria INT,
     @PrecioVenta DECIMAL(10,2), @PrecioCosto DECIMAL(10,2)
@@ -311,7 +298,7 @@ END;
 GO
 
 
--- PRODUCTO_VARIANTE (NUEVOS: el color/talle/stock que antes estaban en producto)
+-- PRODUCTO_VARIANTE ---------------------------------------------------------
 IF OBJECT_ID('SP_ListarVariantes', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVariantes;
 GO
 CREATE PROCEDURE SP_ListarVariantes AS BEGIN
@@ -371,7 +358,6 @@ GO
 -- VISTA DE GERENTE ----------------------------------------------------------
 IF OBJECT_ID('SP_ReporteVentasMensuales', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteVentasMensuales;
 GO
--- CAMBIO: el total ya no está en tVenta, se calcula desde el detalle
 CREATE PROCEDURE SP_ReporteVentasMensuales
 AS
 BEGIN
@@ -387,7 +373,6 @@ GO
 ---
 IF OBJECT_ID('SP_ReporteTopProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteTopProductos;
 GO
--- CAMBIO: el detalle va a la variante; se sube hasta el producto por JOIN
 CREATE PROCEDURE SP_ReporteTopProductos
 AS
 BEGIN
@@ -402,7 +387,6 @@ GO
 ---
 IF OBJECT_ID('SP_ContarVentas', 'P') IS NOT NULL DROP PROCEDURE SP_ContarVentas;
 GO
--- SIN CAMBIOS
 CREATE PROCEDURE SP_ContarVentas
 AS
 BEGIN
@@ -412,7 +396,6 @@ GO
 ---
 IF OBJECT_ID('SP_ProductosStockMinimo', 'P') IS NOT NULL DROP PROCEDURE SP_ProductosStockMinimo;
 GO
--- CAMBIO: el stock bajo ahora es por variante (sabés qué color/talle está flojo)
 CREATE PROCEDURE SP_ProductosStockMinimo
 AS
 BEGIN
@@ -437,7 +420,7 @@ END;
 GO
 
 
--- PROVEEDOR (sin cambios: tProveedor quedó igual) ---------------------------
+-- PROVEEDOR -----------------------------------------------------------------
 IF OBJECT_ID('SP_InsertarProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarProveedor;
 GO
 CREATE PROCEDURE SP_InsertarProveedor (

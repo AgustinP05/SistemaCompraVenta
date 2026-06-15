@@ -90,11 +90,11 @@
     <Compile Include="FormVendedor.Designer.cs">
       <DependentUpon>FormVendedor.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormAdministrador.cs">
+    <Compile Include="FormGestionUsuarios.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormAdministrador.Designer.cs">
-      <DependentUpon>FormAdministrador.cs</DependentUpon>
+    <Compile Include="FormGestionUsuarios.Designer.cs">
+      <DependentUpon>FormGestionUsuarios.cs</DependentUpon>
     </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
@@ -125,8 +125,8 @@
     <EmbeddedResource Include="FormVendedor.resx">
       <DependentUpon>FormVendedor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormAdministrador.resx">
-      <DependentUpon>FormAdministrador.cs</DependentUpon>
+    <EmbeddedResource Include="FormGestionUsuarios.resx">
+      <DependentUpon>FormGestionUsuarios.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
