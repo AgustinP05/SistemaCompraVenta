@@ -48,6 +48,25 @@ BEGIN
     ORDER BY u.Nombre;
 END;
 GO
+
+---Esto sirve para la vista de gerente... Agus o Agos, o Juli, reveer...
+USE SistemaCompraVenta;
+GO
+
+ALTER PROCEDURE SP_ObtenerUsuarios
+    @Filtro VARCHAR(20) = ''
+AS
+BEGIN
+    -- Agregamos u.ID al principio del SELECT
+    SELECT u.ID, u.DNI, u.Nombre, u.Apellido, u.Email, r.NombreRol AS Rol,
+           u.ID_Rol, u.FechaNacimiento
+    FROM tUsuario u
+    JOIN tRol r ON r.ID_Rol = u.ID_Rol
+    WHERE @Filtro = '' OR u.DNI LIKE '%' + @Filtro + '%'
+    ORDER BY u.Nombre;
+END;
+GO
+
 ---
 IF OBJECT_ID('SP_InsertarUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarUsuario;
 GO
@@ -287,6 +306,44 @@ GO
 
 
 -- VISTA DE GERENTE ----------------------------------------------------------
+USE SistemaCompraVenta;
+GO
+
+IF OBJECT_ID('sp_GenerarReporteVentas', 'P') IS NOT NULL DROP PROCEDURE sp_GenerarReporteVentas;
+GO
+
+CREATE PROCEDURE sp_GenerarReporteVentas(
+    @Desde DATETIME,
+    @Hasta DATETIME,
+    @IdVendedor INT = NULL,
+    @IdProducto INT = NULL,
+    @IdCliente INT = NULL
+)
+AS BEGIN
+    SELECT 
+        v.ID_Venta, 
+        v.Fecha, 
+        c.Nombre + ' ' + c.Apellido AS NombreCliente,
+        u.Nombre + ' ' + u.Apellido AS NombreVendedor,
+        p.Nombre AS DescripcionProducto,
+        dv.Cantidad,
+        (dv.Cantidad * dv.PrecioUnitario) AS Subtotal
+    FROM tVenta v
+    JOIN tCliente c ON v.ID_Cliente = c.ID_Cliente
+    JOIN tUsuario u ON v.ID_Usuario = u.ID
+    JOIN tDetalleVenta dv ON v.ID_Venta = dv.ID_Venta
+    JOIN tProductoVariante pv ON dv.ID_ProductoVariante = pv.ID_ProductoVariante
+    JOIN tProducto p ON pv.ID_Producto = p.ID_Producto
+    WHERE 
+        v.Fecha >= @Desde AND v.Fecha <= @Hasta
+        -- Si el parámetro es NULL, ignora el filtro. Si tiene un número, filtra por ese ID.
+        AND (@IdVendedor IS NULL OR v.ID_Usuario = @IdVendedor)
+        AND (@IdProducto IS NULL OR p.ID_Producto = @IdProducto)
+        AND (@IdCliente IS NULL OR v.ID_Cliente = @IdCliente)
+    ORDER BY v.Fecha DESC;
+END;
+GO
+-----estos sp no estan mal, tampoco ocupan espacio, ni hacen mas lenta la app, pero no estan documentados, su funcionalidad a futuro seria capaz, mostrar graficos o un dashboard. dejarlos asi, o voletearlos. pero no hacen daño...
 IF OBJECT_ID('SP_ReporteVentasMensuales', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteVentasMensuales;
 GO
 -- CAMBIO: el total ya no está en tVenta, se calcula desde el detalle
