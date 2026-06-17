@@ -23,26 +23,26 @@ namespace UI.SistemaCompraVentas
             this.btnCancelar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResultados)).BeginInit();
             this.SuspendLayout();
-            //
+            // 
             // lblBuscar
-            //
+            // 
             this.lblBuscar.AutoSize = true;
             this.lblBuscar.Location = new System.Drawing.Point(12, 18);
             this.lblBuscar.Name = "lblBuscar";
-            this.lblBuscar.Size = new System.Drawing.Size(150, 13);
+            this.lblBuscar.Size = new System.Drawing.Size(121, 13);
             this.lblBuscar.TabIndex = 0;
             this.lblBuscar.Text = "SKU o nombre (o parte):";
-            //
+            // 
             // txtBusqueda
-            //
+            // 
             this.txtBusqueda.Location = new System.Drawing.Point(168, 15);
             this.txtBusqueda.Name = "txtBusqueda";
             this.txtBusqueda.Size = new System.Drawing.Size(444, 20);
             this.txtBusqueda.TabIndex = 1;
             this.txtBusqueda.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtBusqueda_KeyDown);
-            //
+            // 
             // btnBuscar
-            //
+            // 
             this.btnBuscar.Location = new System.Drawing.Point(618, 13);
             this.btnBuscar.Name = "btnBuscar";
             this.btnBuscar.Size = new System.Drawing.Size(90, 23);
@@ -50,11 +50,12 @@ namespace UI.SistemaCompraVentas
             this.btnBuscar.Text = "Buscar";
             this.btnBuscar.UseVisualStyleBackColor = true;
             this.btnBuscar.Click += new System.EventHandler(this.btnBuscar_Click);
-            //
+            // 
             // dgvResultados
-            //
+            // 
             this.dgvResultados.AllowUserToAddRows = false;
             this.dgvResultados.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvResultados.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvResultados.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvResultados.Location = new System.Drawing.Point(15, 47);
             this.dgvResultados.MultiSelect = false;
@@ -64,9 +65,9 @@ namespace UI.SistemaCompraVentas
             this.dgvResultados.Size = new System.Drawing.Size(693, 240);
             this.dgvResultados.TabIndex = 3;
             this.dgvResultados.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvResultados_CellDoubleClick);
-            //
+            // 
             // btnSeleccionar
-            //
+            // 
             this.btnSeleccionar.Location = new System.Drawing.Point(512, 297);
             this.btnSeleccionar.Name = "btnSeleccionar";
             this.btnSeleccionar.Size = new System.Drawing.Size(100, 30);
@@ -74,9 +75,10 @@ namespace UI.SistemaCompraVentas
             this.btnSeleccionar.Text = "Seleccionar";
             this.btnSeleccionar.UseVisualStyleBackColor = true;
             this.btnSeleccionar.Click += new System.EventHandler(this.btnSeleccionar_Click);
-            //
+            // 
             // btnCancelar
-            //
+            // 
+            this.btnCancelar.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancelar.Location = new System.Drawing.Point(618, 297);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(90, 30);
@@ -84,13 +86,13 @@ namespace UI.SistemaCompraVentas
             this.btnCancelar.Text = "Cancelar";
             this.btnCancelar.UseVisualStyleBackColor = true;
             this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
-            //
+            // 
             // FormBuscarProducto
-            //
+            // 
             this.AcceptButton = this.btnBuscar;
-            this.CancelButton = this.btnCancelar;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancelar;
             this.ClientSize = new System.Drawing.Size(720, 339);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnSeleccionar);
@@ -98,8 +100,8 @@ namespace UI.SistemaCompraVentas
             this.Controls.Add(this.btnBuscar);
             this.Controls.Add(this.txtBusqueda);
             this.Controls.Add(this.lblBuscar);
-            this.MinimizeBox = false;
             this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormBuscarProducto";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Buscar Producto";
@@ -107,6 +109,7 @@ namespace UI.SistemaCompraVentas
             ((System.ComponentModel.ISupportInitialize)(this.dgvResultados)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion
