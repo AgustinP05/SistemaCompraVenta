@@ -14,15 +14,12 @@ namespace DAL.SistemaCompraVenta
     public class Conexion
     {
         private SqlConnection objConexion;
+        private SqlTransaction objTransaccion;
+        private bool enTransaccion = false;
         private string strCadenaDeConexion = "";
 
-        /* -------------------- private void Conectar() ------------ 
-         * Este metodo como indica su nombre... me permite conectarme con la 
-         * base de datos (en este caso, SqlServer)
-         * 
-         */
-        private void Conectar()
-        {   
+        private void AsignarCadena()
+        {
             //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=AgusPC";
             //cadena de compu sofi,
             //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=SOFI\SQLEXPRESS";
@@ -30,21 +27,64 @@ namespace DAL.SistemaCompraVenta
             strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=DESKTOP-31EJQH0\SQLEXPRESS";
             //cadena de compu Juli,
             //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=JULAZARO\SQLEXPRESS";
-            //Instanció un objeto del tipo SqlConnection
+        }
+
+        /* -------------------- private void Conectar() ------------
+         * Abre la conexión con la base. Si hay una transacción en curso, no abre
+         * una nueva: reutiliza la conexión ya abierta por IniciarTransaccion().
+         */
+        private void Conectar()
+        {
+            if (enTransaccion) return;
+            AsignarCadena();
             objConexion = new SqlConnection();
             objConexion.ConnectionString = strCadenaDeConexion;
             objConexion.Open();
         }
 
-        /* -------------------- private void Desconectar() ------------ 
-         * Este metodo como indica su nombre... me permite desconectarme de la
-         * base de datos (en este caso, SqlServer)
-         * 
+        /* -------------------- private void Desconectar() ------------
+         * Cierra la conexión. Durante una transacción NO cierra: la conexión
+         * debe seguir viva hasta el Confirmar()/Revertir().
          */
         private void Desconectar()
         {
+            if (enTransaccion) return;
             objConexion.Close();
             objConexion.Dispose();
+        }
+
+        /* -------------------- Transacciones ------------
+         * Agrupan varias operaciones en un "todo o nada": si alguna falla se
+         * revierten todas. Uso: IniciarTransaccion(); ...varios SP...; Confirmar();
+         * y en el catch, Revertir();
+         */
+        public void IniciarTransaccion()
+        {
+            AsignarCadena();
+            objConexion = new SqlConnection();
+            objConexion.ConnectionString = strCadenaDeConexion;
+            objConexion.Open();
+            objTransaccion = objConexion.BeginTransaction();
+            enTransaccion = true;
+        }
+
+        public void Confirmar()
+        {
+            try { objTransaccion?.Commit(); }
+            finally { CerrarTransaccion(); }
+        }
+
+        public void Revertir()
+        {
+            try { objTransaccion?.Rollback(); }
+            finally { CerrarTransaccion(); }
+        }
+
+        private void CerrarTransaccion()
+        {
+            enTransaccion = false;
+            if (objTransaccion != null) { objTransaccion.Dispose(); objTransaccion = null; }
+            if (objConexion != null) { objConexion.Close(); objConexion.Dispose(); }
         }
 
         public DataTable LeerPorStoreProcedure(string pNombreStoreProcedure, SqlParameter[] pParametrosSql = null)
@@ -64,6 +104,7 @@ namespace DAL.SistemaCompraVenta
                 objComando.CommandText = pNombreStoreProcedure;
                 objComando.CommandType = CommandType.StoredProcedure;
                 objComando.Connection = this.objConexion;
+                if (enTransaccion) objComando.Transaction = objTransaccion;
 
                 if (pParametrosSql != null)
                 {
@@ -93,86 +134,6 @@ namespace DAL.SistemaCompraVenta
 
 
             return unaTabla;
-        }
-
-        public DataTable LeerPorComando(string pComando)
-        {
-            //Instancio un objeto del tipo DataTable
-            var unaTabla = new DataTable();
-
-            //Instancio un objeto del tipo SqlCommand
-            var objComando = new SqlCommand();
-
-            //Me conecto...
-            this.Conectar();
-
-            try
-            {
-
-
-                //Parametrizo el objeto SqlCommand con sus valores respectivos
-                objComando.CommandType = CommandType.Text;
-                objComando.Connection = this.objConexion;
-                objComando.CommandText = pComando;
-
-                //Instancio un adaptador con el parametro SqlCommand
-                var objAdaptador = new SqlDataAdapter(objComando);
-
-                //Lleno la tabla, el objeto unaTabla con el adaptador
-                objAdaptador.Fill(unaTabla);
-
-            }
-            catch
-            {
-                //Como hay error... por el motivo que sea asigno el resultado a null
-                unaTabla = null;
-
-                throw;
-            }
-            finally
-            {
-                //Siempre, por más que salga bien o mal el llenado, me desconecto
-                this.Desconectar();
-            }
-
-            return unaTabla;
-        }
-
-        public int EscribirPorComando(string pTexto)
-        {
-            //Instanció una variable filasAfectadas que va a terminar devolviendo la cantidad de filas afectadas.
-            int filasAfectadas = 0;
-
-            //Instancio un objeto del tipo SqlCommand
-            var objComando = new SqlCommand();
-
-            //Me conecto...
-            this.Conectar();
-
-            try
-            {
-                objComando.CommandText = pTexto;
-                objComando.CommandType = CommandType.Text;
-                objComando.Connection = this.objConexion;
-
-                //El método ExecuteNonQuery() me devuelve la cantidad de filas afectadas.
-                filasAfectadas = objComando.ExecuteNonQuery();
-
-
-            }
-            catch (Exception)
-            {
-                filasAfectadas = -1;
-                throw;
-            }
-            finally
-            {
-                //Me desconecto
-                this.Desconectar();
-            }
-
-
-            return filasAfectadas;
         }
 
         public SqlParameter crearParametro(string pNombre, object pValor)
@@ -208,6 +169,7 @@ namespace DAL.SistemaCompraVenta
                 objComando.CommandText = pTexto;
                 objComando.CommandType = CommandType.StoredProcedure;
                 objComando.Connection = this.objConexion;
+                if (enTransaccion) objComando.Transaction = objTransaccion;
 
                 if (pParametrosSql.Length > 0)
                 {
@@ -293,17 +255,6 @@ namespace DAL.SistemaCompraVenta
         }
 
 
-        public SqlParameter crearParametro(string pNombre, Boolean pValor)
-        {
-
-            SqlParameter objParametro = new SqlParameter();
-
-            objParametro.ParameterName = pNombre;
-            objParametro.Value = pValor;
-            objParametro.DbType = DbType.Boolean;
-
-            return objParametro;
-        }
         #endregion
 
 

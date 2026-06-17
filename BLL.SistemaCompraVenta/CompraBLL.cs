@@ -9,18 +9,13 @@ namespace BLL.SistemaCompraVenta
     public class CompraBLL
     {
         private CompraDAL oCompraDAL = new CompraDAL();
-        private ProductoBLL oProductoBLL = new ProductoBLL();
 
-        // Registra la orden de compra. Nace en estado Pendiente y NO toca el stock:
-        // el stock recién se mueve cuando el encargado de Stock la recepciona.
+        // Registra la orden de compra (cabecera + detalles, de forma atómica en la DAL).
+        // Nace en estado Pendiente y NO toca el stock: el stock recién se mueve cuando
+        // el encargado de Stock la recepciona.
         public int RegistrarCompra(Compra nuevaCompra)
         {
-            int idCompra = oCompraDAL.RegistrarCompra(nuevaCompra);
-
-            foreach (DetalleCompra detalle in nuevaCompra.Detalles)
-                oCompraDAL.InsertarDetalle(idCompra, detalle);
-
-            return idCompra;
+            return oCompraDAL.RegistrarCompra(nuevaCompra);
         }
 
         public int ObtenerProximoNumeroCompra() => oCompraDAL.ObtenerProximoNumero();
@@ -56,31 +51,15 @@ namespace BLL.SistemaCompraVenta
             // Transición de estado (lanza si el estado actual no lo permite).
             EstadoCompra nuevoEstado = compra.Estado.Recepcionar(huboFaltantes);
 
-            foreach (DetalleCompra detalle in compra.Detalles)
-            {
-                int recibido = detalle.CantidadConfirmada ?? detalle.Cantidad;
-
-                // 1. Suma al stock lo efectivamente recibido.
-                oProductoBLL.SumarStock(detalle.Variante.SKU, recibido);
-
-                // 2. Persiste lo confirmado en el detalle.
-                oCompraDAL.ConfirmarDetalle(compra.IdCompra, detalle.Variante.SKU, recibido);
-
-                // 3. Si faltó mercadería, deja el reclamo auditado.
-                int faltante = detalle.Cantidad - recibido;
-                if (faltante > 0)
-                    oCompraDAL.InsertarReclamo(
-                        compra.IdCompra, detalle.Variante.SKU,
-                        detalle.Cantidad, recibido, faltante);
-            }
-
-            // 4. Cierra el circuito: estado final + auditoría de quién y cuándo recepcionó.
             DateTime fechaRecepcion = DateTime.Now;
-            oCompraDAL.CerrarRecepcion(compra.IdCompra, nuevoEstado.Nombre,
-                fechaRecepcion, usuarioRecepcion.ID);
 
-            compra.Estado          = nuevoEstado;
-            compra.FechaRecepcion  = fechaRecepcion;
+            // Persistencia ATÓMICA en la DAL: suma stock + confirma detalles + reclamos
+            // + cierra el estado, todo en una transacción (todo o nada).
+            oCompraDAL.ProcesarRecepcion(compra.IdCompra, compra.Detalles,
+                nuevoEstado.Nombre, fechaRecepcion, usuarioRecepcion.ID);
+
+            compra.Estado           = nuevoEstado;
+            compra.FechaRecepcion   = fechaRecepcion;
             compra.UsuarioRecepcion = usuarioRecepcion;
         }
 

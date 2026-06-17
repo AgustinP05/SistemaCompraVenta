@@ -11,6 +11,20 @@ namespace DAL.SistemaCompraVenta
     {
         private Conexion conexion = new Conexion();
 
+        // Catálogo completo de roles (cada rol es una familia candidata).
+        public List<Rol> ListarRoles()
+        {
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarRoles", null);
+            List<Rol> lista = new List<Rol>();
+            foreach (DataRow fila in dt.Rows)
+                lista.Add(new Rol
+                {
+                    ID_Rol    = Convert.ToInt32(fila["ID_Rol"]),
+                    NombreRol = fila["NombreRol"].ToString()
+                });
+            return lista;
+        }
+
         public List<Rol> SubRolesDeRol(int idRol)
         {
             SqlParameter[] parametros = { conexion.crearParametro("@ID_Rol", idRol) };

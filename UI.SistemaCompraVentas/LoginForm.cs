@@ -21,8 +21,7 @@ namespace UI.SistemaCompraVentas
             // 1. Instanciamos el servicio de la BLL
             UsuarioBLL service = new UsuarioBLL();
 
-            // 2. Intentamos loguear (service ahora devuelve un Usuario de la capa ENT)
-            //var usuarioLogueado = service.Login(txtUsuario.Text, txtPassword.Text);
+            // 2. Intentamos loguear (service devuelve un Usuario de la capa ENT, o null)
             var usuarioLogueado = service.Login(txtUsuario.Text, txtPassword.Text);
 
             if (usuarioLogueado != null)

@@ -59,17 +59,5 @@ namespace DAL.SistemaCompraVenta
             };
             return conexion.LeerPorStoreProcedure("SP_ObtenerVariantesPorProveedor", param);
         }
-
-        public int InsertarVariante(int idProducto, int idColor, int idTalle, int cantidad)
-        {
-            SqlParameter[] param = {
-                conexion.crearParametro("@ID_Producto", idProducto),
-                conexion.crearParametro("@ID_Color",    idColor),
-                conexion.crearParametro("@ID_Talle",    idTalle),
-                conexion.crearParametro("@Cantidad",    cantidad)
-            };
-            DataTable dt = conexion.LeerPorStoreProcedure("SP_InsertarProductoVariante", param);
-            return Convert.ToInt32(dt.Rows[0]["SKU"]);
-        }
     }
 }

@@ -17,7 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsSQL", "ScriptsSQL", 
 		2-Tablas.sql = 2-Tablas.sql
 		3-DatosIniciales.sql = 3-DatosIniciales.sql
 		4-StoreProcedures.sql = 4-StoreProcedures.sql
-		5-Extras.sql = 5-Extras.sql
 	EndProjectSection
 EndProject
 Global

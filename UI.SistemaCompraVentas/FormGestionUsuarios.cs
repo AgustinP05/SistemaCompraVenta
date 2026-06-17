@@ -17,7 +17,7 @@ namespace UI.SistemaCompraVentas
 
         // Solapa "Permisos por rol". Cada rol ES una familia: sus componentes son
         // permisos individuales (hojas) y otros roles incluidos como sub-familias.
-        private readonly PermisoBLL oPermisoBLL = new PermisoBLL();
+        // Toda la lógica de armado/guardado vive en RolComposicionBLL.
         private readonly RolComposicionBLL oRolComposicionBLL = new RolComposicionBLL();
         private List<Componente> _permisosDisponibles = new List<Componente>();
         private List<Componente> _permisosOtorgados = new List<Componente>();
@@ -32,8 +32,8 @@ namespace UI.SistemaCompraVentas
             lstPermDisponibles.SelectionMode = SelectionMode.MultiExtended;
             lstPermOtorgados.SelectionMode = SelectionMode.MultiExtended;
 
-            // Al seleccionar una familia en cualquiera de las listas, se exhiben
-            // sus permisos individuales (hijos del Composite) en la grilla inferior.
+            // Al seleccionar un rol (sub-familia) en cualquiera de las listas, se
+            // exhiben sus permisos efectivos en la grilla inferior.
             lstPermDisponibles.SelectedIndexChanged += ListaPermisos_SelectedIndexChanged;
             lstPermOtorgados.SelectedIndexChanged += ListaPermisos_SelectedIndexChanged;
 
@@ -76,14 +76,16 @@ namespace UI.SistemaCompraVentas
             }
             catch
             {
-                // Si la DB no está disponible, usa lista hardcodeada como fallback
+                // Si la DB no está disponible, usa lista hardcodeada como fallback.
+                // Los IDs deben coincidir con el seed de 3-DatosIniciales.sql.
                 var fallback = new DataTable();
                 fallback.Columns.Add("ID_Rol",    typeof(int));
                 fallback.Columns.Add("NombreRol", typeof(string));
                 fallback.Rows.Add(1, "Administrador");
                 fallback.Rows.Add(2, "Vendedor");
-                fallback.Rows.Add(3, "Stock");
-                fallback.Rows.Add(4, "Gerente");
+                fallback.Rows.Add(3, "Gerente");
+                fallback.Rows.Add(4, "Stock");
+                fallback.Rows.Add(5, "Compras");
                 cboRoles.DisplayMember    = "NombreRol";
                 cboRoles.ValueMember      = "ID_Rol";
                 cboRoles.DataSource       = fallback;
@@ -362,38 +364,11 @@ namespace UI.SistemaCompraVentas
 
             try
             {
-                // Hojas: catálogo de permisos individuales y los que ya tiene el rol.
-                List<Permiso> todosPermisos = oPermisoBLL.ListarTodos();
-                HashSet<int> idsPermisosRol = new HashSet<int>();
-                foreach (Permiso p in oPermisoBLL.ListarPorRol(idRol)) idsPermisosRol.Add(p.ID_Permiso);
-
-                // Sub-familias: los otros roles que este rol contiene (Composite).
-                HashSet<int> idsSubRolesDelRol = new HashSet<int>();
-                foreach (Rol r in oRolComposicionBLL.SubRolesDeRol(idRol)) idsSubRolesDelRol.Add(r.ID_Rol);
-
-                _permisosDisponibles = new List<Componente>();
-                _permisosOtorgados = new List<Componente>();
-
-                // Cada OTRO rol es una sub-familia candidata (un rol no se contiene a sí mismo).
-                // Se arma su árbol Composite para poder exhibir sus permisos efectivos.
-                foreach (DataRow fila in TablaRoles().Rows)
-                {
-                    int idOtro = Convert.ToInt32(fila["ID_Rol"]);
-                    if (idOtro == idRol) continue;
-
-                    FamiliaPermisos subFamilia =
-                        oRolComposicionBLL.ConstruirArbolDeRol(idOtro, fila["NombreRol"].ToString());
-
-                    if (idsSubRolesDelRol.Contains(idOtro)) _permisosOtorgados.Add(subFamilia);
-                    else _permisosDisponibles.Add(subFamilia);
-                }
-
-                // Permisos individuales (hojas), igual que cualquier componente.
-                foreach (Permiso p in todosPermisos)
-                {
-                    if (idsPermisosRol.Contains(p.ID_Permiso)) _permisosOtorgados.Add(p);
-                    else _permisosDisponibles.Add(p);
-                }
+                // Toda la lógica (armado del árbol, candidatos, ciclos, split) vive en
+                // la BLL; el form solo bindea el resultado.
+                ComponentesDeRol componentes = oRolComposicionBLL.ArmarComponentes(idRol);
+                _permisosDisponibles = componentes.Disponibles;
+                _permisosOtorgados = componentes.Otorgados;
 
                 RefrescarListasPermisos();
             }
@@ -402,12 +377,6 @@ namespace UI.SistemaCompraVentas
                 MessageBox.Show("No se pudieron cargar los permisos: " + ex.Message,
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        // Catálogo de roles cargado en el combo (DataTable con ID_Rol / NombreRol).
-        private DataTable TablaRoles()
-        {
-            return (DataTable)cboRolPermisos.DataSource;
         }
 
         private void RefrescarListasPermisos()
@@ -434,24 +403,12 @@ namespace UI.SistemaCompraVentas
                 return;
             }
 
-            Dictionary<int, string> permisos = new Dictionary<int, string>();
-            RecolectarPermisos(familia, permisos);
-
+            // El Composite sabe enumerar sus permisos efectivos (en cascada).
             dgvPermisosFamilia.Rows.Clear();
-            foreach (KeyValuePair<int, string> par in permisos)
-                dgvPermisosFamilia.Rows.Add(par.Key, par.Value);
+            foreach (Permiso p in familia.ObtenerPermisosEfectivos())
+                dgvPermisosFamilia.Rows.Add(p.ID_Permiso, p.Nombre);
 
             lblPermisosFamilia.Text = "Permisos del rol: " + familia.Nombre;
-        }
-
-        // Recorre el Composite y junta los permisos hoja (sin repetir), bajando por los sub-roles.
-        private void RecolectarPermisos(FamiliaPermisos familia, Dictionary<int, string> acumulado)
-        {
-            foreach (Componente hijo in familia.ObtenerHijos)
-            {
-                if (hijo is Permiso p) acumulado[p.ID_Permiso] = p.Nombre;
-                else if (hijo is FamiliaPermisos sub) RecolectarPermisos(sub, acumulado);
-            }
         }
 
         private void LimpiarGrillaFamilia()
@@ -496,19 +453,10 @@ namespace UI.SistemaCompraVentas
                 return;
             }
 
-            // Separa lo otorgado en sub-roles (familias) y permisos individuales (hojas).
-            List<int> idsSubRoles = new List<int>();
-            List<Permiso> permisos = new List<Permiso>();
-            foreach (Componente c in _permisosOtorgados)
-            {
-                if (c is FamiliaPermisos f) idsSubRoles.Add(f.ID_Familia); // ID_Familia = ID del rol
-                else if (c is Permiso p) permisos.Add(p);
-            }
-
             try
             {
-                oPermisoBLL.GuardarPermisosDeRol(idRol, permisos);
-                oRolComposicionBLL.GuardarSubRolesDeRol(idRol, idsSubRoles);
+                // El split (permisos vs sub-roles) y la persistencia viven en la BLL.
+                oRolComposicionBLL.GuardarComponentes(idRol, _permisosOtorgados);
                 MessageBox.Show("Permisos del rol actualizados con éxito.");
                 CargarPermisos(); // refresca el árbol (la composición pudo cambiar)
             }

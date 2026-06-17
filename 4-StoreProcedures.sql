@@ -328,31 +328,6 @@ AS BEGIN
     ORDER BY p.Nombre;
 END;
 GO
----
-IF OBJECT_ID('SP_InsertarProductoVariante', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarProductoVariante;
-GO
-CREATE PROCEDURE SP_InsertarProductoVariante(
-    @ID_Producto INT, @ID_Color INT, @ID_Talle INT, @Cantidad INT
-)
-AS BEGIN
-    INSERT INTO tProductoVariante (ID_Producto, ID_Color, ID_Talle, Cantidad)
-    VALUES (@ID_Producto, @ID_Color, @ID_Talle, @Cantidad);
-    SELECT SCOPE_IDENTITY() AS SKU;
-END;
-GO
----
--- Talles válidos para un producto (para el combo al crear la variante)
-IF OBJECT_ID('SP_TallesPorProducto', 'P') IS NOT NULL DROP PROCEDURE SP_TallesPorProducto;
-GO
-CREATE PROCEDURE SP_TallesPorProducto
-    @ID_Producto INT
-AS BEGIN
-    SELECT t.ID_Talle, t.Valor
-    FROM tTalle t
-    JOIN tProducto p ON p.ID_Categoria = t.ID_Categoria
-    WHERE p.ID_Producto = @ID_Producto;
-END;
-GO
 
 
 -- VISTA DE GERENTE ----------------------------------------------------------

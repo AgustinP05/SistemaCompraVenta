@@ -109,5 +109,44 @@ namespace DAL.SistemaCompraVenta
             };
             conexion.EscribirPorStoreProcedure("SP_InsertarDescuentoVenta", parametros);
         }
+
+        // Cierra la venta de forma atómica: cabecera + detalles + descuento de stock +
+        // auditoría de descuento, todo en una transacción. La validación de stock la
+        // hace la BLL antes de llamar acá.
+        public int FinalizarVenta(Venta v)
+        {
+            conexion.IniciarTransaccion();
+            try
+            {
+                int idVenta = RegistrarVenta(v);
+
+                foreach (DetalleVenta d in v.Detalles)
+                {
+                    InsertarDetalle(idVenta, d);
+                    DescontarStock(d.Variante.SKU, d.Cantidad);
+                }
+
+                double montoDescuento = v.DevolverDescuento();
+                if (montoDescuento > 0)
+                    InsertarDescuento(idVenta, v.Descuento.Descripcion, montoDescuento);
+
+                conexion.Confirmar();
+                return idVenta;
+            }
+            catch
+            {
+                conexion.Revertir();
+                throw;
+            }
+        }
+
+        private void DescontarStock(int sku, int cantidad)
+        {
+            SqlParameter[] parametros = {
+                conexion.crearParametro("@SKU",      sku),
+                conexion.crearParametro("@Cantidad", cantidad)
+            };
+            conexion.EscribirPorStoreProcedure("SP_ActualizarStock", parametros);
+        }
     }
 }

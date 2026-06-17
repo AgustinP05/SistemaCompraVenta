@@ -11,10 +11,5 @@ namespace ENT.SistemaCompraVenta
             get { return talle; }
             set { talle = value; }
         }
-
-        public override string DevolverTalle()
-        {
-            return talle; 
-        }
     }
 }

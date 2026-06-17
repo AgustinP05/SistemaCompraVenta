@@ -1,6 +1,7 @@
 using ENT.SistemaCompraVenta;
 using ENT.SistemaCompraVenta.EstadosCompra;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -10,17 +11,33 @@ namespace DAL.SistemaCompraVenta
     {
         private Conexion conexion = new Conexion();
 
-        // Cabecera de la orden. Nace en estado 'Pendiente' (lo fija el SP).
+        // Registra la orden completa (cabecera + detalles) de forma atómica: si falla
+        // algún detalle, no queda la cabecera suelta. Nace en estado 'Pendiente'.
         public int RegistrarCompra(Compra c)
         {
-            SqlParameter[] parametros = {
-                conexion.crearParametro("@Fecha",        c.Fecha),
-                conexion.crearParametro("@ID_Proveedor", c.Proveedor.IdProveedor),
-                conexion.crearParametro("@ID_Usuario",   c.Usuario.ID)
-            };
+            conexion.IniciarTransaccion();
+            try
+            {
+                SqlParameter[] parametros = {
+                    conexion.crearParametro("@Fecha",        c.Fecha),
+                    conexion.crearParametro("@ID_Proveedor", c.Proveedor.IdProveedor),
+                    conexion.crearParametro("@ID_Usuario",   c.Usuario.ID)
+                };
 
-            DataTable dt = conexion.LeerPorStoreProcedure("SP_RegistrarCompra", parametros);
-            return Convert.ToInt32(dt.Rows[0]["ID_Compra"]);
+                DataTable dt = conexion.LeerPorStoreProcedure("SP_RegistrarCompra", parametros);
+                int idCompra = Convert.ToInt32(dt.Rows[0]["ID_Compra"]);
+
+                foreach (DetalleCompra d in c.Detalles)
+                    InsertarDetalle(idCompra, d);
+
+                conexion.Confirmar();
+                return idCompra;
+            }
+            catch
+            {
+                conexion.Revertir();
+                throw;
+            }
         }
 
         public void InsertarDetalle(int idCompra, DetalleCompra d)
@@ -132,6 +149,46 @@ namespace DAL.SistemaCompraVenta
                 conexion.crearParametro("@CantidadFaltante", faltante)
             };
             conexion.EscribirPorStoreProcedure("SP_InsertarReclamoCompra", parametros);
+        }
+
+        // Recepción atómica: por cada ítem suma stock, confirma lo recibido y registra
+        // el faltante si lo hubo; al final cierra el estado de la orden. Todo en una
+        // transacción: si algo falla, no queda nada a medias (ni stock sumado de más).
+        public void ProcesarRecepcion(int idCompra, List<DetalleCompra> detalles,
+                                      string estado, DateTime fechaRecepcion, int idUsuarioRecepcion)
+        {
+            conexion.IniciarTransaccion();
+            try
+            {
+                foreach (DetalleCompra d in detalles)
+                {
+                    int recibido = d.CantidadConfirmada ?? d.Cantidad;
+
+                    SumarStock(d.Variante.SKU, recibido);
+                    ConfirmarDetalle(idCompra, d.Variante.SKU, recibido);
+
+                    int faltante = d.Cantidad - recibido;
+                    if (faltante > 0)
+                        InsertarReclamo(idCompra, d.Variante.SKU, d.Cantidad, recibido, faltante);
+                }
+
+                CerrarRecepcion(idCompra, estado, fechaRecepcion, idUsuarioRecepcion);
+                conexion.Confirmar();
+            }
+            catch
+            {
+                conexion.Revertir();
+                throw;
+            }
+        }
+
+        private void SumarStock(int sku, int cantidad)
+        {
+            SqlParameter[] parametros = {
+                conexion.crearParametro("@SKU",      sku),
+                conexion.crearParametro("@Cantidad", cantidad)
+            };
+            conexion.EscribirPorStoreProcedure("SP_SumarStock", parametros);
         }
     }
 }

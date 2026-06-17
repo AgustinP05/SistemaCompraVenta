@@ -6,11 +6,6 @@ namespace ENT.SistemaCompraVenta
     {
         public int ID_Permiso { get; set; }
 
-        public override string Mostrar()
-        {
-            return "- " + Nombre + Environment.NewLine;
-        }
-
         // REQUERIDO: Compara su propio nombre
         public override bool TienePermiso(string nombrePermiso)
         {

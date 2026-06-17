@@ -9,17 +9,6 @@ namespace DAL.SistemaCompraVenta
     {
         Conexion conexion = new Conexion();
 
-        public List<string> ObtenerPermisos(int idRol)
-        {
-            SqlParameter[] parametros = { conexion.crearParametro("@ID_Rol", idRol) };
-            DataTable dt = conexion.LeerPorStoreProcedure("SP_PermisosPorRol", parametros);
-
-            List<string> permisos = new List<string>();
-            foreach (DataRow fila in dt.Rows)
-                permisos.Add(fila["Nombre"].ToString());
-            return permisos;
-        }
-
         public DataTable ObtenerUsuarios()
         {
             return conexion.LeerPorStoreProcedure("SP_ObtenerUsuarios");

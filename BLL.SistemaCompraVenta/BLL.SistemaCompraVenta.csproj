@@ -51,6 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProveedorBLL.cs" />
     <Compile Include="ReporteBLL.cs" />
+    <Compile Include="Validaciones.cs" />
     <Compile Include="Services\UsuarioBLL.cs" />
     <Compile Include="Sesion\Sesion.cs" />
     <Compile Include="VentaBLL.cs" />

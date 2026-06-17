@@ -33,7 +33,7 @@ namespace BLL.SistemaCompraVenta
             if (string.IsNullOrWhiteSpace(cuit) || string.IsNullOrWhiteSpace(razonSocial))
                 throw new Exception("Complete todos los datos obligatorios.");
 
-            if (!ValidarEmail(email))
+            if (!Validaciones.EmailValido(email))
                 throw new Exception("Email inválido.");
 
             Proveedor p = new Proveedor
@@ -58,7 +58,7 @@ namespace BLL.SistemaCompraVenta
             if (string.IsNullOrWhiteSpace(p.Cuit) || string.IsNullOrWhiteSpace(p.RazonSocial))
                 throw new Exception("Complete todos los datos obligatorios.");
 
-            if (!ValidarEmail(p.Email))
+            if (!Validaciones.EmailValido(p.Email))
                 throw new Exception("Email inválido.");
 
             return oProveedorDAL.ModificarProveedor(p) > 0;
@@ -72,10 +72,5 @@ namespace BLL.SistemaCompraVenta
             return oProveedorDAL.EliminarProveedor(cuit) > 0;
         }
 
-        private bool ValidarEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email)) return false;
-            return email.Contains("@") && email.Contains(".");
-        }
     }
 }

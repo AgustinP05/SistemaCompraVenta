@@ -11,7 +11,7 @@ namespace BLL.SistemaCompraVenta
     {
         private VentaDAL oVentaDAL = new VentaDAL();
 
-        public string GenerarTexto(int nroVenta)
+        private string GenerarTexto(int nroVenta)
         {
             Venta venta = oVentaDAL.ObtenerVentaPorId(nroVenta);
             if (venta == null)

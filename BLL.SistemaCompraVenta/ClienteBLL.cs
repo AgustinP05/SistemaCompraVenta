@@ -22,8 +22,8 @@ namespace BLL.SistemaCompraVenta
                 throw new Exception("Complete todos los datos obligatorios");
             }
 
-            // 2. Validación de formato de email 
-            if (!ValidarEmail(c.Email))
+            // 2. Validación de formato de email
+            if (!Validaciones.EmailValido(c.Email))
             {
                 throw new Exception("Email inválido");
             }
@@ -69,7 +69,7 @@ namespace BLL.SistemaCompraVenta
                 throw new Exception("Complete todos los datos obligatorios");
             }
 
-            if (!ValidarEmail(c.Email))
+            if (!Validaciones.EmailValido(c.Email))
             {
                 throw new Exception("Email inválido");
             }
@@ -87,11 +87,6 @@ namespace BLL.SistemaCompraVenta
             return resultado > 0;
         }
 
-        private bool ValidarEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email)) return false;
-            return email.Contains("@") && email.Contains(".");
-        }
         public List<Cliente> ListarClientes()
         {
            
