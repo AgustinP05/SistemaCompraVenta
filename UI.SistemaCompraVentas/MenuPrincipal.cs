@@ -71,14 +71,14 @@ namespace UI.SistemaCompraVentas
             // Lista de botones en el orden lógico que querés mostrarlos
             var botones = new List<System.Windows.Forms.Button>
             {
-                btnUsuarios,
-                btnReportes,
-                btnVentas,
-                btnProductos,
-                btnClientes,
-                btnProveedores,
-                btnCompras,
-                btnRecepcionCompras
+                btnUsuarios,         // 1
+                btnClientes,         // 2
+                btnProveedores,      // 3
+                btnProductos,        // 4  (Gestionar Stock)
+                btnCompras,          // 5  (Registrar Compra)
+                btnRecepcionCompras, // 6
+                btnVentas,           // 7  (Registrar Venta)
+                btnReportes          // 8  (Generar Reportes)
             };
 
             int yInicial = 119; // misma Y que tenía btnUsuarios en el Designer
@@ -110,9 +110,9 @@ namespace UI.SistemaCompraVentas
 
         private void btnProductos_Click(object sender, EventArgs e)
         {
-            FormStock vistaStock = new FormStock();
-            vistaStock.StartPosition = FormStartPosition.CenterScreen;
-            vistaStock.ShowDialog();
+            FormCrearProducto vistaProductos = new FormCrearProducto();
+            vistaProductos.StartPosition = FormStartPosition.CenterScreen;
+            vistaProductos.ShowDialog();
         }
 
         private void btnReportes_Click(object sender, EventArgs e)

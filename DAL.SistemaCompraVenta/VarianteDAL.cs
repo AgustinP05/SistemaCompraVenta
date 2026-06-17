@@ -59,5 +59,47 @@ namespace DAL.SistemaCompraVenta
             };
             return conexion.LeerPorStoreProcedure("SP_ObtenerVariantesPorProveedor", param);
         }
+
+        // Variantes (SKU) de un producto, para la solapa Crear Variante.
+        public DataTable ListarPorProducto(int idProducto)
+        {
+            SqlParameter[] param = { ParametroSql.Crear("@ID_Producto", idProducto) };
+            return conexion.LeerPorStoreProcedure("SP_ListarVariantesPorProducto", param);
+        }
+
+        // ¿Ya existe esa combinación producto+color+talle? Se consulta antes de insertar
+        // para no consumir un número de SKU con un INSERT que iba a fallar por el UNIQUE.
+        public bool ExisteVariante(int idProducto, int idColor, int idTalle)
+        {
+            SqlParameter[] param = {
+                ParametroSql.Crear("@ID_Producto", idProducto),
+                ParametroSql.Crear("@ID_Color",    idColor),
+                ParametroSql.Crear("@ID_Talle",    idTalle)
+            };
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ExisteVariante", param);
+            return dt != null && dt.Rows.Count > 0;
+        }
+
+        // Crea un SKU con stock inicial 0 (lo pone el DEFAULT de la tabla).
+        public int Insertar(int idProducto, int idColor, int idTalle)
+        {
+            SqlParameter[] param = {
+                ParametroSql.Crear("@ID_Producto", idProducto),
+                ParametroSql.Crear("@ID_Color",    idColor),
+                ParametroSql.Crear("@ID_Talle",    idTalle)
+            };
+            return conexion.EscribirPorStoreProcedure("SP_InsertarVariante", param);
+        }
+
+        public DataTable ListarColores()
+        {
+            return conexion.LeerPorStoreProcedure("SP_ListarColores", null);
+        }
+
+        public DataTable ListarTallesPorCategoria(int idCategoria)
+        {
+            SqlParameter[] param = { ParametroSql.Crear("@ID_Categoria", idCategoria) };
+            return conexion.LeerPorStoreProcedure("SP_ListarTallesPorCategoria", param);
+        }
     }
 }

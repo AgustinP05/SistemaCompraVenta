@@ -280,23 +280,56 @@ namespace UI.SistemaCompraVentas
         private void buscarSku_Click(object sender, EventArgs e)
         {
             Proveedor proveedor = BuscarProveedorPorCuit(txtProveedor.Text.Trim());
-            if (proveedor == null)
-            {
-                MessageBox.Show("Primero ingresá o buscá un proveedor: los productos se filtran por sus marcas.",
-                    "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
 
             using (FormBuscarProducto buscador = new FormBuscarProducto())
             {
-                // Limita el buscador a las marcas que provee este proveedor.
-                buscador.IdProveedorFiltro = proveedor.IdProveedor;
+                // Con proveedor: el buscador se limita a sus marcas.
+                // Sin proveedor (modo "SKU primero"): catálogo completo; después
+                // resolvemos el proveedor a partir del SKU elegido.
+                if (proveedor != null)
+                    buscador.IdProveedorFiltro = proveedor.IdProveedor;
 
                 if (buscador.ShowDialog() != DialogResult.OK || buscador.SkuSeleccionado == 0)
                     return;
 
                 txtSku.Text = buscador.SkuSeleccionado.ToString();
+
+                if (proveedor == null)
+                    ResolverProveedorDesdeSku(avisarSiNoExiste: true);
             }
+        }
+
+        // Modo "SKU primero": si todavía no hay proveedor elegido, resuelve el proveedor
+        // a partir del SKU (la marca del producto lo determina de forma única) y lo carga.
+        private void ResolverProveedorDesdeSku(bool avisarSiNoExiste = false)
+        {
+            // Si ya hay un proveedor válido, no pisamos su elección.
+            if (BuscarProveedorPorCuit(txtProveedor.Text.Trim()) != null) return;
+            if (!int.TryParse(txtSku.Text.Trim(), out int sku)) return;
+
+            Proveedor prov = oProveedorBLL.ObtenerProveedorPorSku(sku);
+            if (prov == null)
+            {
+                if (avisarSiNoExiste)
+                    MessageBox.Show("No se encontró ningún proveedor para el SKU " + sku + ".",
+                        "Atención", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (!proveedores.Exists(p => p.Cuit == prov.Cuit))
+                proveedores.Add(prov);
+
+            // Al setear el CUIT se dispara la carga de variantes del proveedor;
+            // luego re-evaluamos el SKU para mostrar sus datos.
+            txtProveedor.Text = prov.Cuit;
+            txtSku_TextChanged(null, EventArgs.Empty);
+        }
+
+        // Al salir del campo SKU, si no hay proveedor elegido, intentamos resolverlo
+        // (silencioso: no molesta con avisos si el SKU está incompleto o no existe).
+        private void txtSku_Leave(object sender, EventArgs e)
+        {
+            ResolverProveedorDesdeSku(avisarSiNoExiste: false);
         }
 
         private void btnSalir_Click(object sender, EventArgs e) => this.Close();

@@ -91,11 +91,23 @@
       <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
     </Compile>
     <Compile Include="GrillaHelper.cs" />
-    <Compile Include="FormStock.cs">
+    <Compile Include="FormCrearProducto.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormStock.Designer.cs">
-      <DependentUpon>FormStock.cs</DependentUpon>
+    <Compile Include="FormCrearProducto.Designer.cs">
+      <DependentUpon>FormCrearProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormBuscarProductoBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarProductoBase.Designer.cs">
+      <DependentUpon>FormBuscarProductoBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormNuevaMarca.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNuevaMarca.Designer.cs">
+      <DependentUpon>FormNuevaMarca.cs</DependentUpon>
     </Compile>
     <Compile Include="FormGerente.cs">
       <SubType>Form</SubType>
@@ -150,8 +162,14 @@
     <EmbeddedResource Include="FormRecepcionCompras.resx">
       <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormStock.resx">
-      <DependentUpon>FormStock.cs</DependentUpon>
+    <EmbeddedResource Include="FormCrearProducto.resx">
+      <DependentUpon>FormCrearProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormBuscarProductoBase.resx">
+      <DependentUpon>FormBuscarProductoBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNuevaMarca.resx">
+      <DependentUpon>FormNuevaMarca.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormGerente.resx">
       <DependentUpon>FormGerente.cs</DependentUpon>

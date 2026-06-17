@@ -227,6 +227,7 @@ namespace UI.SistemaCompraVentas
             this.txtSku.Size = new System.Drawing.Size(130, 20);
             this.txtSku.TabIndex = 4;
             this.txtSku.TextChanged += new System.EventHandler(this.txtSku_TextChanged);
+            this.txtSku.Leave += new System.EventHandler(this.txtSku_Leave);
             // 
             // label3
             // 

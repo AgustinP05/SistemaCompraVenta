@@ -298,7 +298,7 @@ GO
 IF OBJECT_ID('SP_ListarProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ListarProductos;
 GO
 CREATE PROCEDURE SP_ListarProductos AS BEGIN
-    SELECT p.ID_Producto, p.Nombre, p.Marca, c.Nombre AS Categoria,
+    SELECT p.ID_Producto, p.Nombre, p.Marca, p.ID_Categoria, c.Nombre AS Categoria,
            p.PrecioVenta, p.PrecioCosto
     FROM tProducto p
     JOIN tCategoria c ON c.ID_Categoria = p.ID_Categoria;
@@ -315,6 +315,59 @@ AS BEGIN
     INSERT INTO tProducto (Nombre, Marca, ID_Categoria, PrecioVenta, PrecioCosto)
     VALUES (@Nombre, @Marca, @ID_Categoria, @PrecioVenta, @PrecioCosto);
     SELECT SCOPE_IDENTITY() AS ID_Producto;
+END;
+GO
+---
+IF OBJECT_ID('SP_ObtenerProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerProductos;
+GO
+-- Busca productos por ID, nombre o marca (para la solapa Buscar / Editar)
+CREATE PROCEDURE SP_ObtenerProductos
+    @Filtro VARCHAR(100)
+AS BEGIN
+    SELECT p.ID_Producto, p.Nombre, p.Marca, p.ID_Categoria, c.Nombre AS Categoria,
+           p.PrecioVenta, p.PrecioCosto
+    FROM tProducto p
+    JOIN tCategoria c ON c.ID_Categoria = p.ID_Categoria
+    WHERE p.Nombre LIKE '%' + @Filtro + '%'
+       OR p.Marca  LIKE '%' + @Filtro + '%'
+       OR CAST(p.ID_Producto AS VARCHAR(20)) LIKE '%' + @Filtro + '%'
+    ORDER BY p.Nombre;
+END;
+GO
+---
+IF OBJECT_ID('SP_ObtenerProductoPorId', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerProductoPorId;
+GO
+-- Trae un producto puntual por su ID (para la solapa Crear Variante)
+CREATE PROCEDURE SP_ObtenerProductoPorId
+    @ID_Producto INT
+AS BEGIN
+    SELECT p.ID_Producto, p.Nombre, p.Marca, p.ID_Categoria, c.Nombre AS Categoria,
+           p.PrecioVenta, p.PrecioCosto
+    FROM tProducto p
+    JOIN tCategoria c ON c.ID_Categoria = p.ID_Categoria
+    WHERE p.ID_Producto = @ID_Producto;
+END;
+GO
+---
+IF OBJECT_ID('SP_ModificarProducto', 'P') IS NOT NULL DROP PROCEDURE SP_ModificarProducto;
+GO
+CREATE PROCEDURE SP_ModificarProducto
+    @ID_Producto INT, @Nombre VARCHAR(100), @Marca VARCHAR(100),
+    @ID_Categoria INT, @PrecioVenta DECIMAL(10,2), @PrecioCosto DECIMAL(10,2)
+AS BEGIN
+    UPDATE tProducto
+    SET Nombre = @Nombre, Marca = @Marca, ID_Categoria = @ID_Categoria,
+        PrecioVenta = @PrecioVenta, PrecioCosto = @PrecioCosto
+    WHERE ID_Producto = @ID_Producto;
+END;
+GO
+---
+IF OBJECT_ID('SP_EliminarProducto', 'P') IS NOT NULL DROP PROCEDURE SP_EliminarProducto;
+GO
+CREATE PROCEDURE SP_EliminarProducto
+    @ID_Producto INT
+AS BEGIN
+    DELETE FROM tProducto WHERE ID_Producto = @ID_Producto;
 END;
 GO
 
@@ -347,6 +400,64 @@ AS BEGIN
     WHERE CAST(pv.SKU AS VARCHAR(20)) LIKE '%' + @Filtro + '%'
        OR p.Nombre LIKE '%' + @Filtro + '%'
     ORDER BY p.Nombre;
+END;
+GO
+---
+IF OBJECT_ID('SP_ListarVariantesPorProducto', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVariantesPorProducto;
+GO
+-- Variantes (SKU) de un producto, para la solapa Crear Variante
+CREATE PROCEDURE SP_ListarVariantesPorProducto
+    @ID_Producto INT
+AS BEGIN
+    SELECT pv.SKU, c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
+    FROM tProductoVariante pv
+    JOIN tColor c ON c.ID_Color = pv.ID_Color
+    JOIN tTalle t ON t.ID_Talle = pv.ID_Talle
+    WHERE pv.ID_Producto = @ID_Producto
+    ORDER BY t.Valor, c.Nombre;
+END;
+GO
+---
+IF OBJECT_ID('SP_ExisteVariante', 'P') IS NOT NULL DROP PROCEDURE SP_ExisteVariante;
+GO
+-- Chequeo previo: ¿ya existe esa combinación producto+color+talle?
+-- Se consulta ANTES de insertar para no "quemar" un número de SKU con un INSERT
+-- que iba a fallar por el UNIQUE (en SQL Server el IDENTITY se consume igual al fallar).
+CREATE PROCEDURE SP_ExisteVariante
+    @ID_Producto INT, @ID_Color INT, @ID_Talle INT
+AS BEGIN
+    SELECT SKU FROM tProductoVariante
+    WHERE ID_Producto = @ID_Producto AND ID_Color = @ID_Color AND ID_Talle = @ID_Talle;
+END;
+GO
+---
+IF OBJECT_ID('SP_InsertarVariante', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarVariante;
+GO
+-- Crea un SKU para un producto. El stock arranca en 0 (Cantidad tiene DEFAULT 0).
+-- El UNIQUE (ID_Producto, ID_Color, ID_Talle) queda como red de seguridad.
+CREATE PROCEDURE SP_InsertarVariante
+    @ID_Producto INT, @ID_Color INT, @ID_Talle INT
+AS BEGIN
+    INSERT INTO tProductoVariante (ID_Producto, ID_Color, ID_Talle)
+    VALUES (@ID_Producto, @ID_Color, @ID_Talle);
+    SELECT SCOPE_IDENTITY() AS SKU;
+END;
+GO
+---
+IF OBJECT_ID('SP_ListarColores', 'P') IS NOT NULL DROP PROCEDURE SP_ListarColores;
+GO
+CREATE PROCEDURE SP_ListarColores AS BEGIN
+    SELECT ID_Color, Nombre FROM tColor ORDER BY Nombre;
+END;
+GO
+---
+IF OBJECT_ID('SP_ListarTallesPorCategoria', 'P') IS NOT NULL DROP PROCEDURE SP_ListarTallesPorCategoria;
+GO
+-- Talles válidos para la categoría del producto (Calzado vs Vestimenta)
+CREATE PROCEDURE SP_ListarTallesPorCategoria
+    @ID_Categoria INT
+AS BEGIN
+    SELECT ID_Talle, Valor FROM tTalle WHERE ID_Categoria = @ID_Categoria ORDER BY Valor;
 END;
 GO
 
@@ -754,6 +865,42 @@ GO
 CREATE PROCEDURE SP_MarcasDeProveedor(@ID_Proveedor INT)
 AS BEGIN
     SELECT Marca FROM tProveedorMarca WHERE ID_Proveedor = @ID_Proveedor ORDER BY Marca;
+END;
+GO
+---
+-- Catálogo de marcas disponibles: las que provee al menos un proveedor
+-- (alimenta el desplegable de marca al crear/editar un producto).
+IF OBJECT_ID('SP_ListarMarcas', 'P') IS NOT NULL DROP PROCEDURE SP_ListarMarcas;
+GO
+CREATE PROCEDURE SP_ListarMarcas AS BEGIN
+    SELECT DISTINCT Marca FROM tProveedorMarca ORDER BY Marca;
+END;
+GO
+---
+-- Alta de marca: la asocia a un proveedor. Como Marca es PK, si la marca ya existe
+-- (la provee otro proveedor) el INSERT viola la PK y la BLL lo traduce a un mensaje claro.
+IF OBJECT_ID('SP_AsociarMarcaProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_AsociarMarcaProveedor;
+GO
+CREATE PROCEDURE SP_AsociarMarcaProveedor
+    @ID_Proveedor INT, @Marca VARCHAR(100)
+AS BEGIN
+    INSERT INTO tProveedorMarca (ID_Proveedor, Marca) VALUES (@ID_Proveedor, @Marca);
+END;
+GO
+---
+-- Proveedor que provee un SKU (modo "SKU primero" en la carga de compras).
+-- Como cada marca pertenece a un único proveedor, el SKU determina un solo proveedor.
+IF OBJECT_ID('SP_ObtenerProveedorPorSku', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerProveedorPorSku;
+GO
+CREATE PROCEDURE SP_ObtenerProveedorPorSku
+    @SKU INT
+AS BEGIN
+    SELECT pr.ID_Proveedor, pr.CUIT, pr.RazonSocial, pr.Telefono, pr.Email, pr.Direccion
+    FROM tProductoVariante pv
+    JOIN tProducto p        ON p.ID_Producto   = pv.ID_Producto
+    JOIN tProveedorMarca pm ON pm.Marca         = p.Marca
+    JOIN tProveedor pr      ON pr.ID_Proveedor  = pm.ID_Proveedor
+    WHERE pv.SKU = @SKU;
 END;
 GO
 ---

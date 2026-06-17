@@ -23,6 +23,39 @@ namespace BLL.SistemaCompraVenta
             return oProveedorDAL.MarcasDeProveedor(idProveedor);
         }
 
+        // Proveedor que provee un SKU (la marca del producto lo determina de forma única).
+        public Proveedor ObtenerProveedorPorSku(int sku)
+        {
+            return oProveedorDAL.ObtenerPorSku(sku);
+        }
+
+        // Catálogo de marcas disponibles (para el desplegable al crear/editar producto).
+        public List<string> ListarMarcas()
+        {
+            return oProveedorDAL.ListarMarcas();
+        }
+
+        // Alta de marca nueva: la asocia a un proveedor existente.
+        // Regla: una marca pertenece a un único proveedor (no se cruza).
+        public void AsociarMarca(int idProveedor, string marca)
+        {
+            if (idProveedor <= 0)
+                throw new Exception("Seleccioná un proveedor.");
+            if (string.IsNullOrWhiteSpace(marca))
+                throw new Exception("Ingresá el nombre de la marca.");
+
+            try
+            {
+                oProveedorDAL.AsociarMarca(idProveedor, marca.Trim());
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601) // PK/UNIQUE
+            {
+                throw new OperacionNoPermitidaException(
+                    "La marca \"" + marca.Trim() + "\" ya pertenece a un proveedor. " +
+                    "Cada marca puede estar asignada a un único proveedor.");
+            }
+        }
+
         public bool ExisteProveedor(string cuit)
         {
             return oProveedorDAL.ExisteProveedor(cuit);
