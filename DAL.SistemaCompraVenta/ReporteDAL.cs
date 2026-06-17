@@ -43,11 +43,11 @@ namespace DAL.SistemaCompraVentas
 
             // si DBNull.Value si el filtro no se selecciono
             SqlParameter[] parametros = {
-                conexion.crearParametro("@Desde", f.FechaDesde),
-                conexion.crearParametro("@Hasta", f.FechaHasta),
-                conexion.crearParametro("@IdVendedor", f.IdVendedor.HasValue ? (object)f.IdVendedor.Value : DBNull.Value),
-                conexion.crearParametro("@IdProducto", f.IdProducto.HasValue ? (object)f.IdProducto.Value : DBNull.Value),
-                conexion.crearParametro("@IdCliente", f.IdCliente.HasValue ? (object)f.IdCliente.Value : DBNull.Value)
+                ParametroSql.Crear("@Desde", f.FechaDesde),
+                ParametroSql.Crear("@Hasta", f.FechaHasta),
+                ParametroSql.Crear("@IdVendedor", f.IdVendedor.HasValue ? (object)f.IdVendedor.Value : DBNull.Value),
+                ParametroSql.Crear("@IdProducto", f.IdProducto.HasValue ? (object)f.IdProducto.Value : DBNull.Value),
+                ParametroSql.Crear("@IdCliente", f.IdCliente.HasValue ? (object)f.IdCliente.Value : DBNull.Value)
             };
 
             // SP

@@ -232,7 +232,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.dgvProveedoresCargados.AllowUserToAddRows = false;
             this.dgvProveedoresCargados.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvProveedoresCargados.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvProveedoresCargados.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvProveedoresCargados.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvProveedoresCargados.Location = new System.Drawing.Point(8, 153);
             this.dgvProveedoresCargados.Name = "dgvProveedoresCargados";
@@ -303,7 +303,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.dgvProveedores.AllowUserToAddRows = false;
             this.dgvProveedores.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvProveedores.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvProveedores.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvProveedores.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvProveedores.Location = new System.Drawing.Point(8, 70);
             this.dgvProveedores.MultiSelect = false;

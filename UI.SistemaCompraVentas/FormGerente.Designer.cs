@@ -121,6 +121,7 @@
             // 
             // dgvCrecimiento
             // 
+            this.dgvCrecimiento.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvCrecimiento.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvCrecimiento.Location = new System.Drawing.Point(34, 163);
             this.dgvCrecimiento.Name = "dgvCrecimiento";
@@ -218,6 +219,7 @@
             // 
             // dgvReporte
             // 
+            this.dgvReporte.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvReporte.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvReporte.Location = new System.Drawing.Point(37, 163);
             this.dgvReporte.Name = "dgvReporte";

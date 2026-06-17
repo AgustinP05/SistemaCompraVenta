@@ -29,8 +29,6 @@ namespace UI.SistemaCompraVentas
                 // 3. Guardamos el usuario en el Singleton (BLL)
                 Sesion.ObtenerInstancia().UsuarioActual = usuarioLogueado;
 
-                MessageBox.Show("¡Bienvenido " + usuarioLogueado.Nombre + "!");
-
                 // 4. Abrimos el menú principal
                 MenuPrincipal menu = new MenuPrincipal();
                 menu.Show();
@@ -39,7 +37,11 @@ namespace UI.SistemaCompraVentas
             }
             else
             {
-                MessageBox.Show("Credenciales incorrectas. Intente nuevamente.");
+                MessageBox.Show(
+                    "Credenciales incorrectas. Intente nuevamente.",
+                    "Inicio de sesión",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
             }
         }
 

@@ -328,7 +328,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.dgvClientes.AllowUserToAddRows = false;
             this.dgvClientes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvClientes.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvClientes.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvClientes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvClientes.Location = new System.Drawing.Point(8, 70);
             this.dgvClientes.MultiSelect = false;

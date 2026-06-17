@@ -216,6 +216,7 @@
             // 
             // dgvProductos
             // 
+            this.dgvProductos.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvProductos.Location = new System.Drawing.Point(310, 20);
             this.dgvProductos.Name = "dgvProductos";
             this.dgvProductos.Size = new System.Drawing.Size(860, 500);

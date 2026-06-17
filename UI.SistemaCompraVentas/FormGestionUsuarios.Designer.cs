@@ -300,7 +300,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.dgvUsuariosCargados.AllowUserToAddRows = false;
             this.dgvUsuariosCargados.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvUsuariosCargados.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvUsuariosCargados.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvUsuariosCargados.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvUsuariosCargados.Location = new System.Drawing.Point(8, 191);
             this.dgvUsuariosCargados.Name = "dgvUsuariosCargados";
@@ -371,7 +371,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.dgvUsuarios.AllowUserToAddRows = false;
             this.dgvUsuarios.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvUsuarios.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvUsuarios.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvUsuarios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvUsuarios.Location = new System.Drawing.Point(8, 70);
             this.dgvUsuarios.MultiSelect = false;
@@ -691,6 +691,7 @@ namespace UI.SistemaCompraVentas
             this.dgvPermisosFamilia.AllowUserToAddRows = false;
             this.dgvPermisosFamilia.AllowUserToDeleteRows = false;
             this.dgvPermisosFamilia.AllowUserToResizeRows = false;
+            this.dgvPermisosFamilia.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvPermisosFamilia.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPermisosFamilia.Location = new System.Drawing.Point(8, 283);
             this.dgvPermisosFamilia.MultiSelect = false;

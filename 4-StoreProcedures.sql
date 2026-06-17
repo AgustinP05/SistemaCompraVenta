@@ -378,7 +378,7 @@ AS BEGIN
     JOIN tCliente c ON v.ID_Cliente = c.ID_Cliente
     JOIN tUsuario u ON v.ID_Usuario = u.ID
     JOIN tDetalleVenta dv ON v.ID_Venta = dv.ID_Venta
-    JOIN tProductoVariante pv ON dv.ID_ProductoVariante = pv.ID_ProductoVariante
+    JOIN tProductoVariante pv ON dv.SKU = pv.SKU
     JOIN tProducto p ON pv.ID_Producto = p.ID_Producto
     WHERE 
         v.Fecha >= @Desde AND v.Fecha <= @Hasta
