@@ -226,13 +226,14 @@ namespace UI.SistemaCompraVentas
                     MessageBox.Show("Error al eliminar el proveedor.");
                 }
             }
+            catch (ENT.SistemaCompraVenta.OperacionNoPermitidaException ex)
+            {
+                MessageBox.Show(ex.Message, "Operación no permitida",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("REFERENCE") || ex.Message.Contains("FK_"))
-                    MessageBox.Show("No se puede eliminar el proveedor porque tiene compras registradas en el sistema.",
-                                    "Operación no permitida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else
-                    MessageBox.Show("Ocurrió un error: " + ex.Message);
+                MessageBox.Show("Ocurrió un error: " + ex.Message);
             }
         }
 

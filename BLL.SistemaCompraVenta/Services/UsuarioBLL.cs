@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using ENT.SistemaCompraVenta;
 using DAL.SistemaCompraVenta;
 using BLL.SistemaCompraVenta;
@@ -74,8 +75,15 @@ namespace BLL.SistemaCompraVenta.Services
             if (string.IsNullOrWhiteSpace(dni))
                 throw new Exception("DNI inválido.");
 
-            int filas = oUsuarioDAL.EliminarUsuario(dni);
-            return filas > 0;
+            try
+            {
+                return oUsuarioDAL.EliminarUsuario(dni) > 0;
+            }
+            catch (SqlException ex) when (ex.Number == 547) // violación de FK
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el usuario porque tiene operaciones registradas en el sistema.");
+            }
         }
     }
 }
