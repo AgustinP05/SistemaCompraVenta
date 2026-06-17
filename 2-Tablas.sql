@@ -1,3 +1,4 @@
+
 /* =========================================================
    SistemaCompraVenta - Script de tablas (versión final)
    Nomenclatura 2-Tablas: prefijo t, PascalCase, FKs inline.

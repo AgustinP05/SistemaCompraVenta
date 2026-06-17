@@ -50,8 +50,11 @@
     <Compile Include="Composite\Permiso.cs" />
     <Compile Include="Compra.cs" />
     <Compile Include="DetalleCompra.cs" />
+    <Compile Include="DetalleReporte.cs" />
     <Compile Include="DetalleVenta.cs" />
     <Compile Include="OperacionNoPermitidaException.cs" />
+    <Compile Include="EntidadReporte.cs" />
+    <Compile Include="FiltroReporte.cs" />
     <Compile Include="Producto.cs" />
     <Compile Include="ProductoVariante.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
