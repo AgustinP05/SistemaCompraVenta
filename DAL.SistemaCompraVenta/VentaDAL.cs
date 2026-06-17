@@ -123,7 +123,7 @@ namespace DAL.SistemaCompraVenta
                 foreach (DetalleVenta d in v.Detalles)
                 {
                     InsertarDetalle(idVenta, d);
-                    DescontarStock(d.Variante.SKU, d.Cantidad);
+                    RestarStock(d.Variante.SKU, d.Cantidad);
                 }
 
                 double montoDescuento = v.DevolverDescuento();
@@ -140,13 +140,13 @@ namespace DAL.SistemaCompraVenta
             }
         }
 
-        private void DescontarStock(int sku, int cantidad)
+        private void RestarStock(int sku, int cantidad)
         {
             SqlParameter[] parametros = {
                 ParametroSql.Crear("@SKU",      sku),
                 ParametroSql.Crear("@Cantidad", cantidad)
             };
-            conexion.EscribirPorStoreProcedure("SP_ActualizarStock", parametros);
+            conexion.EscribirPorStoreProcedure("SP_RestarStock", parametros);
         }
     }
 }

@@ -253,9 +253,11 @@ GO
 
 
 -- STOCK ---------------------------------------------------------------------
-IF OBJECT_ID('SP_ActualizarStock', 'P') IS NOT NULL DROP PROCEDURE SP_ActualizarStock;
+-- Resta stock (venta). Hace pareja con SP_SumarStock (compra).
+IF OBJECT_ID('SP_ActualizarStock', 'P') IS NOT NULL DROP PROCEDURE SP_ActualizarStock; -- nombre viejo
+IF OBJECT_ID('SP_RestarStock', 'P') IS NOT NULL DROP PROCEDURE SP_RestarStock;
 GO
-CREATE PROCEDURE SP_ActualizarStock(@SKU INT, @Cantidad INT)
+CREATE PROCEDURE SP_RestarStock(@SKU INT, @Cantidad INT)
 AS BEGIN
     UPDATE tProductoVariante
     SET Cantidad = Cantidad - @Cantidad
@@ -554,7 +556,7 @@ GO
 
 -- COMPRAS -------------------------------------------------------------------
 -- Suma stock (la compra recién recepcionada incrementa la variante).
--- Es el inverso de SP_ActualizarStock, que resta para las ventas.
+-- Es el inverso de SP_RestarStock, que resta para las ventas.
 IF OBJECT_ID('SP_SumarStock', 'P') IS NOT NULL DROP PROCEDURE SP_SumarStock;
 GO
 CREATE PROCEDURE SP_SumarStock(@SKU INT, @Cantidad INT)

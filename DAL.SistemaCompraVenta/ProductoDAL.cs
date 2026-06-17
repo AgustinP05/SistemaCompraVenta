@@ -55,24 +55,5 @@ namespace DAL.SistemaCompraVenta
                 return Convert.ToInt32(dt.Rows[0]["Cantidad"]);
             return 0;
         }
-
-        public void ActualizarStock(int idVariante, int cantidadVendida)
-        {
-            SqlParameter[] param = {
-                ParametroSql.Crear("@SKU",      idVariante),
-                ParametroSql.Crear("@Cantidad", cantidadVendida)
-            };
-            conexion.EscribirPorStoreProcedure("SP_ActualizarStock", param);
-        }
-
-        // Suma stock (recepción de una compra). Inverso de ActualizarStock.
-        public void SumarStock(int idVariante, int cantidadRecibida)
-        {
-            SqlParameter[] param = {
-                ParametroSql.Crear("@SKU",      idVariante),
-                ParametroSql.Crear("@Cantidad", cantidadRecibida)
-            };
-            conexion.EscribirPorStoreProcedure("SP_SumarStock", param);
-        }
     }
 }
