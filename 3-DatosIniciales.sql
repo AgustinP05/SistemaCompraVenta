@@ -27,33 +27,32 @@ INSERT INTO tPermiso (Nombre) VALUES
 ('GestionarProductos'),  -- 5
 ('GestionarClientes'),   -- 6
 ('GestionarProveedores'),-- 7
-('RegistrarCompras');-- 8
+('RegistrarCompras'),-- 8
+('ConfirmarCompras');-- 9  (recepción de órdenes: suma de stock / reclamo, rol Stock)
 GO
 
----- ROL_PERMISO (refleja los AgregarHijo de cada case en la Factory) ----
+---- ROL_PERMISO (permisos PROPIOS de cada rol = hojas de su familia).
+----  Cada rol ES una familia; estas son sus hojas directas.
 INSERT INTO tRolPermiso (ID_Rol, ID_Permiso) VALUES
--- Administrador: hereda todo (Vendedor + Gerente + Stock + SuperGerente)
-(1, 1),  -- LogIn
-(1, 2),  -- GestionarUsuarios
-(1, 3),  -- RegistrarVentas
-(1, 4),  -- VerReportes
-(1, 5),  -- GestionarProductos
-(1, 6),  -- GestionarClientes
-(1, 7),  -- GestionarProveedores
--- Vendedor
-(2, 1),  -- LogIn
-(2, 3),  -- RegistrarVentas
-(2, 6),  -- GestionarClientes
--- Gerente
-(3, 1),  -- LogIn
-(3, 4),  -- VerReportes
--- Stock
-(4, 1),  -- LogIn
-(4, 5),  -- GestionarProductos
--- Compras
-(5, 1),  -- LogIn
-(5, 8),  -- Gestionar Compras
-(5, 7);  -- GestionarUProveedores
+-- Administrador (1): solo lo suyo; el resto lo hereda de los roles que contiene
+(1, 2),                  -- GestionarUsuarios
+-- Vendedor (2)
+(2, 1), (2, 3), (2, 6),  -- LogIn, RegistrarVentas, GestionarClientes
+-- Gerente (3)
+(3, 1), (3, 4),          -- LogIn, VerReportes
+-- Stock (4)
+(4, 1), (4, 5), (4, 9),  -- LogIn, GestionarProductos, ConfirmarCompras
+-- Compras (5)
+(5, 1), (5, 8), (5, 7);  -- LogIn, RegistrarCompras, GestionarProveedores
+GO
+
+---- ROL_COMPOSICION (Composite recursivo: el Administrador contiene a los demás roles,
+----  así hereda automáticamente todos sus permisos) ----
+INSERT INTO tRolComposicion (ID_RolPadre, ID_RolHijo) VALUES
+(1, 2),  -- Administrador contiene Vendedor
+(1, 3),  -- Administrador contiene Gerente
+(1, 4),  -- Administrador contiene Stock
+(1, 5);  -- Administrador contiene Compras
 GO
 
 ---- USUARIO (Password de ejemplo, en producción debería ir hasheada) ----
@@ -96,6 +95,16 @@ INSERT INTO tProveedor (CUIT, RazonSocial, Telefono, Email, Direccion) VALUES
 ('30555666778', 'Puma Sports SRL',              '1143210004', 'ventas@pumasports.com',    'Av. del Trabajo 4500, CABA'),-- 4
 ('27888999001', 'Importadora Atletica SA',      '1143210005', 'compras@impatletica.com',  'Dock Sud, Avellaneda'),      -- 5
 ('30444555667', 'Mayorista Indumentaria SRL',   '1143210006', 'info@mayindumentaria.com', 'Once 1200, CABA');           -- 6
+GO
+
+---- PROVEEDOR_MARCA (qué marcas provee cada proveedor; el texto coincide con tProducto.Marca) ----
+INSERT INTO tProveedorMarca (ID_Proveedor, Marca) VALUES
+(1, 'Nike'), (1, 'Adidas'), (1, 'Puma'),   -- Distribuidora Deportiva: multimarca
+(2, 'Nike'),                                -- Nike Argentina
+(3, 'Adidas'),                              -- Adidas Mayorista
+(4, 'Puma'),                                -- Puma Sports
+(5, 'Nike'), (5, 'Puma'),                   -- Importadora Atletica
+(6, 'Adidas'), (6, 'Puma');                 -- Mayorista Indumentaria
 GO
 
 ---- PRODUCTO (ID_Categoria: 1 = VESTIMENTA, 2 = CALZADO) ----
@@ -160,7 +169,7 @@ INSERT INTO tVenta (Fecha, ID_Cliente, ID_Usuario) VALUES
 GO
 
 ---- DETALLE_VENTA (PrecioUnitario tomado del precio de venta del producto) ----
-INSERT INTO tDetalleVenta (ID_Venta, ID_ProductoVariante, Cantidad, PrecioUnitario) VALUES
+INSERT INTO tDetalleVenta (ID_Venta, SKU, Cantidad, PrecioUnitario) VALUES
 (1,  1, 1, 120000.00),  -- Zap Running 40
 (1,  6, 2,  32000.00),  -- Remera M
 (2,  4, 1, 150000.00),  -- Ultraboost 42
@@ -171,22 +180,38 @@ INSERT INTO tDetalleVenta (ID_Venta, ID_ProductoVariante, Cantidad, PrecioUnitar
 (6,  8, 1,  85000.00);  -- Campera L
 GO
 
----- COMPRA ----
-INSERT INTO tCompra (Fecha, ID_Usuario, ID_Proveedor) VALUES
-('2026-04-10 09:00:00', 3, 1),  -- 1
-('2026-04-15 10:30:00', 3, 2),  -- 2
-('2026-04-20 14:00:00', 3, 3),  -- 3
-('2026-04-25 11:45:00', 1, 1),  -- 4
-('2026-05-01 16:20:00', 3, 4);  -- 5
+---- COMPRA (circuito completo y coherente):
+----   ID_Usuario = quien la generó (5 = Camila, Compras).
+----   Recepcionadas (Confirmada/Reclamo) llevan FechaRecepcion y usuario de Stock (4 = Agostina).
+----   El proveedor de cada orden provee la marca de sus productos (ver tProveedorMarca).
+INSERT INTO tCompra (Fecha, ID_Usuario, ID_Proveedor, Estado, FechaRecepcion, ID_UsuarioRecepcion) VALUES
+('2026-04-10 09:00:00', 5, 2, 'Confirmada', '2026-04-13 10:00:00', 4),  -- 1  Nike,   llegó completa
+('2026-04-15 10:30:00', 5, 3, 'Confirmada', '2026-04-18 09:30:00', 4),  -- 2  Adidas,  llegó completa
+('2026-04-20 14:00:00', 5, 4, 'Reclamo',    '2026-04-23 11:00:00', 4),  -- 3  Puma,    llegó con faltante
+('2026-04-25 11:45:00', 5, 1, 'Confirmada', '2026-04-28 16:00:00', 4),  -- 4  multimarca, llegó completa
+('2026-05-01 16:20:00', 5, 4, 'Pendiente',  NULL, NULL);                -- 5  Puma,    pendiente (ejemplo para la recepción)
 GO
 
----- DETALLE_COMPRA (PrecioUnitario tomado del precio de costo del producto) ----
-INSERT INTO tDetalleCompra (ID_Compra, ID_ProductoVariante, Cantidad, PrecioUnitario) VALUES
-(1,  1, 10, 70000.00),  -- Zap Running 40
-(1,  2,  8, 70000.00),  -- Zap Running 41
-(2,  4, 10, 90000.00),  -- Ultraboost 42
-(3,  5,  6, 80000.00),  -- Botin 40
-(4,  6, 25, 15000.00),  -- Remera M
-(5,  9, 20, 13000.00),  -- Short S
-(5, 10,  9, 65000.00);  -- Zap Urbana 43
+---- DETALLE_COMPRA (PrecioUnitario = costo del producto; CantidadConfirmada = lo recibido al recepcionar) ----
+INSERT INTO tDetalleCompra (ID_Compra, SKU, Cantidad, PrecioUnitario, CantidadConfirmada) VALUES
+-- Compra 1 (Confirmada: recibido = pedido)
+(1,  1, 10, 70000.00,   10),  -- Zap Running Negro 40 (Nike)
+(1,  6, 20, 15000.00,   20),  -- Remera Dry-Fit M     (Nike)
+-- Compra 2 (Confirmada)
+(2,  4, 10, 90000.00,   10),  -- Ultraboost 42        (Adidas)
+(2,  5,  6, 80000.00,    6),  -- Botin Predator 40    (Adidas)
+-- Compra 3 (Reclamo: el SKU 10 llegó incompleto -> 5 de 12)
+(3,  8,  8, 48000.00,    8),  -- Campera Azul L        (Puma) - completo
+(3, 10, 12, 65000.00,    5),  -- Zap Urbana 43         (Puma) - faltaron 7
+-- Compra 4 (Confirmada, proveedor multimarca)
+(4,  2,  8, 70000.00,    8),  -- Zap Running Negro 41 (Nike)
+(4,  9, 15, 13000.00,   15),  -- Short Negro S        (Adidas)
+-- Compra 5 (Pendiente: aún sin recepcionar)
+(5,  8, 10, 48000.00, NULL),  -- Campera Azul L       (Puma)
+(5, 10,  9, 65000.00, NULL);  -- Zap Urbana 43        (Puma)
+GO
+
+---- RECLAMO_COMPRA (faltante registrado al recepcionar la compra 3) ----
+INSERT INTO tReclamoCompra (ID_Compra, SKU, CantidadPedida, CantidadRecibida, CantidadFaltante) VALUES
+(3, 10, 12, 5, 7);  -- Zap Urbana 43: se pidieron 12, llegaron 5
 GO

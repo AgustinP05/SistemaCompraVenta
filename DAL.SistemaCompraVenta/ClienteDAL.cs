@@ -8,15 +8,7 @@ namespace DAL.SistemaCompraVenta
 {
     public class ClienteDAL
     {
-        /*private static List<Cliente> clientesSimulados = new List<Cliente>()
-        {
-    
-        new Cliente { Dni = 20123456, Nombre = "Juan", Apellido = "Pérez", Telefono = "11-4444-5555", Email = "juan@mail.com" },
-        new Cliente { Dni = 30987654, Nombre = "María", Apellido = "García", Telefono = "11-2222-3333", Email = "maria@mail.com" },
-        new Cliente { Dni = 25111222, Nombre = "Carlos", Apellido = "López", Telefono = "11-6666-7777", Email = "carlos@email.com" }
-        };
-
-        public List<Cliente> ListarTodo() => clientesSimulados;*/
+       
 
         // Usamos la clase de conexión 
         private Conexion conexion = new Conexion();
@@ -26,12 +18,12 @@ namespace DAL.SistemaCompraVenta
             // Mapeamos las propiedades de la Entidad a los parámetros del SP
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@DNI", c.Dni),
-                conexion.crearParametro("@Nombre", c.Nombre),
-                conexion.crearParametro("@Apellido", c.Apellido),
-                conexion.crearParametro("@Telefono", c.Telefono),
-                conexion.crearParametro("@Email", c.Email),
-                conexion.crearParametro("@Direccion", c.Direccion)
+                ParametroSql.Crear("@DNI", c.Dni),
+                ParametroSql.Crear("@Nombre", c.Nombre),
+                ParametroSql.Crear("@Apellido", c.Apellido),
+                ParametroSql.Crear("@Telefono", c.Telefono),
+                ParametroSql.Crear("@Email", c.Email),
+                ParametroSql.Crear("@Direccion", c.Direccion)
             };
 
             // Ejecutamos la inserción usando la lógica de conexión ya existente
@@ -42,7 +34,7 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros =
             {
-        conexion.crearParametro("@DNI", dni)
+        ParametroSql.Crear("@DNI", dni)
     };
 
             DataTable dt = conexion.LeerPorStoreProcedure("SP_ExisteCliente", parametros);
@@ -73,7 +65,7 @@ namespace DAL.SistemaCompraVenta
                 {
                     SqlParameter[] parametros =
                     {
-                conexion.crearParametro("@Filtro", filtro ?? "")
+                ParametroSql.Crear("@Filtro", filtro ?? "")
             };
                     return conexion.LeerPorStoreProcedure("SP_ObtenerClientes", parametros);
                 }
@@ -82,13 +74,13 @@ namespace DAL.SistemaCompraVenta
                 {
                     SqlParameter[] parametros =
                     {
-                conexion.crearParametro("@ID_Cliente", c.IdCliente),
-                conexion.crearParametro("@DNI", c.Dni),
-                conexion.crearParametro("@Nombre", c.Nombre),
-                conexion.crearParametro("@Apellido", c.Apellido),
-                conexion.crearParametro("@Telefono", c.Telefono),
-                conexion.crearParametro("@Email", c.Email),
-                conexion.crearParametro("@Direccion", c.Direccion)
+                ParametroSql.Crear("@ID_Cliente", c.IdCliente),
+                ParametroSql.Crear("@DNI", c.Dni),
+                ParametroSql.Crear("@Nombre", c.Nombre),
+                ParametroSql.Crear("@Apellido", c.Apellido),
+                ParametroSql.Crear("@Telefono", c.Telefono),
+                ParametroSql.Crear("@Email", c.Email),
+                ParametroSql.Crear("@Direccion", c.Direccion)
             };
                     return conexion.EscribirPorStoreProcedure("SP_ModificarCliente", parametros);
                 }
@@ -97,7 +89,7 @@ namespace DAL.SistemaCompraVenta
                 {
                     SqlParameter[] parametros =
                     {
-                conexion.crearParametro("@ID_Cliente", idCliente)
+                ParametroSql.Crear("@ID_Cliente", idCliente)
             };
                     return conexion.EscribirPorStoreProcedure("SP_EliminarCliente", parametros);
                 }

@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using ENT.SistemaCompraVenta;
 using DAL.SistemaCompraVenta;
+using BLL.SistemaCompraVenta;
 using BLL.SistemaCompraVenta.Componentes;
 
 namespace BLL.SistemaCompraVenta.Services
@@ -9,42 +12,30 @@ namespace BLL.SistemaCompraVenta.Services
     public class UsuarioBLL
     {
         private UsuarioDAL oUsuarioDAL = new UsuarioDAL();
+        private RolComposicionBLL oRolComposicionBLL = new RolComposicionBLL();
 
         public Usuario Login(string dni, string password)
         {
-            // Bloque de prueba (credenciales hardcodeadas)
-            if (password == "123")
-            {
-                if (dni == "admin" || dni == "vendedor" || dni == "gerente" || dni == "stock")
-                {
-                    string rolSimulado = char.ToUpper(dni[0]) + dni.Substring(1);
-                    return new Usuario
-                    {
-                        ID             = 999,
-                        Nombre         = dni,
-                        Password       = password,
-                        FechaHoraLogin = DateTime.Now,
-                        Permisos       = PermisosFactory.CrearArbolPermisos(rolSimulado)
-                    };
-                }
-            }
-
             DataTable tabla = oUsuarioDAL.LoginUsuario(dni, password);
             if (tabla == null || tabla.Rows.Count == 0)
                 return null;
 
-            DataRow fila           = tabla.Rows[0];
-            string nombreRolBD     = fila["Rol"].ToString();
-            Componente arbolPermisos = PermisosFactory.CrearArbolPermisos(nombreRolBD);
+            DataRow fila      = tabla.Rows[0];
+            int idRol         = Convert.ToInt32(fila["ID_Rol"]);
+            string nombreRol  = fila["Rol"].ToString();
+
+            // El rol ES una familia: se arma su árbol Composite (permisos propios +
+            // sub-roles en cascada).
+            FamiliaPermisos arbol = oRolComposicionBLL.ConstruirArbolDeRol(idRol, nombreRol);
 
             Usuario usuario = new Usuario
             {
                 ID             = Convert.ToInt32(fila["ID"]),
-                ID_Rol         = Convert.ToInt32(fila["ID_Rol"]),
                 Nombre         = fila["Nombre"].ToString(),
+                Apellido       = fila["Apellido"].ToString(),
                 Password       = fila["Password"].ToString(),
-                Permisos       = arbolPermisos,
-                FechaHoraLogin = DateTime.Now
+                FechaHoraLogin = DateTime.Now,
+                Rol            = PermisosFactory.CrearRol(idRol, nombreRol, arbol)
             };
 
             oUsuarioDAL.RegistrarLogin(usuario.ID, usuario.FechaHoraLogin);
@@ -84,8 +75,15 @@ namespace BLL.SistemaCompraVenta.Services
             if (string.IsNullOrWhiteSpace(dni))
                 throw new Exception("DNI inválido.");
 
-            int filas = oUsuarioDAL.EliminarUsuario(dni);
-            return filas > 0;
+            try
+            {
+                return oUsuarioDAL.EliminarUsuario(dni) > 0;
+            }
+            catch (SqlException ex) when (ex.Number == 547) // violación de FK
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el usuario porque tiene operaciones registradas en el sistema.");
+            }
         }
     }
 }

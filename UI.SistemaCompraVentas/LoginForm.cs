@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
-// --- CAMBIOS CLAVE AQUÍ ---
-using ENT.SistemaCompraVenta;      // Traemos Usuario, Rol y Permisos de la nueva capa
-using BLL.SistemaCompraVenta.Services; // Para usar UsuarioService
-using BLL.SistemaCompraVenta.Sesion;   // Para usar el Singleton (Sesion)
+using ENT.SistemaCompraVenta;
+using BLL.SistemaCompraVenta.Services;
+using BLL.SistemaCompraVenta.Sesion;
 
 namespace UI.SistemaCompraVentas
 {
@@ -22,8 +21,7 @@ namespace UI.SistemaCompraVentas
             // 1. Instanciamos el servicio de la BLL
             UsuarioBLL service = new UsuarioBLL();
 
-            // 2. Intentamos loguear (service ahora devuelve un Usuario de la capa ENT)
-            //var usuarioLogueado = service.Login(txtUsuario.Text, txtPassword.Text);
+            // 2. Intentamos loguear (service devuelve un Usuario de la capa ENT, o null)
             var usuarioLogueado = service.Login(txtUsuario.Text, txtPassword.Text);
 
             if (usuarioLogueado != null)
@@ -45,20 +43,5 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-        
-        // Métodos vacíos por si el diseñador los requiere
-        private void label1_Click(object sender, EventArgs e) { }
-        private void txtUsuario_TextChanged(object sender, EventArgs e) { }
-        private void txtPassword_TextChanged(object sender, EventArgs e) { }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
     }
 }

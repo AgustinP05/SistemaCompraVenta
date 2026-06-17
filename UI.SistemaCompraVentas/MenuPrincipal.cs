@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using ENT.SistemaCompraVenta;       //  Usuario, Rol y Permisos
-using BLL.SistemaCompraVenta.Sesion; // Aquí vive el Singleton (Sesion)
+using ENT.SistemaCompraVenta;
+using BLL.SistemaCompraVenta.Sesion;
 
 namespace UI.SistemaCompraVentas
 {
@@ -35,18 +35,20 @@ namespace UI.SistemaCompraVentas
             var usuario = Sesion.ObtenerInstancia().UsuarioActual;
 
             // Verificamos que el usuario y su árbol de permisos existan
-            if (usuario != null && usuario.Permisos != null)
+            if (usuario != null && usuario.Rol != null)
             {
-                var arbolPermisos = usuario.Permisos;
+                var rol = usuario.Rol;
 
-                // Evalua en cascada de forma recursiva gracias al patrón Composite
-                // Los nombres de cadenas coinciden exactamente con PermisosFactory
-                btnUsuarios.Visible = arbolPermisos.TienePermiso("GestionarUsuarios");
-                btnVentas.Visible = arbolPermisos.TienePermiso("RegistrarVentas");
-                btnProductos.Visible = arbolPermisos.TienePermiso("GestionarProductos");
-                btnReportes.Visible = arbolPermisos.TienePermiso("VerReportes");
-                btnClientes.Visible     = arbolPermisos.TienePermiso("GestionarClientes");
-                btnProveedores.Visible  = arbolPermisos.TienePermiso("GestionarProveedores");
+                // Evalúa en cascada de forma recursiva gracias al patrón Composite.
+                // Los nombres coinciden con los permisos cargados desde la base.
+                btnUsuarios.Visible = rol.TienePermiso("GestionarUsuarios");
+                btnVentas.Visible = rol.TienePermiso("RegistrarVentas");
+                btnProductos.Visible = rol.TienePermiso("GestionarProductos");
+                btnReportes.Visible = rol.TienePermiso("VerReportes");
+                btnClientes.Visible     = rol.TienePermiso("GestionarClientes");
+                btnProveedores.Visible  = rol.TienePermiso("GestionarProveedores");
+                btnCompras.Visible          = rol.TienePermiso("RegistrarCompras");
+                btnRecepcionCompras.Visible = rol.TienePermiso("ConfirmarCompras");
             }
             else
             {
@@ -57,6 +59,8 @@ namespace UI.SistemaCompraVentas
                 btnReportes.Visible    = false;
                 btnClientes.Visible    = false;
                 btnProveedores.Visible = false;
+                btnCompras.Visible          = false;
+                btnRecepcionCompras.Visible = false;
             }
         }
 
@@ -72,7 +76,9 @@ namespace UI.SistemaCompraVentas
                 btnVentas,
                 btnProductos,
                 btnClientes,
-                btnProveedores
+                btnProveedores,
+                btnCompras,
+                btnRecepcionCompras
             };
 
             int yInicial = 119; // misma Y que tenía btnUsuarios en el Designer
@@ -130,6 +136,20 @@ namespace UI.SistemaCompraVentas
             vistaProveedores.ShowDialog();
         }
 
+        private void btnCompras_Click(object sender, EventArgs e)
+        {
+            FormCompras vistaCompras = new FormCompras();
+            vistaCompras.StartPosition = FormStartPosition.CenterScreen;
+            vistaCompras.ShowDialog();
+        }
+
+        private void btnRecepcionCompras_Click(object sender, EventArgs e)
+        {
+            FormRecepcionCompras vistaRecepcion = new FormRecepcionCompras();
+            vistaRecepcion.StartPosition = FormStartPosition.CenterScreen;
+            vistaRecepcion.ShowDialog();
+        }
+
         private void btnLogout_Click(object sender, EventArgs e)
         {
             Sesion.ObtenerInstancia().Logout();
@@ -137,7 +157,5 @@ namespace UI.SistemaCompraVentas
             login.Show();
             this.Close();
         }
-
-        //private void panel1_Paint(object sender, PaintEventArgs e) { }
     }
 }

@@ -4,19 +4,20 @@ namespace ENT.SistemaCompraVenta
 {
     public class ProductoVariante
     {
-        private int idProductoVariante;
+        private int sku;
         private int idProducto;
         private string nombre;
         private string marca;
         private double precioVenta;
+        private double precioCosto;
         private string color;
         private string talle;
         private int cantidad;
 
-        public int ID_ProductoVariante
+        public int SKU
         {
-            get { return idProductoVariante; }
-            set { idProductoVariante = value; }
+            get { return sku; }
+            set { sku = value; }
         }
 
         public int ID_Producto
@@ -41,6 +42,12 @@ namespace ENT.SistemaCompraVenta
         {
             get { return precioVenta; }
             set { precioVenta = value; }
+        }
+
+        public double PrecioCosto
+        {
+            get { return precioCosto; }
+            set { precioCosto = value; }
         }
 
         public string Color

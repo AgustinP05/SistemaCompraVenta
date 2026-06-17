@@ -1,21 +1,15 @@
-﻿using DAL.SistemaCompraVenta; // La BLL sí puede ver a la DAL
+﻿using DAL.SistemaCompraVenta;
 using ENT.SistemaCompraVenta;
 using System;
 using System.Collections.Generic;
 using System.Data;
-
-//using System.Collections.Generic;
+using System.Data.SqlClient;
 
 namespace BLL.SistemaCompraVenta
 {
     public class ClienteBLL
     {
-        // private ClienteDAL oClienteDAL = new ClienteDAL();
 
-        /*public List<Cliente> ListarClientes()
-        {
-            return oClienteDAL.ListarTodo();
-        }*/
 
         private ClienteDAL oClienteDAL = new ClienteDAL();
 
@@ -29,8 +23,8 @@ namespace BLL.SistemaCompraVenta
                 throw new Exception("Complete todos los datos obligatorios");
             }
 
-            // 2. Validación de formato de email 
-            if (!ValidarEmail(c.Email))
+            // 2. Validación de formato de email
+            if (!Validaciones.EmailValido(c.Email))
             {
                 throw new Exception("Email inválido");
             }
@@ -59,7 +53,7 @@ namespace BLL.SistemaCompraVenta
                 Email = email
             };
 
-            return CrearCliente(c); // reutiliza el método que ya tenés con sus validaciones
+            return CrearCliente(c); // reutiliza las validaciones del otro CrearCliente
         }
 
         public DataTable ObtenerClientes(string filtro)
@@ -76,7 +70,7 @@ namespace BLL.SistemaCompraVenta
                 throw new Exception("Complete todos los datos obligatorios");
             }
 
-            if (!ValidarEmail(c.Email))
+            if (!Validaciones.EmailValido(c.Email))
             {
                 throw new Exception("Email inválido");
             }
@@ -90,15 +84,17 @@ namespace BLL.SistemaCompraVenta
             if (idCliente <= 0)
                 throw new Exception("Cliente inválido.");
 
-            int resultado = oClienteDAL.EliminarCliente(idCliente);
-            return resultado > 0;
+            try
+            {
+                return oClienteDAL.EliminarCliente(idCliente) > 0;
+            }
+            catch (SqlException ex) when (ex.Number == 547) // violación de FK
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el cliente porque tiene ventas registradas en el sistema.");
+            }
         }
 
-        private bool ValidarEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email)) return false;
-            return email.Contains("@") && email.Contains(".");
-        }
         public List<Cliente> ListarClientes()
         {
            

@@ -56,8 +56,5 @@ namespace ENT.SistemaCompraVenta
             get { return precioCosto; }
             set { precioCosto = value; }
         }
-
-        public abstract string DevolverTalle();
-
     }
 }

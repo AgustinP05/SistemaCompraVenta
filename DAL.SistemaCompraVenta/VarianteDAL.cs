@@ -12,36 +12,52 @@ namespace DAL.SistemaCompraVenta
 
         public List<ProductoVariante> ListarVariantes()
         {
-            List<ProductoVariante> lista = new List<ProductoVariante>();
             DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarVariantes", null);
+            return Mapear(dt);
+        }
 
+        // Catálogo limitado a las marcas que provee el proveedor.
+        public List<ProductoVariante> ListarVariantesPorProveedor(int idProveedor)
+        {
+            SqlParameter[] param = { ParametroSql.Crear("@ID_Proveedor", idProveedor) };
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarVariantesPorProveedor", param);
+            return Mapear(dt);
+        }
+
+        private List<ProductoVariante> Mapear(DataTable dt)
+        {
+            List<ProductoVariante> lista = new List<ProductoVariante>();
             foreach (DataRow fila in dt.Rows)
             {
                 lista.Add(new ProductoVariante
                 {
-                    ID_ProductoVariante = Convert.ToInt32(fila["ID_ProductoVariante"]),
+                    SKU                 = Convert.ToInt32(fila["SKU"]),
                     Nombre              = fila["Nombre"].ToString(),
                     Marca               = fila["Marca"].ToString(),
                     Color               = fila["Color"].ToString(),
                     Talle               = fila["Talle"].ToString(),
                     Cantidad            = Convert.ToInt32(fila["Cantidad"]),
                     PrecioVenta         = Convert.ToDouble(fila["PrecioVenta"]),
+                    PrecioCosto         = Convert.ToDouble(fila["PrecioCosto"]),
                 });
             }
-
             return lista;
         }
 
-        public int InsertarVariante(int idProducto, int idColor, int idTalle, int cantidad)
+        public DataTable ObtenerVariantes(string filtro)
+        {
+            SqlParameter[] param = { ParametroSql.Crear("@Filtro", filtro ?? "") };
+            return conexion.LeerPorStoreProcedure("SP_ObtenerVariantes", param);
+        }
+
+        // Buscador de SKU limitado a las marcas del proveedor.
+        public DataTable ObtenerVariantesPorProveedor(string filtro, int idProveedor)
         {
             SqlParameter[] param = {
-                conexion.crearParametro("@ID_Producto", idProducto),
-                conexion.crearParametro("@ID_Color",    idColor),
-                conexion.crearParametro("@ID_Talle",    idTalle),
-                conexion.crearParametro("@Cantidad",    cantidad)
+                ParametroSql.Crear("@Filtro", filtro ?? ""),
+                ParametroSql.Crear("@ID_Proveedor", idProveedor)
             };
-            DataTable dt = conexion.LeerPorStoreProcedure("SP_InsertarProductoVariante", param);
-            return Convert.ToInt32(dt.Rows[0]["ID_ProductoVariante"]);
+            return conexion.LeerPorStoreProcedure("SP_ObtenerVariantesPorProveedor", param);
         }
     }
 }

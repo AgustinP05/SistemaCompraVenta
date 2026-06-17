@@ -257,7 +257,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.dgvClientesCargados.AllowUserToAddRows = false;
             this.dgvClientesCargados.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvClientesCargados.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvClientesCargados.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvClientesCargados.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvClientesCargados.Location = new System.Drawing.Point(8, 153);
             this.dgvClientesCargados.Name = "dgvClientesCargados";

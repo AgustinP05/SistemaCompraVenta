@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ENT.SistemaCompraVenta.EstadosCompra;
 
 namespace ENT.SistemaCompraVenta
 {
@@ -12,7 +13,14 @@ namespace ENT.SistemaCompraVenta
         // Relaciones (con guion bajo para indicar que apuntan a otros objetos)
         private Proveedor _proveedor;
         private Usuario _usuario;
-        private List<DetalleCompra> _detalles;
+        private List<DetalleCompra> _detalles = new List<DetalleCompra>();
+
+        // Estado del circuito (patrón State). Una orden nace Pendiente.
+        private EstadoCompra _estado = new EstadoPendiente();
+
+        // Auditoría de la recepción: cuándo y quién (Stock) la procesó. Null hasta entonces.
+        private DateTime? _fechaRecepcion;
+        private Usuario _usuarioRecepcion;
 
         // Propiedades públicas en PascalCase
         public int IdCompra
@@ -42,7 +50,25 @@ namespace ENT.SistemaCompraVenta
         public List<DetalleCompra> Detalles
         {
             get { return _detalles; }
-            set { _detalles = value; }
+            set { _detalles = value ?? new List<DetalleCompra>(); }
+        }
+
+        public EstadoCompra Estado
+        {
+            get { return _estado; }
+            set { _estado = value ?? new EstadoPendiente(); }
+        }
+
+        public DateTime? FechaRecepcion
+        {
+            get { return _fechaRecepcion; }
+            set { _fechaRecepcion = value; }
+        }
+
+        public Usuario UsuarioRecepcion
+        {
+            get { return _usuarioRecepcion; }
+            set { _usuarioRecepcion = value; }
         }
 
         public double DevolverTotal()

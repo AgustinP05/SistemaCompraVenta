@@ -1,13 +1,27 @@
 using DAL.SistemaCompraVenta;
 using ENT.SistemaCompraVenta;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace BLL.SistemaCompraVenta
 {
     public class ProveedorBLL
     {
         private ProveedorDAL oProveedorDAL = new ProveedorDAL();
+
+        // Catálogo en memoria para resolver el CUIT tipeado en FormCompras.
+        public List<Proveedor> ListarProveedores()
+        {
+            return oProveedorDAL.ListarProveedores();
+        }
+
+        // Marcas que provee un proveedor (para filtrar los productos en la compra).
+        public List<string> MarcasDeProveedor(int idProveedor)
+        {
+            return oProveedorDAL.MarcasDeProveedor(idProveedor);
+        }
 
         public bool ExisteProveedor(string cuit)
         {
@@ -20,7 +34,7 @@ namespace BLL.SistemaCompraVenta
             if (string.IsNullOrWhiteSpace(cuit) || string.IsNullOrWhiteSpace(razonSocial))
                 throw new Exception("Complete todos los datos obligatorios.");
 
-            if (!ValidarEmail(email))
+            if (!Validaciones.EmailValido(email))
                 throw new Exception("Email inválido.");
 
             Proveedor p = new Proveedor
@@ -45,7 +59,7 @@ namespace BLL.SistemaCompraVenta
             if (string.IsNullOrWhiteSpace(p.Cuit) || string.IsNullOrWhiteSpace(p.RazonSocial))
                 throw new Exception("Complete todos los datos obligatorios.");
 
-            if (!ValidarEmail(p.Email))
+            if (!Validaciones.EmailValido(p.Email))
                 throw new Exception("Email inválido.");
 
             return oProveedorDAL.ModificarProveedor(p) > 0;
@@ -56,13 +70,16 @@ namespace BLL.SistemaCompraVenta
             if (string.IsNullOrWhiteSpace(cuit))
                 throw new Exception("CUIT inválido.");
 
-            return oProveedorDAL.EliminarProveedor(cuit) > 0;
+            try
+            {
+                return oProveedorDAL.EliminarProveedor(cuit) > 0;
+            }
+            catch (SqlException ex) when (ex.Number == 547) // violación de FK
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el proveedor porque tiene compras registradas en el sistema.");
+            }
         }
 
-        private bool ValidarEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email)) return false;
-            return email.Contains("@") && email.Contains(".");
-        }
     }
 }

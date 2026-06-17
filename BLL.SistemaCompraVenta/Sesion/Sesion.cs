@@ -21,11 +21,6 @@ namespace BLL.SistemaCompraVenta.Sesion
             return instancia;
         }
 
-        public void Login(Usuario usuario)
-        {
-            UsuarioActual = usuario;
-        }
-
         public void Logout()
         {
             UsuarioActual = null;

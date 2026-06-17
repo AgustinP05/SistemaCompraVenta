@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using ENT.SistemaCompraVenta;
+using BLL.SistemaCompraVenta;
 
 namespace UI.SistemaCompraVentas
 {
@@ -13,6 +15,13 @@ namespace UI.SistemaCompraVentas
         // DNI del usuario seleccionado en la grilla (key natural del SP)
         private string _dniUsuarioSeleccionado = "";
 
+        // Solapa "Permisos por rol". Cada rol ES una familia: sus componentes son
+        // permisos individuales (hojas) y otros roles incluidos como sub-familias.
+        // Toda la lógica de armado/guardado vive en RolComposicionBLL.
+        private readonly RolComposicionBLL oRolComposicionBLL = new RolComposicionBLL();
+        private List<Componente> _permisosDisponibles = new List<Componente>();
+        private List<Componente> _permisosOtorgados = new List<Componente>();
+
         public FormGestionUsuarios()
         {
             InitializeComponent();
@@ -20,6 +29,20 @@ namespace UI.SistemaCompraVentas
 
         private void FormGestionUsuarios_Load(object sender, EventArgs e)
         {
+            lstPermDisponibles.SelectionMode = SelectionMode.MultiExtended;
+            lstPermOtorgados.SelectionMode = SelectionMode.MultiExtended;
+
+            // Al seleccionar un rol (sub-familia) en cualquiera de las listas, se
+            // exhiben sus permisos efectivos en la grilla inferior.
+            lstPermDisponibles.SelectedIndexChanged += ListaPermisos_SelectedIndexChanged;
+            lstPermOtorgados.SelectedIndexChanged += ListaPermisos_SelectedIndexChanged;
+
+            dgvPermisosFamilia.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvPermisosFamilia.Columns.Add("colIdPermiso", "ID");
+            dgvPermisosFamilia.Columns.Add("colNombrePermiso", "Permiso");
+            dgvPermisosFamilia.Columns["colIdPermiso"].FillWeight = 20;
+            dgvPermisosFamilia.Columns["colNombrePermiso"].FillWeight = 80;
+
             CargarCombosRoles();
 
             dgvUsuariosCargados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -47,23 +70,31 @@ namespace UI.SistemaCompraVentas
                 cboEditRoles.DisplayMember = "NombreRol";
                 cboEditRoles.ValueMember   = "ID_Rol";
                 cboEditRoles.DataSource    = dt.Copy();
+                cboRolPermisos.DisplayMember = "NombreRol";
+                cboRolPermisos.ValueMember   = "ID_Rol";
+                cboRolPermisos.DataSource    = dt.Copy();
             }
             catch
             {
-                // Si la DB no está disponible, usa lista hardcodeada como fallback
+                // Si la DB no está disponible, usa lista hardcodeada como fallback.
+                // Los IDs deben coincidir con el seed de 3-DatosIniciales.sql.
                 var fallback = new DataTable();
                 fallback.Columns.Add("ID_Rol",    typeof(int));
                 fallback.Columns.Add("NombreRol", typeof(string));
                 fallback.Rows.Add(1, "Administrador");
                 fallback.Rows.Add(2, "Vendedor");
-                fallback.Rows.Add(3, "Stock");
-                fallback.Rows.Add(4, "Gerente");
+                fallback.Rows.Add(3, "Gerente");
+                fallback.Rows.Add(4, "Stock");
+                fallback.Rows.Add(5, "Compras");
                 cboRoles.DisplayMember    = "NombreRol";
                 cboRoles.ValueMember      = "ID_Rol";
                 cboRoles.DataSource       = fallback;
                 cboEditRoles.DisplayMember = "NombreRol";
                 cboEditRoles.ValueMember   = "ID_Rol";
                 cboEditRoles.DataSource    = fallback.Copy();
+                cboRolPermisos.DisplayMember = "NombreRol";
+                cboRolPermisos.ValueMember   = "ID_Rol";
+                cboRolPermisos.DataSource    = fallback.Copy();
             }
         }
 
@@ -150,12 +181,21 @@ namespace UI.SistemaCompraVentas
             {
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
                 dgvUsuarios.DataSource = bll.ObtenerUsuarios(txtBuscarDni.Text.Trim());
+                OcultarColumnasUsuarios();
                 LimpiarEdicion();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ocurrió un error al buscar: " + ex.Message);
             }
+        }
+
+        // ID_Rol se usa internamente (al seleccionar la fila se setea el combo),
+        // pero no tiene sentido mostrarlo en la grilla.
+        private void OcultarColumnasUsuarios()
+        {
+            if (dgvUsuarios.Columns.Contains("ID_Rol"))
+                dgvUsuarios.Columns["ID_Rol"].Visible = false;
         }
 
         private void dgvUsuarios_SelectionChanged(object sender, EventArgs e)
@@ -168,36 +208,26 @@ namespace UI.SistemaCompraVentas
             txtEditDni.Text         = _dniUsuarioSeleccionado;
             txtEditNombre.Text      = fila.Cells["Nombre"].Value?.ToString() ?? "";
             txtEditApellido.Text    = fila.Cells["Apellido"].Value?.ToString() ?? "";
-            txtEditEmail.Text       = LeerCelda(fila, "Email", "email", "Mail");
+            txtEditEmail.Text       = GrillaHelper.LeerCelda(dgvUsuarios, fila, "Email", "email", "Mail");
 
             // Seleccionar rol: por ID_Rol si el SP lo devuelve, si no por nombre
-            string idRolStr = LeerCelda(fila, "ID_Rol");
+            string idRolStr = GrillaHelper.LeerCelda(dgvUsuarios, fila, "ID_Rol");
             if (int.TryParse(idRolStr, out int idRol) && idRol > 0)
             {
                 cboEditRoles.SelectedValue = idRol;
             }
             else
             {
-                string rolNombre = LeerCelda(fila, "Rol");
+                string rolNombre = GrillaHelper.LeerCelda(dgvUsuarios, fila, "Rol");
                 foreach (DataRow dr in ((System.Data.DataTable)cboEditRoles.DataSource).Rows)
                     if (dr["NombreRol"].ToString() == rolNombre)
                     { cboEditRoles.SelectedValue = dr["ID_Rol"]; break; }
             }
 
-            string fechaStr = LeerCelda(fila, "FechaNacimiento", "Fecha_Nacimiento", "FechaNac");
+            string fechaStr = GrillaHelper.LeerCelda(dgvUsuarios, fila, "FechaNacimiento", "Fecha_Nacimiento", "FechaNac");
             if (DateTime.TryParse(fechaStr, out DateTime fecha))
                 dtpEditFechaNacimiento.Value = fecha;
         }
-
-        private string LeerCelda(DataGridViewRow fila, params string[] nombres)
-        {
-            foreach (var nombre in nombres)
-                if (dgvUsuarios.Columns.Contains(nombre))
-                    return fila.Cells[nombre].Value?.ToString() ?? "";
-            return "";
-        }
-
-        private void dgvUsuarios_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
 
         private void btnGuardarCambios_Click(object sender, EventArgs e)
         {
@@ -277,13 +307,14 @@ namespace UI.SistemaCompraVentas
                     MessageBox.Show("Error al eliminar el usuario.");
                 }
             }
+            catch (OperacionNoPermitidaException ex)
+            {
+                MessageBox.Show(ex.Message, "Operación no permitida",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("REFERENCE") || ex.Message.Contains("FK_"))
-                    MessageBox.Show("No se puede eliminar el usuario porque tiene operaciones registradas en el sistema.",
-                                    "Operación no permitida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                else
-                    MessageBox.Show("Ocurrió un error: " + ex.Message);
+                MessageBox.Show("Ocurrió un error: " + ex.Message);
             }
         }
 
@@ -293,6 +324,7 @@ namespace UI.SistemaCompraVentas
             {
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
                 dgvUsuarios.DataSource = bll.ObtenerUsuarios(txtBuscarDni.Text.Trim());
+                OcultarColumnasUsuarios();
             }
             catch { }
         }
@@ -311,69 +343,126 @@ namespace UI.SistemaCompraVentas
 
         // ── Global ───────────────────────────────────────────────────────
 
+        // ── Tab 3: Permisos por rol ───────────────────────────────────────
+
+        private void cboRolPermisos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CargarPermisos();
+        }
+
+        private void CargarPermisos()
+        {
+            if (!int.TryParse(cboRolPermisos.SelectedValue?.ToString(), out int idRol))
+                return;
+
+            try
+            {
+                // Toda la lógica (armado del árbol, candidatos, ciclos, split) vive en
+                // la BLL; el form solo bindea el resultado.
+                ComponentesDeRol componentes = oRolComposicionBLL.ArmarComponentes(idRol);
+                _permisosDisponibles = componentes.Disponibles;
+                _permisosOtorgados = componentes.Otorgados;
+
+                RefrescarListasPermisos();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudieron cargar los permisos: " + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void RefrescarListasPermisos()
+        {
+            // Sin DisplayMember: cada nodo se muestra con su ToString()
+            // ("[Rol] ..." para los roles-familia, el nombre para los permisos).
+            lstPermDisponibles.DataSource = null;
+            lstPermDisponibles.DataSource = _permisosDisponibles;
+
+            lstPermOtorgados.DataSource = null;
+            lstPermOtorgados.DataSource = _permisosOtorgados;
+
+            LimpiarGrillaFamilia();
+        }
+
+        // Si lo seleccionado es un rol (sub-familia), muestra sus permisos efectivos
+        // (en cascada, incluidos los de sus propios sub-roles). Si es un permiso suelto, limpia.
+        private void ListaPermisos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ListBox lista = sender as ListBox;
+            if (!(lista?.SelectedItem is FamiliaPermisos familia))
+            {
+                LimpiarGrillaFamilia();
+                return;
+            }
+
+            // El Composite sabe enumerar sus permisos efectivos (en cascada).
+            dgvPermisosFamilia.Rows.Clear();
+            foreach (Permiso p in familia.ObtenerPermisosEfectivos())
+                dgvPermisosFamilia.Rows.Add(p.ID_Permiso, p.Nombre);
+
+            lblPermisosFamilia.Text = "Permisos del rol: " + familia.Nombre;
+        }
+
+        private void LimpiarGrillaFamilia()
+        {
+            dgvPermisosFamilia.Rows.Clear();
+            lblPermisosFamilia.Text = "Permisos del rol seleccionado:";
+        }
+
+        private void btnAgregarPermiso_Click(object sender, EventArgs e)
+        {
+            MoverPermisos(lstPermDisponibles, _permisosDisponibles, _permisosOtorgados);
+        }
+
+        private void btnQuitarPermiso_Click(object sender, EventArgs e)
+        {
+            MoverPermisos(lstPermOtorgados, _permisosOtorgados, _permisosDisponibles);
+        }
+
+        private void MoverPermisos(ListBox origen, List<Componente> listaOrigen, List<Componente> listaDestino)
+        {
+            if (origen.SelectedItems.Count == 0) return;
+
+            List<Componente> seleccionados = new List<Componente>();
+            foreach (object item in origen.SelectedItems)
+                seleccionados.Add((Componente)item);
+
+            foreach (Componente c in seleccionados)
+            {
+                listaOrigen.Remove(c);
+                listaDestino.Add(c);
+            }
+
+            RefrescarListasPermisos();
+        }
+
+        private void btnGuardarPermisos_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(cboRolPermisos.SelectedValue?.ToString(), out int idRol))
+            {
+                MessageBox.Show("Seleccioná un rol.", "Atención",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                // El split (permisos vs sub-roles) y la persistencia viven en la BLL.
+                oRolComposicionBLL.GuardarComponentes(idRol, _permisosOtorgados);
+                MessageBox.Show("Permisos del rol actualizados con éxito.");
+                CargarPermisos(); // refresca el árbol (la composición pudo cambiar)
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error al guardar: " + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void btnSalir_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void dtpFechaNacimiento_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblFechaNacimiento_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dgvUsuariosCargados_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void txtEditEmail_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEditEmail_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEditFechaNacimiento_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dtpEditFechaNacimiento_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cboEditRoles_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtEditNombre_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEditNombre_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEditRol_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void datosDelUsuario_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 }

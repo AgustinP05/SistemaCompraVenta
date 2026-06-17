@@ -24,6 +24,8 @@
             this.btnLogout = new System.Windows.Forms.Button();
             this.btnClientes = new System.Windows.Forms.Button();
             this.btnProveedores = new System.Windows.Forms.Button();
+            this.btnCompras = new System.Windows.Forms.Button();
+            this.btnRecepcionCompras = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblUsuario
@@ -110,7 +112,7 @@
             this.btnLogout.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
             this.btnLogout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLogout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btnLogout.Location = new System.Drawing.Point(266, 414);
+            this.btnLogout.Location = new System.Drawing.Point(266, 505);
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Size = new System.Drawing.Size(90, 32);
             this.btnLogout.TabIndex = 6;
@@ -146,13 +148,41 @@
             this.btnProveedores.UseVisualStyleBackColor = false;
             this.btnProveedores.Click += new System.EventHandler(this.btnProveedores_Click);
             //
+            // btnCompras
+            //
+            this.btnCompras.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnCompras.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
+            this.btnCompras.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCompras.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btnCompras.Location = new System.Drawing.Point(56, 395);
+            this.btnCompras.Name = "btnCompras";
+            this.btnCompras.Size = new System.Drawing.Size(300, 36);
+            this.btnCompras.TabIndex = 9;
+            this.btnCompras.Text = "Registrar Compra";
+            this.btnCompras.UseVisualStyleBackColor = false;
+            this.btnCompras.Click += new System.EventHandler(this.btnCompras_Click);
+            //
+            // btnRecepcionCompras
+            //
+            this.btnRecepcionCompras.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnRecepcionCompras.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
+            this.btnRecepcionCompras.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRecepcionCompras.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btnRecepcionCompras.Location = new System.Drawing.Point(56, 441);
+            this.btnRecepcionCompras.Name = "btnRecepcionCompras";
+            this.btnRecepcionCompras.Size = new System.Drawing.Size(300, 36);
+            this.btnRecepcionCompras.TabIndex = 10;
+            this.btnRecepcionCompras.Text = "Recepción de Compras";
+            this.btnRecepcionCompras.UseVisualStyleBackColor = false;
+            this.btnRecepcionCompras.Click += new System.EventHandler(this.btnRecepcionCompras_Click);
+            //
             // MenuPrincipal
-            // 
+            //
             this.AccessibleName = "Sistema SCV - Panel de Control";
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(418, 481);
+            this.ClientSize = new System.Drawing.Size(418, 560);
             this.Controls.Add(this.lblUsuario);
             this.Controls.Add(this.lblSesion);
             this.Controls.Add(this.btnUsuarios);
@@ -161,6 +191,8 @@
             this.Controls.Add(this.btnProductos);
             this.Controls.Add(this.btnClientes);
             this.Controls.Add(this.btnProveedores);
+            this.Controls.Add(this.btnCompras);
+            this.Controls.Add(this.btnRecepcionCompras);
             this.Controls.Add(this.btnLogout);
             this.Name = "MenuPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -181,5 +213,7 @@
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnClientes;
         private System.Windows.Forms.Button btnProveedores;
+        private System.Windows.Forms.Button btnCompras;
+        private System.Windows.Forms.Button btnRecepcionCompras;
     }
 }

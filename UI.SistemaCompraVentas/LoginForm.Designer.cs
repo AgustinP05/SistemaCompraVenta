@@ -46,7 +46,6 @@
             this.DNI.Size = new System.Drawing.Size(57, 16);
             this.DNI.TabIndex = 0;
             this.DNI.Text = "Usuario:";
-            this.DNI.Click += new System.EventHandler(this.label1_Click);
             // 
             // txtUsuario
             // 
@@ -55,7 +54,6 @@
             this.txtUsuario.Name = "txtUsuario";
             this.txtUsuario.Size = new System.Drawing.Size(173, 22);
             this.txtUsuario.TabIndex = 1;
-            this.txtUsuario.TextChanged += new System.EventHandler(this.txtUsuario_TextChanged);
             // 
             // txtPassword
             // 
@@ -65,7 +63,6 @@
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(173, 22);
             this.txtPassword.TabIndex = 3;
-            this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
             // 
             // label2
             // 
@@ -76,7 +73,6 @@
             this.label2.Size = new System.Drawing.Size(79, 16);
             this.label2.TabIndex = 2;
             this.label2.Text = "Contraseña:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // btnLogin
             // 
@@ -102,7 +98,6 @@
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Iniciar Sesión";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // LoginForm
             // 

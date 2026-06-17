@@ -48,6 +48,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormBuscarCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarCliente.Designer.cs">
+      <DependentUpon>FormBuscarCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormBuscarProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarProducto.Designer.cs">
+      <DependentUpon>FormBuscarProducto.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormCrearCliente.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -60,6 +72,25 @@
     <Compile Include="FormCrearProveedor.Designer.cs">
       <DependentUpon>FormCrearProveedor.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormBuscarProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarProveedor.Designer.cs">
+      <DependentUpon>FormBuscarProveedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCompras.Designer.cs">
+      <DependentUpon>FormCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRecepcionCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRecepcionCompras.Designer.cs">
+      <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GrillaHelper.cs" />
     <Compile Include="FormStock.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,11 +109,11 @@
     <Compile Include="FormVendedor.Designer.cs">
       <DependentUpon>FormVendedor.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormAdministrador.cs">
+    <Compile Include="FormGestionUsuarios.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormAdministrador.Designer.cs">
-      <DependentUpon>FormAdministrador.cs</DependentUpon>
+    <Compile Include="FormGestionUsuarios.Designer.cs">
+      <DependentUpon>FormGestionUsuarios.cs</DependentUpon>
     </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
@@ -98,11 +129,23 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormBuscarCliente.resx">
+      <DependentUpon>FormBuscarCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormBuscarProducto.resx">
+      <DependentUpon>FormBuscarProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormBuscarProveedor.resx">
+      <DependentUpon>FormBuscarProveedor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormCrearCliente.resx">
       <DependentUpon>FormCrearCliente.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormCrearProveedor.resx">
       <DependentUpon>FormCrearProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRecepcionCompras.resx">
+      <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormStock.resx">
       <DependentUpon>FormStock.cs</DependentUpon>
@@ -113,8 +156,8 @@
     <EmbeddedResource Include="FormVendedor.resx">
       <DependentUpon>FormVendedor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormAdministrador.resx">
-      <DependentUpon>FormAdministrador.cs</DependentUpon>
+    <EmbeddedResource Include="FormGestionUsuarios.resx">
+      <DependentUpon>FormGestionUsuarios.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>

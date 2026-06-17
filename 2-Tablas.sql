@@ -1,3 +1,4 @@
+
 /* =========================================================
    SistemaCompraVenta - Script de tablas (versión final)
    Nomenclatura 2-Tablas: prefijo t, PascalCase, FKs inline.
@@ -43,6 +44,18 @@ CREATE TABLE tRolPermiso (
     PRIMARY KEY (ID_Rol, ID_Permiso),
     FOREIGN KEY (ID_Rol) REFERENCES tRol(ID_Rol),
     FOREIGN KEY (ID_Permiso) REFERENCES tPermiso(ID_Permiso)
+);
+GO
+
+---- ROL_COMPOSICION (Composite: un rol-familia contiene a otro rol-familia.
+----  Ej: Administrador contiene a Vendedor, Stock, Gerente y Compras) ----
+CREATE TABLE tRolComposicion (
+    ID_RolPadre INT NOT NULL,
+    ID_RolHijo INT NOT NULL,
+    PRIMARY KEY (ID_RolPadre, ID_RolHijo),
+    FOREIGN KEY (ID_RolPadre) REFERENCES tRol(ID_Rol),
+    FOREIGN KEY (ID_RolHijo) REFERENCES tRol(ID_Rol),
+    CONSTRAINT CK_tRolComposicion_NoAutocontenido CHECK (ID_RolPadre <> ID_RolHijo)
 );
 GO
 
@@ -97,6 +110,15 @@ CREATE TABLE tProducto (
 );
 GO
 
+---- PROVEEDOR_MARCA (qué marcas provee cada proveedor; Marca = mismo texto que tProducto.Marca) ----
+CREATE TABLE tProveedorMarca (
+    ID_Proveedor INT NOT NULL,
+    Marca VARCHAR(100) NOT NULL,
+    PRIMARY KEY (ID_Proveedor, Marca),
+    FOREIGN KEY (ID_Proveedor) REFERENCES tProveedor(ID_Proveedor)
+);
+GO
+
 ---- COLOR ----
 CREATE TABLE tColor (
     ID_Color INT PRIMARY KEY IDENTITY(1,1),
@@ -115,7 +137,7 @@ GO
 
 ---- PRODUCTO_VARIANTE (Cantidad embebida; ID_Color NOT NULL por entrar en el UNIQUE) ----
 CREATE TABLE tProductoVariante (
-    ID_ProductoVariante INT PRIMARY KEY IDENTITY(1,1),
+    SKU INT PRIMARY KEY IDENTITY(1,1),
     ID_Producto INT NOT NULL,
     ID_Color INT NOT NULL,
     ID_Talle INT NOT NULL,
@@ -142,34 +164,65 @@ GO
 CREATE TABLE tDetalleVenta (
     ID_DetalleVenta INT PRIMARY KEY IDENTITY(1,1),
     ID_Venta INT NOT NULL,
-    ID_ProductoVariante INT NOT NULL,
+    SKU INT NOT NULL,
     Cantidad INT NOT NULL,
     PrecioUnitario DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (ID_Venta) REFERENCES tVenta(ID_Venta),
-    FOREIGN KEY (ID_ProductoVariante) REFERENCES tProductoVariante(ID_ProductoVariante)
+    FOREIGN KEY (SKU) REFERENCES tProductoVariante(SKU)
 );
 GO
 
----- COMPRA ----
+---- DESCUENTO_VENTA (auditoría: solo se cargan las ventas que tuvieron descuento) ----
+CREATE TABLE tDescuentoVenta (
+    ID_Descuento INT PRIMARY KEY IDENTITY(1,1),
+    ID_Venta INT NOT NULL,
+    Tipo VARCHAR(100) NOT NULL,
+    Monto DECIMAL(10,2) NOT NULL,
+    Fecha DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (ID_Venta) REFERENCES tVenta(ID_Venta)
+);
+GO
+
+---- COMPRA (Estado: circuito Pendiente -> Confirmada / Reclamo. Por defecto Pendiente.
+----  FechaRecepcion / ID_UsuarioRecepcion: cuándo y quién (Stock) recepcionó. NULL hasta procesar) ----
 CREATE TABLE tCompra (
     ID_Compra INT PRIMARY KEY IDENTITY(1,1),
     Fecha DATETIME NOT NULL,
     ID_Usuario INT NOT NULL,
     ID_Proveedor INT NOT NULL,
+    Estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
+    FechaRecepcion DATETIME NULL,
+    ID_UsuarioRecepcion INT NULL,
     FOREIGN KEY (ID_Usuario) REFERENCES tUsuario(ID),
-    FOREIGN KEY (ID_Proveedor) REFERENCES tProveedor(ID_Proveedor)
+    FOREIGN KEY (ID_Proveedor) REFERENCES tProveedor(ID_Proveedor),
+    FOREIGN KEY (ID_UsuarioRecepcion) REFERENCES tUsuario(ID)
 );
 GO
 
----- DETALLE_COMPRA (apunta a la variante) ----
+---- DETALLE_COMPRA (apunta a la variante; CantidadConfirmada = lo que el encargado de Stock dio por recibido, NULL hasta procesar) ----
 CREATE TABLE tDetalleCompra (
     ID_DetalleCompra INT PRIMARY KEY IDENTITY(1,1),
     ID_Compra INT NOT NULL,
-    ID_ProductoVariante INT NOT NULL,
+    SKU INT NOT NULL,
     Cantidad INT NOT NULL,
     PrecioUnitario DECIMAL(10,2) NOT NULL,
+    CantidadConfirmada INT NULL,
     FOREIGN KEY (ID_Compra) REFERENCES tCompra(ID_Compra),
-    FOREIGN KEY (ID_ProductoVariante) REFERENCES tProductoVariante(ID_ProductoVariante)
+    FOREIGN KEY (SKU) REFERENCES tProductoVariante(SKU)
+);
+GO
+
+---- RECLAMO_COMPRA (auditoría: faltantes detectados al recepcionar una orden) ----
+CREATE TABLE tReclamoCompra (
+    ID_Reclamo INT PRIMARY KEY IDENTITY(1,1),
+    ID_Compra INT NOT NULL,
+    SKU INT NOT NULL,
+    CantidadPedida INT NOT NULL,
+    CantidadRecibida INT NOT NULL,
+    CantidadFaltante INT NOT NULL,
+    Fecha DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (ID_Compra) REFERENCES tCompra(ID_Compra),
+    FOREIGN KEY (SKU) REFERENCES tProductoVariante(SKU)
 );
 GO
 
