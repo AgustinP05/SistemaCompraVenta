@@ -19,7 +19,7 @@ namespace DAL.SistemaCompraVenta
         // Catálogo limitado a las marcas que provee el proveedor.
         public List<ProductoVariante> ListarVariantesPorProveedor(int idProveedor)
         {
-            SqlParameter[] param = { conexion.crearParametro("@ID_Proveedor", idProveedor) };
+            SqlParameter[] param = { ParametroSql.Crear("@ID_Proveedor", idProveedor) };
             DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarVariantesPorProveedor", param);
             return Mapear(dt);
         }
@@ -46,7 +46,7 @@ namespace DAL.SistemaCompraVenta
 
         public DataTable ObtenerVariantes(string filtro)
         {
-            SqlParameter[] param = { conexion.crearParametro("@Filtro", filtro ?? "") };
+            SqlParameter[] param = { ParametroSql.Crear("@Filtro", filtro ?? "") };
             return conexion.LeerPorStoreProcedure("SP_ObtenerVariantes", param);
         }
 
@@ -54,8 +54,8 @@ namespace DAL.SistemaCompraVenta
         public DataTable ObtenerVariantesPorProveedor(string filtro, int idProveedor)
         {
             SqlParameter[] param = {
-                conexion.crearParametro("@Filtro", filtro ?? ""),
-                conexion.crearParametro("@ID_Proveedor", idProveedor)
+                ParametroSql.Crear("@Filtro", filtro ?? ""),
+                ParametroSql.Crear("@ID_Proveedor", idProveedor)
             };
             return conexion.LeerPorStoreProcedure("SP_ObtenerVariantesPorProveedor", param);
         }

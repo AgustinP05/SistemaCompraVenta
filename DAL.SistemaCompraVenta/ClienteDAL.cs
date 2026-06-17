@@ -18,12 +18,12 @@ namespace DAL.SistemaCompraVenta
             // Mapeamos las propiedades de la Entidad a los parámetros del SP
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@DNI", c.Dni),
-                conexion.crearParametro("@Nombre", c.Nombre),
-                conexion.crearParametro("@Apellido", c.Apellido),
-                conexion.crearParametro("@Telefono", c.Telefono),
-                conexion.crearParametro("@Email", c.Email),
-                conexion.crearParametro("@Direccion", c.Direccion)
+                ParametroSql.Crear("@DNI", c.Dni),
+                ParametroSql.Crear("@Nombre", c.Nombre),
+                ParametroSql.Crear("@Apellido", c.Apellido),
+                ParametroSql.Crear("@Telefono", c.Telefono),
+                ParametroSql.Crear("@Email", c.Email),
+                ParametroSql.Crear("@Direccion", c.Direccion)
             };
 
             // Ejecutamos la inserción usando la lógica de conexión ya existente
@@ -34,7 +34,7 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros =
             {
-        conexion.crearParametro("@DNI", dni)
+        ParametroSql.Crear("@DNI", dni)
     };
 
             DataTable dt = conexion.LeerPorStoreProcedure("SP_ExisteCliente", parametros);
@@ -65,7 +65,7 @@ namespace DAL.SistemaCompraVenta
                 {
                     SqlParameter[] parametros =
                     {
-                conexion.crearParametro("@Filtro", filtro ?? "")
+                ParametroSql.Crear("@Filtro", filtro ?? "")
             };
                     return conexion.LeerPorStoreProcedure("SP_ObtenerClientes", parametros);
                 }
@@ -74,13 +74,13 @@ namespace DAL.SistemaCompraVenta
                 {
                     SqlParameter[] parametros =
                     {
-                conexion.crearParametro("@ID_Cliente", c.IdCliente),
-                conexion.crearParametro("@DNI", c.Dni),
-                conexion.crearParametro("@Nombre", c.Nombre),
-                conexion.crearParametro("@Apellido", c.Apellido),
-                conexion.crearParametro("@Telefono", c.Telefono),
-                conexion.crearParametro("@Email", c.Email),
-                conexion.crearParametro("@Direccion", c.Direccion)
+                ParametroSql.Crear("@ID_Cliente", c.IdCliente),
+                ParametroSql.Crear("@DNI", c.Dni),
+                ParametroSql.Crear("@Nombre", c.Nombre),
+                ParametroSql.Crear("@Apellido", c.Apellido),
+                ParametroSql.Crear("@Telefono", c.Telefono),
+                ParametroSql.Crear("@Email", c.Email),
+                ParametroSql.Crear("@Direccion", c.Direccion)
             };
                     return conexion.EscribirPorStoreProcedure("SP_ModificarCliente", parametros);
                 }
@@ -89,7 +89,7 @@ namespace DAL.SistemaCompraVenta
                 {
                     SqlParameter[] parametros =
                     {
-                conexion.crearParametro("@ID_Cliente", idCliente)
+                ParametroSql.Crear("@ID_Cliente", idCliente)
             };
                     return conexion.EscribirPorStoreProcedure("SP_EliminarCliente", parametros);
                 }

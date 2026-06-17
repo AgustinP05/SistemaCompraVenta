@@ -12,7 +12,7 @@ namespace DAL.SistemaCompraVenta
 
         public Venta ObtenerVentaPorId(int idVenta)
         {
-            SqlParameter[] pCab = { conexion.crearParametro("@ID_Venta", idVenta) };
+            SqlParameter[] pCab = { ParametroSql.Crear("@ID_Venta", idVenta) };
             DataTable dtCab = conexion.LeerPorStoreProcedure("SP_ObtenerVentaPorId", pCab);
             if (dtCab == null || dtCab.Rows.Count == 0) return null;
 
@@ -37,7 +37,7 @@ namespace DAL.SistemaCompraVenta
             };
 
         
-            SqlParameter[] pDet = { conexion.crearParametro("@ID_Venta", idVenta) };
+            SqlParameter[] pDet = { ParametroSql.Crear("@ID_Venta", idVenta) };
             DataTable dtDet = conexion.LeerPorStoreProcedure("SP_ObtenerDetalleVentaPorId", pDet);
             foreach (DataRow fila in dtDet.Rows)
             {
@@ -57,7 +57,7 @@ namespace DAL.SistemaCompraVenta
             }
 
             // Descuento auditado (si la venta tuvo descuentos)
-            SqlParameter[] pDesc = { conexion.crearParametro("@ID_Venta", idVenta) };
+            SqlParameter[] pDesc = { ParametroSql.Crear("@ID_Venta", idVenta) };
             DataTable dtDesc = conexion.LeerPorStoreProcedure("SP_ObtenerDescuentoVenta", pDesc);
             if (dtDesc != null && dtDesc.Rows.Count > 0)
             {
@@ -72,9 +72,9 @@ namespace DAL.SistemaCompraVenta
         public int RegistrarVenta(Venta v)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@Fecha",      v.Fecha),
-                conexion.crearParametro("@ID_Cliente", v.Cliente.IdCliente),
-                conexion.crearParametro("@ID_Usuario", v.Usuario.ID)
+                ParametroSql.Crear("@Fecha",      v.Fecha),
+                ParametroSql.Crear("@ID_Cliente", v.Cliente.IdCliente),
+                ParametroSql.Crear("@ID_Usuario", v.Usuario.ID)
             };
 
             DataTable dt = conexion.LeerPorStoreProcedure("SP_RegistrarVenta", parametros);
@@ -92,10 +92,10 @@ namespace DAL.SistemaCompraVenta
         public void InsertarDetalle(int idVenta, DetalleVenta d)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@ID_Venta",            idVenta),
-                conexion.crearParametro("@SKU",            d.Variante.SKU),
-                conexion.crearParametro("@Cantidad",            d.Cantidad),
-                conexion.crearParametro("@PrecioUnitario",      d.PrecioUnitario)
+                ParametroSql.Crear("@ID_Venta",            idVenta),
+                ParametroSql.Crear("@SKU",            d.Variante.SKU),
+                ParametroSql.Crear("@Cantidad",            d.Cantidad),
+                ParametroSql.Crear("@PrecioUnitario",      d.PrecioUnitario)
             };
             conexion.EscribirPorStoreProcedure("SP_InsertarDetalleVenta", parametros);
         }
@@ -103,9 +103,9 @@ namespace DAL.SistemaCompraVenta
         public void InsertarDescuento(int idVenta, string tipo, double monto)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@ID_Venta", idVenta),
-                conexion.crearParametro("@Tipo",     tipo),
-                conexion.crearParametro("@Monto",    monto)
+                ParametroSql.Crear("@ID_Venta", idVenta),
+                ParametroSql.Crear("@Tipo",     tipo),
+                ParametroSql.Crear("@Monto",    monto)
             };
             conexion.EscribirPorStoreProcedure("SP_InsertarDescuentoVenta", parametros);
         }
@@ -143,8 +143,8 @@ namespace DAL.SistemaCompraVenta
         private void DescontarStock(int sku, int cantidad)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@SKU",      sku),
-                conexion.crearParametro("@Cantidad", cantidad)
+                ParametroSql.Crear("@SKU",      sku),
+                ParametroSql.Crear("@Cantidad", cantidad)
             };
             conexion.EscribirPorStoreProcedure("SP_ActualizarStock", parametros);
         }

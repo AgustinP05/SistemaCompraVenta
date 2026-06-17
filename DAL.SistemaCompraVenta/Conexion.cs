@@ -1,51 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-//Incorporo el espacio de nombre System.Data.SqlClient
-using System.Data.SqlClient;
+using System;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace DAL.SistemaCompraVenta
 {
+    // Única responsabilidad: ejecutar acceso a datos (correr stored procedures) y
+    // orquestar la transacción. NO sabe de dónde sale la cadena (ConfiguracionBD),
+    // ni cómo se abre una conexión (FabricaConexion), ni cómo se fabrican los
+    // parámetros (ParametroSql).
     public class Conexion
     {
+        private readonly FabricaConexion fabrica = new FabricaConexion();
         private SqlConnection objConexion;
         private SqlTransaction objTransaccion;
         private bool enTransaccion = false;
-        private string strCadenaDeConexion = "";
 
-        private void AsignarCadena()
-        {
-            //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=AgusPC";
-            //cadena de compu sofi,
-            //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=SOFI\SQLEXPRESS";
-            //cadena de compu agos,
-            strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=DESKTOP-31EJQH0\SQLEXPRESS";
-            //cadena de compu Juli,
-            //strCadenaDeConexion = @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=JULAZARO\SQLEXPRESS";
-        }
-
-        /* -------------------- private void Conectar() ------------
-         * Abre la conexión con la base. Si hay una transacción en curso, no abre
-         * una nueva: reutiliza la conexión ya abierta por IniciarTransaccion().
-         */
+        // Abre la conexión (delegando la creación a la fábrica). Si hay una transacción
+        // en curso, reutiliza la conexión ya abierta por IniciarTransaccion().
         private void Conectar()
         {
             if (enTransaccion) return;
-            AsignarCadena();
-            objConexion = new SqlConnection();
-            objConexion.ConnectionString = strCadenaDeConexion;
-            objConexion.Open();
+            objConexion = fabrica.CrearAbierta();
         }
 
-        /* -------------------- private void Desconectar() ------------
-         * Cierra la conexión. Durante una transacción NO cierra: la conexión
-         * debe seguir viva hasta el Confirmar()/Revertir().
-         */
+        // Cierra la conexión. Durante una transacción NO cierra: debe seguir viva
+        // hasta el Confirmar()/Revertir().
         private void Desconectar()
         {
             if (enTransaccion) return;
@@ -60,10 +39,7 @@ namespace DAL.SistemaCompraVenta
          */
         public void IniciarTransaccion()
         {
-            AsignarCadena();
-            objConexion = new SqlConnection();
-            objConexion.ConnectionString = strCadenaDeConexion;
-            objConexion.Open();
+            objConexion = fabrica.CrearAbierta();
             objTransaccion = objConexion.BeginTransaction();
             enTransaccion = true;
         }
@@ -89,16 +65,10 @@ namespace DAL.SistemaCompraVenta
 
         public DataTable LeerPorStoreProcedure(string pNombreStoreProcedure, SqlParameter[] pParametrosSql = null)
         {
-            //Instancio un objeto del tipo DataTable
             var unaTabla = new DataTable();
-
-            //Instancio un objeto del tipo SqlCommand
             var objComando = new SqlCommand();
 
-            //Me conecto...
             this.Conectar();
-
-
             try
             {
                 objComando.CommandText = pNombreStoreProcedure;
@@ -107,63 +77,30 @@ namespace DAL.SistemaCompraVenta
                 if (enTransaccion) objComando.Transaction = objTransaccion;
 
                 if (pParametrosSql != null)
-                {
-                    //Lleno los SqlParameters a la lista de parametros
                     objComando.Parameters.AddRange(pParametrosSql);
-                }
 
-                //Instancio un adaptador con el parametro SqlCommand
                 var objAdaptador = new SqlDataAdapter(objComando);
-
-                //Lleno la tabla, el objeto unaTabla con el adaptador
                 objAdaptador.Fill(unaTabla);
             }
             catch (Exception)
             {
-                //Como hay error... por el motivo que sea asigno el resultado a null
                 unaTabla = null;
-
                 throw;
             }
             finally
             {
-
-                //Pase lo que pase me desconecto
                 this.Desconectar();
             }
-
 
             return unaTabla;
         }
 
-        public SqlParameter crearParametro(string pNombre, object pValor)
-        {
-            SqlParameter objParametro = new SqlParameter();
-            objParametro.ParameterName = pNombre;
-
-            // Si el valor es nulo (o DBNull), lo asignamos correctamente para SQL
-            if (pValor == null)
-            {
-                objParametro.Value = DBNull.Value;
-            }
-            else
-            {
-                objParametro.Value = pValor;
-            }
-
-            return objParametro;
-        }
         public int EscribirPorStoreProcedure(string pTexto, SqlParameter[] pParametrosSql)
         {
-            //Instanció una variable filasAfectadas que va a terminar devolviendo la cantidad de filas afectadas.
             int filasAfectadas = 0;
-
-            //Instancio un objeto del tipo SqlCommand
             var objComando = new SqlCommand();
 
-            //Me conecto...
             this.Conectar();
-
             try
             {
                 objComando.CommandText = pTexto;
@@ -174,17 +111,12 @@ namespace DAL.SistemaCompraVenta
                 if (pParametrosSql.Length > 0)
                 {
                     objComando.Parameters.AddRange(pParametrosSql);
-                    //El método ExecuteNonQuery() me devuelve la cantidad de filas afectadas.
                     filasAfectadas = objComando.ExecuteNonQuery();
                 }
                 else
                 {
-                    //retorno -1 porque la lista de parametros Sql tiene 0 ítems...
                     filasAfectadas = -1;
                 }
-
-
-
             }
             catch (Exception)
             {
@@ -193,70 +125,10 @@ namespace DAL.SistemaCompraVenta
             }
             finally
             {
-                //Me desconecto
                 this.Desconectar();
             }
 
-
             return filasAfectadas;
         }
-
-        #region Parametros
-        public SqlParameter crearParametro(string pNombre, string pValor)
-        {
-
-            SqlParameter objParametro = new SqlParameter();
-
-            objParametro.ParameterName = pNombre;
-            objParametro.Value = pValor;
-            objParametro.DbType = DbType.String;
-
-            return objParametro;
-        }
-
-
-
-        public SqlParameter crearParametro(string pNombre, double pValor)
-        {
-
-            SqlParameter objParametro = new SqlParameter();
-
-            objParametro.ParameterName = pNombre;
-            objParametro.Value = pValor;
-            objParametro.DbType = DbType.Double;
-
-            return objParametro;
-        }
-
-
-        public SqlParameter crearParametro(string pNombre, DateTime pValor)
-        {
-
-            SqlParameter objParametro = new SqlParameter();
-
-            objParametro.ParameterName = pNombre;
-            objParametro.Value = pValor;
-            objParametro.DbType = DbType.DateTime;
-
-            return objParametro;
-        }
-
-
-        public SqlParameter crearParametro(string pNombre, int pValor)
-        {
-
-            SqlParameter objParametro = new SqlParameter();
-
-            objParametro.ParameterName = pNombre;
-            objParametro.Value = pValor;
-            objParametro.DbType = DbType.Int32;
-
-            return objParametro;
-        }
-
-
-        #endregion
-
-
     }
 }

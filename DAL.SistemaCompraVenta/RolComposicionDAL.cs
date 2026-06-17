@@ -27,7 +27,7 @@ namespace DAL.SistemaCompraVenta
 
         public List<Rol> SubRolesDeRol(int idRol)
         {
-            SqlParameter[] parametros = { conexion.crearParametro("@ID_Rol", idRol) };
+            SqlParameter[] parametros = { ParametroSql.Crear("@ID_Rol", idRol) };
             DataTable dt = conexion.LeerPorStoreProcedure("SP_SubRolesDeRol", parametros);
 
             List<Rol> lista = new List<Rol>();
@@ -43,15 +43,15 @@ namespace DAL.SistemaCompraVenta
         public void AsignarSubRol(int idRolPadre, int idRolHijo)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@ID_RolPadre", idRolPadre),
-                conexion.crearParametro("@ID_RolHijo",  idRolHijo)
+                ParametroSql.Crear("@ID_RolPadre", idRolPadre),
+                ParametroSql.Crear("@ID_RolHijo",  idRolHijo)
             };
             conexion.EscribirPorStoreProcedure("SP_AsignarSubRol", parametros);
         }
 
         public void QuitarSubRolesDeRol(int idRol)
         {
-            SqlParameter[] parametros = { conexion.crearParametro("@ID_Rol", idRol) };
+            SqlParameter[] parametros = { ParametroSql.Crear("@ID_Rol", idRol) };
             conexion.EscribirPorStoreProcedure("SP_QuitarSubRolesRol", parametros);
         }
     }

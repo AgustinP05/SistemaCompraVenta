@@ -20,7 +20,7 @@ namespace DAL.SistemaCompraVenta
         // Permisos asignados a un rol.
         public List<Permiso> ListarPorRol(int idRol)
         {
-            SqlParameter[] parametros = { conexion.crearParametro("@ID_Rol", idRol) };
+            SqlParameter[] parametros = { ParametroSql.Crear("@ID_Rol", idRol) };
             DataTable dt = conexion.LeerPorStoreProcedure("SP_PermisosPorRol", parametros);
             return Mapear(dt);
         }
@@ -29,15 +29,15 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@ID_Rol", idRol),
-                conexion.crearParametro("@ID_Permiso", idPermiso)
+                ParametroSql.Crear("@ID_Rol", idRol),
+                ParametroSql.Crear("@ID_Permiso", idPermiso)
             };
             conexion.EscribirPorStoreProcedure("SP_AsignarPermisoRol", parametros);
         }
 
         public void QuitarTodosDeRol(int idRol)
         {
-            SqlParameter[] parametros = { conexion.crearParametro("@ID_Rol", idRol) };
+            SqlParameter[] parametros = { ParametroSql.Crear("@ID_Rol", idRol) };
             conexion.EscribirPorStoreProcedure("SP_QuitarPermisosRol", parametros);
         }
 

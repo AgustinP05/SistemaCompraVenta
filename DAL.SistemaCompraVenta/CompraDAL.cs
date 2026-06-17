@@ -19,9 +19,9 @@ namespace DAL.SistemaCompraVenta
             try
             {
                 SqlParameter[] parametros = {
-                    conexion.crearParametro("@Fecha",        c.Fecha),
-                    conexion.crearParametro("@ID_Proveedor", c.Proveedor.IdProveedor),
-                    conexion.crearParametro("@ID_Usuario",   c.Usuario.ID)
+                    ParametroSql.Crear("@Fecha",        c.Fecha),
+                    ParametroSql.Crear("@ID_Proveedor", c.Proveedor.IdProveedor),
+                    ParametroSql.Crear("@ID_Usuario",   c.Usuario.ID)
                 };
 
                 DataTable dt = conexion.LeerPorStoreProcedure("SP_RegistrarCompra", parametros);
@@ -43,10 +43,10 @@ namespace DAL.SistemaCompraVenta
         public void InsertarDetalle(int idCompra, DetalleCompra d)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@ID_Compra",      idCompra),
-                conexion.crearParametro("@SKU",            d.Variante.SKU),
-                conexion.crearParametro("@Cantidad",       d.Cantidad),
-                conexion.crearParametro("@PrecioUnitario", d.PrecioUnitario)
+                ParametroSql.Crear("@ID_Compra",      idCompra),
+                ParametroSql.Crear("@SKU",            d.Variante.SKU),
+                ParametroSql.Crear("@Cantidad",       d.Cantidad),
+                ParametroSql.Crear("@PrecioUnitario", d.PrecioUnitario)
             };
             conexion.EscribirPorStoreProcedure("SP_InsertarDetalleCompra", parametros);
         }
@@ -68,7 +68,7 @@ namespace DAL.SistemaCompraVenta
         // Reconstruye una orden completa (cabecera + detalle) desde la base.
         public Compra ObtenerCompraPorId(int idCompra)
         {
-            SqlParameter[] pCab = { conexion.crearParametro("@ID_Compra", idCompra) };
+            SqlParameter[] pCab = { ParametroSql.Crear("@ID_Compra", idCompra) };
             DataTable dtCab = conexion.LeerPorStoreProcedure("SP_ObtenerCompraPorId", pCab);
             if (dtCab == null || dtCab.Rows.Count == 0) return null;
 
@@ -92,7 +92,7 @@ namespace DAL.SistemaCompraVenta
                 }
             };
 
-            SqlParameter[] pDet = { conexion.crearParametro("@ID_Compra", idCompra) };
+            SqlParameter[] pDet = { ParametroSql.Crear("@ID_Compra", idCompra) };
             DataTable dtDet = conexion.LeerPorStoreProcedure("SP_ObtenerDetalleCompraPorId", pDet);
             foreach (DataRow fila in dtDet.Rows)
             {
@@ -120,9 +120,9 @@ namespace DAL.SistemaCompraVenta
         public void ConfirmarDetalle(int idCompra, int sku, int cantidadConfirmada)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@ID_Compra",          idCompra),
-                conexion.crearParametro("@SKU",                sku),
-                conexion.crearParametro("@CantidadConfirmada", cantidadConfirmada)
+                ParametroSql.Crear("@ID_Compra",          idCompra),
+                ParametroSql.Crear("@SKU",                sku),
+                ParametroSql.Crear("@CantidadConfirmada", cantidadConfirmada)
             };
             conexion.EscribirPorStoreProcedure("SP_ConfirmarDetalleCompra", parametros);
         }
@@ -131,10 +131,10 @@ namespace DAL.SistemaCompraVenta
         public void CerrarRecepcion(int idCompra, string estado, DateTime fechaRecepcion, int idUsuarioRecepcion)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@ID_Compra",           idCompra),
-                conexion.crearParametro("@Estado",              estado),
-                conexion.crearParametro("@FechaRecepcion",      fechaRecepcion),
-                conexion.crearParametro("@ID_UsuarioRecepcion", idUsuarioRecepcion)
+                ParametroSql.Crear("@ID_Compra",           idCompra),
+                ParametroSql.Crear("@Estado",              estado),
+                ParametroSql.Crear("@FechaRecepcion",      fechaRecepcion),
+                ParametroSql.Crear("@ID_UsuarioRecepcion", idUsuarioRecepcion)
             };
             conexion.EscribirPorStoreProcedure("SP_CerrarRecepcionCompra", parametros);
         }
@@ -142,11 +142,11 @@ namespace DAL.SistemaCompraVenta
         public void InsertarReclamo(int idCompra, int sku, int pedida, int recibida, int faltante)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@ID_Compra",        idCompra),
-                conexion.crearParametro("@SKU",              sku),
-                conexion.crearParametro("@CantidadPedida",   pedida),
-                conexion.crearParametro("@CantidadRecibida", recibida),
-                conexion.crearParametro("@CantidadFaltante", faltante)
+                ParametroSql.Crear("@ID_Compra",        idCompra),
+                ParametroSql.Crear("@SKU",              sku),
+                ParametroSql.Crear("@CantidadPedida",   pedida),
+                ParametroSql.Crear("@CantidadRecibida", recibida),
+                ParametroSql.Crear("@CantidadFaltante", faltante)
             };
             conexion.EscribirPorStoreProcedure("SP_InsertarReclamoCompra", parametros);
         }
@@ -185,8 +185,8 @@ namespace DAL.SistemaCompraVenta
         private void SumarStock(int sku, int cantidad)
         {
             SqlParameter[] parametros = {
-                conexion.crearParametro("@SKU",      sku),
-                conexion.crearParametro("@Cantidad", cantidad)
+                ParametroSql.Crear("@SKU",      sku),
+                ParametroSql.Crear("@Cantidad", cantidad)
             };
             conexion.EscribirPorStoreProcedure("SP_SumarStock", parametros);
         }

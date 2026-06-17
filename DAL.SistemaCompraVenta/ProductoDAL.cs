@@ -38,18 +38,18 @@ namespace DAL.SistemaCompraVenta
         public void Guardar(Producto p)
         {
             SqlParameter[] param = {
-                conexion.crearParametro("@Nombre",       p.Nombre),
-                conexion.crearParametro("@Marca",        p.Marca),
-                conexion.crearParametro("@ID_Categoria", p.ID_Categoria),
-                conexion.crearParametro("@PrecioVenta",  p.PrecioVenta),
-                conexion.crearParametro("@PrecioCosto",  p.PrecioCosto)
+                ParametroSql.Crear("@Nombre",       p.Nombre),
+                ParametroSql.Crear("@Marca",        p.Marca),
+                ParametroSql.Crear("@ID_Categoria", p.ID_Categoria),
+                ParametroSql.Crear("@PrecioVenta",  p.PrecioVenta),
+                ParametroSql.Crear("@PrecioCosto",  p.PrecioCosto)
             };
             conexion.EscribirPorStoreProcedure("SP_InsertarProducto", param);
         }
 
         public int BuscarStockPorVariante(int idVariante)
         {
-            SqlParameter[] param = { conexion.crearParametro("@SKU", idVariante) };
+            SqlParameter[] param = { ParametroSql.Crear("@SKU", idVariante) };
             DataTable dt = conexion.LeerPorStoreProcedure("SP_BuscarStock", param);
             if (dt.Rows.Count > 0)
                 return Convert.ToInt32(dt.Rows[0]["Cantidad"]);
@@ -59,8 +59,8 @@ namespace DAL.SistemaCompraVenta
         public void ActualizarStock(int idVariante, int cantidadVendida)
         {
             SqlParameter[] param = {
-                conexion.crearParametro("@SKU",      idVariante),
-                conexion.crearParametro("@Cantidad", cantidadVendida)
+                ParametroSql.Crear("@SKU",      idVariante),
+                ParametroSql.Crear("@Cantidad", cantidadVendida)
             };
             conexion.EscribirPorStoreProcedure("SP_ActualizarStock", param);
         }
@@ -69,8 +69,8 @@ namespace DAL.SistemaCompraVenta
         public void SumarStock(int idVariante, int cantidadRecibida)
         {
             SqlParameter[] param = {
-                conexion.crearParametro("@SKU",      idVariante),
-                conexion.crearParametro("@Cantidad", cantidadRecibida)
+                ParametroSql.Crear("@SKU",      idVariante),
+                ParametroSql.Crear("@Cantidad", cantidadRecibida)
             };
             conexion.EscribirPorStoreProcedure("SP_SumarStock", param);
         }

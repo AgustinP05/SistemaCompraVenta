@@ -34,7 +34,7 @@ namespace DAL.SistemaCompraVenta
         public List<string> MarcasDeProveedor(int idProveedor)
         {
             List<string> marcas = new List<string>();
-            SqlParameter[] param = { conexion.crearParametro("@ID_Proveedor", idProveedor) };
+            SqlParameter[] param = { ParametroSql.Crear("@ID_Proveedor", idProveedor) };
             DataTable dt = conexion.LeerPorStoreProcedure("SP_MarcasDeProveedor", param);
             foreach (DataRow fila in dt.Rows)
                 marcas.Add(fila["Marca"].ToString());
@@ -45,11 +45,11 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@CUIT",        p.Cuit),
-                conexion.crearParametro("@RazonSocial", p.RazonSocial),
-                conexion.crearParametro("@Telefono",    p.Telefono),
-                conexion.crearParametro("@Email",       p.Email),
-                conexion.crearParametro("@Direccion",   p.Direccion)
+                ParametroSql.Crear("@CUIT",        p.Cuit),
+                ParametroSql.Crear("@RazonSocial", p.RazonSocial),
+                ParametroSql.Crear("@Telefono",    p.Telefono),
+                ParametroSql.Crear("@Email",       p.Email),
+                ParametroSql.Crear("@Direccion",   p.Direccion)
             };
             return conexion.EscribirPorStoreProcedure("SP_InsertarProveedor", parametros);
         }
@@ -58,7 +58,7 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@CUIT", cuit)
+                ParametroSql.Crear("@CUIT", cuit)
             };
             DataTable dt = conexion.LeerPorStoreProcedure("SP_ExisteProveedor", parametros);
             return dt != null && dt.Rows.Count > 0;
@@ -68,7 +68,7 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@Filtro", filtro ?? "")
+                ParametroSql.Crear("@Filtro", filtro ?? "")
             };
             return conexion.LeerPorStoreProcedure("SP_ObtenerProveedores", parametros);
         }
@@ -77,11 +77,11 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@CUIT",        p.Cuit),
-                conexion.crearParametro("@RazonSocial", p.RazonSocial),
-                conexion.crearParametro("@Telefono",    p.Telefono),
-                conexion.crearParametro("@Email",       p.Email),
-                conexion.crearParametro("@Direccion",   p.Direccion)
+                ParametroSql.Crear("@CUIT",        p.Cuit),
+                ParametroSql.Crear("@RazonSocial", p.RazonSocial),
+                ParametroSql.Crear("@Telefono",    p.Telefono),
+                ParametroSql.Crear("@Email",       p.Email),
+                ParametroSql.Crear("@Direccion",   p.Direccion)
             };
             return conexion.EscribirPorStoreProcedure("SP_ModificarProveedor", parametros);
         }
@@ -90,7 +90,7 @@ namespace DAL.SistemaCompraVenta
         {
             SqlParameter[] parametros =
             {
-                conexion.crearParametro("@CUIT", cuit)
+                ParametroSql.Crear("@CUIT", cuit)
             };
             return conexion.EscribirPorStoreProcedure("SP_EliminarProveedor", parametros);
         }

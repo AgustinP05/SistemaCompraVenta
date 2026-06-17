@@ -43,7 +43,10 @@
   <ItemGroup>
     <Compile Include="ClienteDAL.cs" />
     <Compile Include="CompraDAL.cs" />
+    <Compile Include="ConfiguracionBD.cs" />
     <Compile Include="Conexion.cs" />
+    <Compile Include="FabricaConexion.cs" />
+    <Compile Include="ParametroSql.cs" />
     <Compile Include="PermisoDAL.cs" />
     <Compile Include="RolComposicionDAL.cs" />
     <Compile Include="ProductoDAL.cs" />
