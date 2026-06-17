@@ -64,5 +64,15 @@ namespace DAL.SistemaCompraVenta
             };
             conexion.EscribirPorStoreProcedure("SP_ActualizarStock", param);
         }
+
+        // Suma stock (recepción de una compra). Inverso de ActualizarStock.
+        public void SumarStock(int idVariante, int cantidadRecibida)
+        {
+            SqlParameter[] param = {
+                conexion.crearParametro("@SKU",      idVariante),
+                conexion.crearParametro("@Cantidad", cantidadRecibida)
+            };
+            conexion.EscribirPorStoreProcedure("SP_SumarStock", param);
+        }
     }
 }

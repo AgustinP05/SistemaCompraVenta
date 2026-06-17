@@ -47,6 +47,8 @@ namespace UI.SistemaCompraVentas
                 btnReportes.Visible = rol.TienePermiso("VerReportes");
                 btnClientes.Visible     = rol.TienePermiso("GestionarClientes");
                 btnProveedores.Visible  = rol.TienePermiso("GestionarProveedores");
+                btnCompras.Visible          = rol.TienePermiso("RegistrarCompras");
+                btnRecepcionCompras.Visible = rol.TienePermiso("ConfirmarCompras");
             }
             else
             {
@@ -57,6 +59,8 @@ namespace UI.SistemaCompraVentas
                 btnReportes.Visible    = false;
                 btnClientes.Visible    = false;
                 btnProveedores.Visible = false;
+                btnCompras.Visible          = false;
+                btnRecepcionCompras.Visible = false;
             }
         }
 
@@ -72,7 +76,9 @@ namespace UI.SistemaCompraVentas
                 btnVentas,
                 btnProductos,
                 btnClientes,
-                btnProveedores
+                btnProveedores,
+                btnCompras,
+                btnRecepcionCompras
             };
 
             int yInicial = 119; // misma Y que tenía btnUsuarios en el Designer
@@ -128,6 +134,20 @@ namespace UI.SistemaCompraVentas
             FormCrearProveedor vistaProveedores = new FormCrearProveedor();
             vistaProveedores.StartPosition = FormStartPosition.CenterScreen;
             vistaProveedores.ShowDialog();
+        }
+
+        private void btnCompras_Click(object sender, EventArgs e)
+        {
+            FormCompras vistaCompras = new FormCompras();
+            vistaCompras.StartPosition = FormStartPosition.CenterScreen;
+            vistaCompras.ShowDialog();
+        }
+
+        private void btnRecepcionCompras_Click(object sender, EventArgs e)
+        {
+            FormRecepcionCompras vistaRecepcion = new FormRecepcionCompras();
+            vistaRecepcion.StartPosition = FormStartPosition.CenterScreen;
+            vistaRecepcion.ShowDialog();
         }
 
         private void btnLogout_Click(object sender, EventArgs e)

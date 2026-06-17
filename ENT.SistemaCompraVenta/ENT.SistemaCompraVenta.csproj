@@ -45,6 +45,7 @@
     <Compile Include="Cliente.cs" />
     <Compile Include="Composite\Componente.cs" />
     <Compile Include="Descuentos\Descuentos.cs" />
+    <Compile Include="EstadosCompra\EstadoCompra.cs" />
     <Compile Include="Composite\FamiliaPermisos.cs" />
     <Compile Include="Composite\Permiso.cs" />
     <Compile Include="Compra.cs" />

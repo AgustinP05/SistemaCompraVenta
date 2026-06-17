@@ -11,7 +11,7 @@ namespace BLL.SistemaCompraVenta.Services
     public class UsuarioBLL
     {
         private UsuarioDAL oUsuarioDAL = new UsuarioDAL();
-        private FamiliaBLL oFamiliaBLL = new FamiliaBLL();
+        private RolComposicionBLL oRolComposicionBLL = new RolComposicionBLL();
 
         public Usuario Login(string dni, string password)
         {
@@ -23,9 +23,9 @@ namespace BLL.SistemaCompraVenta.Services
             int idRol         = Convert.ToInt32(fila["ID_Rol"]);
             string nombreRol  = fila["Rol"].ToString();
 
-            // Permisos sueltos y familias del rol; con ambos se arma el Composite.
-            List<string> permisosSueltos = oUsuarioDAL.ObtenerPermisos(idRol);
-            List<FamiliaPermisos> familias = oFamiliaBLL.ConstruirFamiliasDeRol(idRol);
+            // El rol ES una familia: se arma su árbol Composite (permisos propios +
+            // sub-roles en cascada).
+            FamiliaPermisos arbol = oRolComposicionBLL.ConstruirArbolDeRol(idRol, nombreRol);
 
             Usuario usuario = new Usuario
             {
@@ -34,7 +34,7 @@ namespace BLL.SistemaCompraVenta.Services
                 Apellido       = fila["Apellido"].ToString(),
                 Password       = fila["Password"].ToString(),
                 FechaHoraLogin = DateTime.Now,
-                Rol            = PermisosFactory.CrearRol(idRol, nombreRol, permisosSueltos, familias)
+                Rol            = PermisosFactory.CrearRol(idRol, nombreRol, arbol)
             };
 
             oUsuarioDAL.RegistrarLogin(usuario.ID, usuario.FechaHoraLogin);

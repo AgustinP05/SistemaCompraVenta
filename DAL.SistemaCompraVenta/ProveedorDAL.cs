@@ -1,4 +1,6 @@
 using ENT.SistemaCompraVenta;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -7,6 +9,37 @@ namespace DAL.SistemaCompraVenta
     public class ProveedorDAL
     {
         private Conexion conexion = new Conexion();
+
+        // Catálogo completo (para resolver el CUIT tipeado en FormCompras).
+        public List<Proveedor> ListarProveedores()
+        {
+            List<Proveedor> lista = new List<Proveedor>();
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarProveedores", null);
+            foreach (DataRow fila in dt.Rows)
+            {
+                lista.Add(new Proveedor
+                {
+                    IdProveedor = Convert.ToInt32(fila["ID_Proveedor"]),
+                    Cuit        = fila["CUIT"].ToString(),
+                    RazonSocial = fila["RazonSocial"].ToString(),
+                    Telefono    = fila["Telefono"].ToString(),
+                    Email       = fila["Email"].ToString(),
+                    Direccion   = fila["Direccion"].ToString()
+                });
+            }
+            return lista;
+        }
+
+        // Marcas (texto, igual que tProducto.Marca) que provee un proveedor.
+        public List<string> MarcasDeProveedor(int idProveedor)
+        {
+            List<string> marcas = new List<string>();
+            SqlParameter[] param = { conexion.crearParametro("@ID_Proveedor", idProveedor) };
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_MarcasDeProveedor", param);
+            foreach (DataRow fila in dt.Rows)
+                marcas.Add(fila["Marca"].ToString());
+            return marcas;
+        }
 
         public int InsertarProveedor(Proveedor p)
         {

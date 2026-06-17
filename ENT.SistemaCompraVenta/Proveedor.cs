@@ -10,6 +10,9 @@ namespace ENT.SistemaCompraVenta
         private string direccion;
         private string email;
 
+        // Key subrogada (FK en tCompra). Auto-implementada como en Cliente.IdCliente.
+        public int IdProveedor { get; set; }
+
         public string Cuit
         {
             get { return cuit; }

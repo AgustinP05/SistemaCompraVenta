@@ -11,6 +11,10 @@ namespace UI.SistemaCompraVentas
         // SKU de la variante elegida (0 si canceló).
         public int SkuSeleccionado { get; private set; }
 
+        // Si se setea antes de ShowDialog, la búsqueda se limita a las marcas
+        // que provee ese proveedor (se usa desde FormCompras).
+        public int? IdProveedorFiltro { get; set; }
+
         public FormBuscarProducto()
         {
             InitializeComponent();
@@ -30,8 +34,11 @@ namespace UI.SistemaCompraVentas
         {
             try
             {
-                // SP_ObtenerVariantes filtra por SKU o por nombre de producto (LIKE %filtro%).
-                dgvResultados.DataSource = oProductoBLL.ObtenerVariantes(txtBusqueda.Text.Trim());
+                string filtro = txtBusqueda.Text.Trim();
+                // Si vino un proveedor, se limita a sus marcas; si no, catálogo completo.
+                dgvResultados.DataSource = IdProveedorFiltro.HasValue
+                    ? oProductoBLL.ObtenerVariantesPorProveedor(filtro, IdProveedorFiltro.Value)
+                    : oProductoBLL.ObtenerVariantes(filtro);
                 AjustarColumnas();
             }
             catch (Exception ex)

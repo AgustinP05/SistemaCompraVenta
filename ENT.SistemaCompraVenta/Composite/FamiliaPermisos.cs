@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace ENT.SistemaCompraVenta
 {
+    // Nodo compuesto del Composite. Representa un rol-familia: agrupa permisos (hojas)
+    // y/o otros roles-familia. ID_Familia lleva el ID del rol que representa.
     public class FamiliaPermisos : Componente
     {
         public int ID_Familia { get; set; }
@@ -18,7 +20,7 @@ namespace ENT.SistemaCompraVenta
 
         public override string Mostrar()
         {
-            string resultado = "[Familia] " + Nombre + Environment.NewLine;
+            string resultado = "[Rol] " + Nombre + Environment.NewLine;
 
             foreach (var hijo in hijos)
             {
@@ -39,7 +41,7 @@ namespace ENT.SistemaCompraVenta
         }
 
         // Etiqueta para mostrarse en listas (la distingue de un permiso individual).
-        public override string ToString() => "[Familia] " + Nombre;
+        public override string ToString() => "[Rol] " + Nombre;
     }
 }
 

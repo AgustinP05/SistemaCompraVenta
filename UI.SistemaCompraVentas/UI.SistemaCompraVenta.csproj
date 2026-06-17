@@ -72,6 +72,24 @@
     <Compile Include="FormCrearProveedor.Designer.cs">
       <DependentUpon>FormCrearProveedor.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormBuscarProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarProveedor.Designer.cs">
+      <DependentUpon>FormBuscarProveedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCompras.Designer.cs">
+      <DependentUpon>FormCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRecepcionCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRecepcionCompras.Designer.cs">
+      <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormStock.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +133,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormCrearProveedor.resx">
       <DependentUpon>FormCrearProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRecepcionCompras.resx">
+      <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormStock.resx">
       <DependentUpon>FormStock.cs</DependentUpon>

@@ -9,6 +9,7 @@ namespace ENT.SistemaCompraVenta
         private string nombre;
         private string marca;
         private double precioVenta;
+        private double precioCosto;
         private string color;
         private string talle;
         private int cantidad;
@@ -41,6 +42,12 @@ namespace ENT.SistemaCompraVenta
         {
             get { return precioVenta; }
             set { precioVenta = value; }
+        }
+
+        public double PrecioCosto
+        {
+            get { return precioCosto; }
+            set { precioCosto = value; }
         }
 
         public string Color

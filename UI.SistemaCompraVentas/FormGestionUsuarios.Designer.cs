@@ -58,7 +58,6 @@ namespace UI.SistemaCompraVentas
             this.dtpEditFechaNacimiento = new System.Windows.Forms.DateTimePicker();
             this.btnGuardarCambios = new System.Windows.Forms.Button();
             this.btnEliminar = new System.Windows.Forms.Button();
-            this.btnSalir = new System.Windows.Forms.Button();
             this.tabPermisos = new System.Windows.Forms.TabPage();
             this.lblRolPermisos = new System.Windows.Forms.Label();
             this.cboRolPermisos = new System.Windows.Forms.ComboBox();
@@ -71,6 +70,7 @@ namespace UI.SistemaCompraVentas
             this.btnGuardarPermisos = new System.Windows.Forms.Button();
             this.lblPermisosFamilia = new System.Windows.Forms.Label();
             this.dgvPermisosFamilia = new System.Windows.Forms.DataGridView();
+            this.btnSalir = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabCargar.SuspendLayout();
             this.datosDelUsuario.SuspendLayout();
@@ -91,7 +91,7 @@ namespace UI.SistemaCompraVentas
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(784, 550);
+            this.tabControl.Size = new System.Drawing.Size(784, 462);
             this.tabControl.TabIndex = 0;
             // 
             // tabCargar
@@ -101,7 +101,7 @@ namespace UI.SistemaCompraVentas
             this.tabCargar.Location = new System.Drawing.Point(4, 22);
             this.tabCargar.Name = "tabCargar";
             this.tabCargar.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCargar.Size = new System.Drawing.Size(776, 387);
+            this.tabCargar.Size = new System.Drawing.Size(776, 436);
             this.tabCargar.TabIndex = 0;
             this.tabCargar.Text = "Cargar Usuario";
             this.tabCargar.UseVisualStyleBackColor = true;
@@ -316,7 +316,7 @@ namespace UI.SistemaCompraVentas
             this.tabEditar.Location = new System.Drawing.Point(4, 22);
             this.tabEditar.Name = "tabEditar";
             this.tabEditar.Padding = new System.Windows.Forms.Padding(3);
-            this.tabEditar.Size = new System.Drawing.Size(776, 387);
+            this.tabEditar.Size = new System.Drawing.Size(776, 436);
             this.tabEditar.TabIndex = 1;
             this.tabEditar.Text = "Buscar / Editar";
             this.tabEditar.UseVisualStyleBackColor = true;
@@ -574,22 +574,8 @@ namespace UI.SistemaCompraVentas
             this.btnEliminar.UseVisualStyleBackColor = false;
             this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
             // 
-            // btnSalir
-            // 
-            this.btnSalir.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.btnSalir.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
-            this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSalir.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btnSalir.Location = new System.Drawing.Point(640, 560);
-            this.btnSalir.Name = "btnSalir";
-            this.btnSalir.Size = new System.Drawing.Size(140, 32);
-            this.btnSalir.TabIndex = 1;
-            this.btnSalir.Text = "Salir";
-            this.btnSalir.UseVisualStyleBackColor = false;
-            this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
-            //
             // tabPermisos
-            //
+            // 
             this.tabPermisos.Controls.Add(this.lblRolPermisos);
             this.tabPermisos.Controls.Add(this.cboRolPermisos);
             this.tabPermisos.Controls.Add(this.lblPermDisponibles);
@@ -604,123 +590,137 @@ namespace UI.SistemaCompraVentas
             this.tabPermisos.Location = new System.Drawing.Point(4, 22);
             this.tabPermisos.Name = "tabPermisos";
             this.tabPermisos.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPermisos.Size = new System.Drawing.Size(776, 524);
+            this.tabPermisos.Size = new System.Drawing.Size(776, 436);
             this.tabPermisos.TabIndex = 2;
             this.tabPermisos.Text = "Permisos por rol";
             this.tabPermisos.UseVisualStyleBackColor = true;
-            //
+            // 
             // lblRolPermisos
-            //
+            // 
             this.lblRolPermisos.AutoSize = true;
             this.lblRolPermisos.Location = new System.Drawing.Point(8, 15);
             this.lblRolPermisos.Name = "lblRolPermisos";
-            this.lblRolPermisos.Size = new System.Drawing.Size(28, 13);
+            this.lblRolPermisos.Size = new System.Drawing.Size(26, 13);
             this.lblRolPermisos.TabIndex = 0;
             this.lblRolPermisos.Text = "Rol:";
-            //
+            // 
             // cboRolPermisos
-            //
+            // 
             this.cboRolPermisos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboRolPermisos.Location = new System.Drawing.Point(50, 12);
             this.cboRolPermisos.Name = "cboRolPermisos";
             this.cboRolPermisos.Size = new System.Drawing.Size(300, 21);
             this.cboRolPermisos.TabIndex = 1;
             this.cboRolPermisos.SelectedIndexChanged += new System.EventHandler(this.cboRolPermisos_SelectedIndexChanged);
-            //
+            // 
             // lblPermDisponibles
-            //
+            // 
             this.lblPermDisponibles.AutoSize = true;
             this.lblPermDisponibles.Location = new System.Drawing.Point(8, 48);
             this.lblPermDisponibles.Name = "lblPermDisponibles";
-            this.lblPermDisponibles.Size = new System.Drawing.Size(115, 13);
+            this.lblPermDisponibles.Size = new System.Drawing.Size(107, 13);
             this.lblPermDisponibles.TabIndex = 2;
             this.lblPermDisponibles.Text = "Permisos disponibles:";
-            //
+            // 
             // lstPermDisponibles
-            //
+            // 
             this.lstPermDisponibles.FormattingEnabled = true;
             this.lstPermDisponibles.Location = new System.Drawing.Point(8, 65);
             this.lstPermDisponibles.Name = "lstPermDisponibles";
-            this.lstPermDisponibles.Size = new System.Drawing.Size(290, 277);
+            this.lstPermDisponibles.Size = new System.Drawing.Size(290, 186);
             this.lstPermDisponibles.TabIndex = 3;
-            //
+            // 
             // lblPermOtorgados
-            //
+            // 
             this.lblPermOtorgados.AutoSize = true;
             this.lblPermOtorgados.Location = new System.Drawing.Point(478, 48);
             this.lblPermOtorgados.Name = "lblPermOtorgados";
-            this.lblPermOtorgados.Size = new System.Drawing.Size(94, 13);
+            this.lblPermOtorgados.Size = new System.Drawing.Size(84, 13);
             this.lblPermOtorgados.TabIndex = 4;
             this.lblPermOtorgados.Text = "Otorgados al rol:";
-            //
+            // 
             // lstPermOtorgados
-            //
+            // 
             this.lstPermOtorgados.FormattingEnabled = true;
             this.lstPermOtorgados.Location = new System.Drawing.Point(478, 65);
             this.lstPermOtorgados.Name = "lstPermOtorgados";
-            this.lstPermOtorgados.Size = new System.Drawing.Size(290, 277);
+            this.lstPermOtorgados.Size = new System.Drawing.Size(290, 186);
             this.lstPermOtorgados.TabIndex = 5;
-            //
+            // 
             // btnAgregarPermiso
-            //
-            this.btnAgregarPermiso.Location = new System.Drawing.Point(330, 150);
+            // 
+            this.btnAgregarPermiso.Location = new System.Drawing.Point(330, 107);
             this.btnAgregarPermiso.Name = "btnAgregarPermiso";
             this.btnAgregarPermiso.Size = new System.Drawing.Size(116, 30);
             this.btnAgregarPermiso.TabIndex = 6;
             this.btnAgregarPermiso.Text = ">>";
             this.btnAgregarPermiso.UseVisualStyleBackColor = true;
             this.btnAgregarPermiso.Click += new System.EventHandler(this.btnAgregarPermiso_Click);
-            //
+            // 
             // btnQuitarPermiso
-            //
-            this.btnQuitarPermiso.Location = new System.Drawing.Point(330, 195);
+            // 
+            this.btnQuitarPermiso.Location = new System.Drawing.Point(330, 152);
             this.btnQuitarPermiso.Name = "btnQuitarPermiso";
             this.btnQuitarPermiso.Size = new System.Drawing.Size(116, 30);
             this.btnQuitarPermiso.TabIndex = 7;
             this.btnQuitarPermiso.Text = "<<";
             this.btnQuitarPermiso.UseVisualStyleBackColor = true;
             this.btnQuitarPermiso.Click += new System.EventHandler(this.btnQuitarPermiso_Click);
-            //
+            // 
             // btnGuardarPermisos
-            //
-            this.btnGuardarPermisos.Location = new System.Drawing.Point(628, 488);
+            // 
+            this.btnGuardarPermisos.Location = new System.Drawing.Point(628, 397);
             this.btnGuardarPermisos.Name = "btnGuardarPermisos";
             this.btnGuardarPermisos.Size = new System.Drawing.Size(140, 30);
             this.btnGuardarPermisos.TabIndex = 8;
             this.btnGuardarPermisos.Text = "Guardar permisos";
             this.btnGuardarPermisos.UseVisualStyleBackColor = true;
             this.btnGuardarPermisos.Click += new System.EventHandler(this.btnGuardarPermisos_Click);
-            //
+            // 
             // lblPermisosFamilia
-            //
+            // 
             this.lblPermisosFamilia.AutoSize = true;
-            this.lblPermisosFamilia.Location = new System.Drawing.Point(8, 352);
+            this.lblPermisosFamilia.Location = new System.Drawing.Point(8, 263);
             this.lblPermisosFamilia.Name = "lblPermisosFamilia";
-            this.lblPermisosFamilia.Size = new System.Drawing.Size(212, 13);
+            this.lblPermisosFamilia.Size = new System.Drawing.Size(176, 13);
             this.lblPermisosFamilia.TabIndex = 9;
-            this.lblPermisosFamilia.Text = "Permisos de la familia seleccionada:";
-            //
+            this.lblPermisosFamilia.Text = "Permisos del rol seleccionado:";
+            // 
             // dgvPermisosFamilia
-            //
+            // 
             this.dgvPermisosFamilia.AllowUserToAddRows = false;
             this.dgvPermisosFamilia.AllowUserToDeleteRows = false;
+            this.dgvPermisosFamilia.AllowUserToResizeRows = false;
             this.dgvPermisosFamilia.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPermisosFamilia.Location = new System.Drawing.Point(8, 372);
+            this.dgvPermisosFamilia.Location = new System.Drawing.Point(8, 283);
+            this.dgvPermisosFamilia.MultiSelect = false;
             this.dgvPermisosFamilia.Name = "dgvPermisosFamilia";
             this.dgvPermisosFamilia.ReadOnly = true;
             this.dgvPermisosFamilia.RowHeadersVisible = false;
-            this.dgvPermisosFamilia.AllowUserToResizeRows = false;
-            this.dgvPermisosFamilia.MultiSelect = false;
             this.dgvPermisosFamilia.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvPermisosFamilia.Size = new System.Drawing.Size(760, 108);
             this.dgvPermisosFamilia.TabIndex = 10;
-            //
+            // 
+            // btnSalir
+            // 
+            this.btnSalir.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnSalir.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
+            this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSalir.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btnSalir.Location = new System.Drawing.Point(640, 468);
+            this.btnSalir.Name = "btnSalir";
+            this.btnSalir.Size = new System.Drawing.Size(140, 32);
+            this.btnSalir.TabIndex = 1;
+            this.btnSalir.Text = "Salir";
+            this.btnSalir.UseVisualStyleBackColor = false;
+            this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
+            // 
             // FormGestionUsuarios
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(784, 600);
+            this.ClientSize = new System.Drawing.Size(784, 515);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.btnSalir);
             this.Name = "FormGestionUsuarios";

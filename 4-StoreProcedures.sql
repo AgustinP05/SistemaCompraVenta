@@ -302,7 +302,7 @@ GO
 IF OBJECT_ID('SP_ListarVariantes', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVariantes;
 GO
 CREATE PROCEDURE SP_ListarVariantes AS BEGIN
-    SELECT pv.SKU, p.Nombre, p.Marca, p.PrecioVenta,
+    SELECT pv.SKU, p.Nombre, p.Marca, p.PrecioVenta, p.PrecioCosto,
            c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
     FROM tProductoVariante pv
     JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
@@ -463,60 +463,48 @@ BEGIN
 END;
 GO
 ---
--- Catálogo completo de familias de permisos
-IF OBJECT_ID('SP_ListarFamilias', 'P') IS NOT NULL DROP PROCEDURE SP_ListarFamilias;
-GO
-CREATE PROCEDURE SP_ListarFamilias
-AS
-BEGIN
-    SELECT ID_Familia, Nombre FROM tFamiliaPermiso ORDER BY Nombre;
-END;
-GO
----
--- Permisos que contiene una familia (hojas del nodo compuesto)
+-- Limpieza de los SP del modelo viejo de familias (por si se corre sobre una base previa).
+IF OBJECT_ID('SP_ListarFamilias',    'P') IS NOT NULL DROP PROCEDURE SP_ListarFamilias;
 IF OBJECT_ID('SP_PermisosDeFamilia', 'P') IS NOT NULL DROP PROCEDURE SP_PermisosDeFamilia;
-GO
-CREATE PROCEDURE SP_PermisosDeFamilia(@ID_Familia INT)
-AS
-BEGIN
-    SELECT p.ID_Permiso, p.Nombre
-    FROM tFamiliaPermisoDetalle fd
-    JOIN tPermiso p ON p.ID_Permiso = fd.ID_Permiso
-    WHERE fd.ID_Familia = @ID_Familia;
-END;
-GO
----
--- Familias otorgadas a un rol
-IF OBJECT_ID('SP_FamiliasPorRol', 'P') IS NOT NULL DROP PROCEDURE SP_FamiliasPorRol;
-GO
-CREATE PROCEDURE SP_FamiliasPorRol(@ID_Rol INT)
-AS
-BEGIN
-    SELECT f.ID_Familia, f.Nombre
-    FROM tRolFamilia rf
-    JOIN tFamiliaPermiso f ON f.ID_Familia = rf.ID_Familia
-    WHERE rf.ID_Rol = @ID_Rol;
-END;
-GO
----
--- Otorga una familia a un rol (evita duplicados)
+IF OBJECT_ID('SP_FamiliasPorRol',    'P') IS NOT NULL DROP PROCEDURE SP_FamiliasPorRol;
 IF OBJECT_ID('SP_AsignarFamiliaRol', 'P') IS NOT NULL DROP PROCEDURE SP_AsignarFamiliaRol;
-GO
-CREATE PROCEDURE SP_AsignarFamiliaRol(@ID_Rol INT, @ID_Familia INT)
-AS
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM tRolFamilia WHERE ID_Rol = @ID_Rol AND ID_Familia = @ID_Familia)
-        INSERT INTO tRolFamilia (ID_Rol, ID_Familia) VALUES (@ID_Rol, @ID_Familia);
-END;
-GO
----
--- Quita todas las familias de un rol (para resincronizar al guardar)
 IF OBJECT_ID('SP_QuitarFamiliasRol', 'P') IS NOT NULL DROP PROCEDURE SP_QuitarFamiliasRol;
 GO
-CREATE PROCEDURE SP_QuitarFamiliasRol(@ID_Rol INT)
+---
+-- Sub-roles que contiene un rol (Composite: rol-familia dentro de otro rol-familia)
+IF OBJECT_ID('SP_SubRolesDeRol', 'P') IS NOT NULL DROP PROCEDURE SP_SubRolesDeRol;
+GO
+CREATE PROCEDURE SP_SubRolesDeRol(@ID_Rol INT)
 AS
 BEGIN
-    DELETE FROM tRolFamilia WHERE ID_Rol = @ID_Rol;
+    SELECT r.ID_Rol, r.NombreRol
+    FROM tRolComposicion rc
+    JOIN tRol r ON r.ID_Rol = rc.ID_RolHijo
+    WHERE rc.ID_RolPadre = @ID_Rol;
+END;
+GO
+---
+-- Incluye un sub-rol dentro de un rol (evita duplicados y la autocontención)
+IF OBJECT_ID('SP_AsignarSubRol', 'P') IS NOT NULL DROP PROCEDURE SP_AsignarSubRol;
+GO
+CREATE PROCEDURE SP_AsignarSubRol(@ID_RolPadre INT, @ID_RolHijo INT)
+AS
+BEGIN
+    IF @ID_RolPadre <> @ID_RolHijo
+       AND NOT EXISTS (SELECT 1 FROM tRolComposicion
+                       WHERE ID_RolPadre = @ID_RolPadre AND ID_RolHijo = @ID_RolHijo)
+        INSERT INTO tRolComposicion (ID_RolPadre, ID_RolHijo)
+        VALUES (@ID_RolPadre, @ID_RolHijo);
+END;
+GO
+---
+-- Quita todos los sub-roles de un rol (para resincronizar al guardar)
+IF OBJECT_ID('SP_QuitarSubRolesRol', 'P') IS NOT NULL DROP PROCEDURE SP_QuitarSubRolesRol;
+GO
+CREATE PROCEDURE SP_QuitarSubRolesRol(@ID_Rol INT)
+AS
+BEGIN
+    DELETE FROM tRolComposicion WHERE ID_RolPadre = @ID_Rol;
 END;
 GO
 
@@ -574,5 +562,195 @@ GO
 CREATE PROCEDURE SP_EliminarProveedor (@CUIT VARCHAR(20))
 AS BEGIN
     DELETE FROM tProveedor WHERE CUIT = @CUIT;
+END;
+GO
+---
+-- Catálogo completo de proveedores (para resolver el CUIT tipeado en Compras)
+IF OBJECT_ID('SP_ListarProveedores', 'P') IS NOT NULL DROP PROCEDURE SP_ListarProveedores;
+GO
+CREATE PROCEDURE SP_ListarProveedores
+AS BEGIN
+    SELECT ID_Proveedor, CUIT, RazonSocial, Telefono, Email, Direccion
+    FROM tProveedor
+    ORDER BY RazonSocial;
+END;
+GO
+
+
+-- COMPRAS -------------------------------------------------------------------
+-- Suma stock (la compra recién recepcionada incrementa la variante).
+-- Es el inverso de SP_ActualizarStock, que resta para las ventas.
+IF OBJECT_ID('SP_SumarStock', 'P') IS NOT NULL DROP PROCEDURE SP_SumarStock;
+GO
+CREATE PROCEDURE SP_SumarStock(@SKU INT, @Cantidad INT)
+AS BEGIN
+    UPDATE tProductoVariante
+    SET Cantidad = Cantidad + @Cantidad
+    WHERE SKU = @SKU;
+END;
+GO
+---
+-- Número que tendrá la próxima orden de compra (se muestra antes de generarla)
+IF OBJECT_ID('SP_ProximoNumeroCompra', 'P') IS NOT NULL DROP PROCEDURE SP_ProximoNumeroCompra;
+GO
+CREATE PROCEDURE SP_ProximoNumeroCompra
+AS BEGIN
+    SELECT ISNULL(MAX(ID_Compra), 0) + 1 AS ProximoNumero FROM tCompra;
+END;
+GO
+---
+-- Cabecera de la orden de compra. Nace SIEMPRE en estado 'Pendiente' (no toca stock).
+IF OBJECT_ID('SP_RegistrarCompra', 'P') IS NOT NULL DROP PROCEDURE SP_RegistrarCompra;
+GO
+CREATE PROCEDURE SP_RegistrarCompra(@Fecha DATETIME, @ID_Proveedor INT, @ID_Usuario INT)
+AS BEGIN
+    INSERT INTO tCompra (Fecha, ID_Proveedor, ID_Usuario, Estado)
+    VALUES (@Fecha, @ID_Proveedor, @ID_Usuario, 'Pendiente');
+    SELECT SCOPE_IDENTITY() AS ID_Compra;
+END;
+GO
+---
+IF OBJECT_ID('SP_InsertarDetalleCompra', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarDetalleCompra;
+GO
+CREATE PROCEDURE SP_InsertarDetalleCompra(
+    @ID_Compra INT, @SKU INT, @Cantidad INT, @PrecioUnitario DECIMAL(10,2)
+)
+AS BEGIN
+    INSERT INTO tDetalleCompra (ID_Compra, SKU, Cantidad, PrecioUnitario)
+    VALUES (@ID_Compra, @SKU, @Cantidad, @PrecioUnitario);
+END;
+GO
+---
+-- Órdenes pendientes (las que el encargado de Stock tiene que recepcionar)
+IF OBJECT_ID('SP_ListarComprasPendientes', 'P') IS NOT NULL DROP PROCEDURE SP_ListarComprasPendientes;
+GO
+CREATE PROCEDURE SP_ListarComprasPendientes
+AS BEGIN
+    SELECT c.ID_Compra, c.Fecha, pr.RazonSocial AS Proveedor,
+           u.Nombre + ' ' + u.Apellido AS Usuario,
+           (SELECT SUM(dc.Cantidad * dc.PrecioUnitario)
+              FROM tDetalleCompra dc WHERE dc.ID_Compra = c.ID_Compra) AS Total
+    FROM tCompra c
+    JOIN tProveedor pr ON pr.ID_Proveedor = c.ID_Proveedor
+    JOIN tUsuario   u  ON u.ID            = c.ID_Usuario
+    WHERE c.Estado = 'Pendiente'
+    ORDER BY c.Fecha;
+END;
+GO
+---
+-- Cabecera de una orden de compra puntual
+IF OBJECT_ID('SP_ObtenerCompraPorId', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerCompraPorId;
+GO
+CREATE PROCEDURE SP_ObtenerCompraPorId(@ID_Compra INT)
+AS BEGIN
+    SELECT c.ID_Compra, c.Fecha, c.Estado,
+           pr.ID_Proveedor, pr.CUIT AS ProveedorCUIT, pr.RazonSocial AS ProveedorRazonSocial,
+           u.ID AS UsuarioID, u.Nombre AS UsuarioNombre, u.Apellido AS UsuarioApellido
+    FROM tCompra c
+    JOIN tProveedor pr ON pr.ID_Proveedor = c.ID_Proveedor
+    JOIN tUsuario   u  ON u.ID            = c.ID_Usuario
+    WHERE c.ID_Compra = @ID_Compra;
+END;
+GO
+---
+-- Detalle (ítems) de una orden de compra, con datos del producto/variante
+IF OBJECT_ID('SP_ObtenerDetalleCompraPorId', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerDetalleCompraPorId;
+GO
+CREATE PROCEDURE SP_ObtenerDetalleCompraPorId(@ID_Compra INT)
+AS BEGIN
+    SELECT dc.SKU, p.Nombre, p.Marca, t.Valor AS Talle, col.Nombre AS Color,
+           dc.Cantidad, dc.PrecioUnitario, dc.CantidadConfirmada
+    FROM tDetalleCompra dc
+    JOIN tProductoVariante pv ON pv.SKU = dc.SKU
+    JOIN tProducto p   ON p.ID_Producto = pv.ID_Producto
+    JOIN tColor    col ON col.ID_Color  = pv.ID_Color
+    JOIN tTalle    t   ON t.ID_Talle    = pv.ID_Talle
+    WHERE dc.ID_Compra = @ID_Compra;
+END;
+GO
+---
+-- Registra lo efectivamente recibido de un ítem (al procesar la recepción)
+IF OBJECT_ID('SP_ConfirmarDetalleCompra', 'P') IS NOT NULL DROP PROCEDURE SP_ConfirmarDetalleCompra;
+GO
+CREATE PROCEDURE SP_ConfirmarDetalleCompra(@ID_Compra INT, @SKU INT, @CantidadConfirmada INT)
+AS BEGIN
+    UPDATE tDetalleCompra
+    SET CantidadConfirmada = @CantidadConfirmada
+    WHERE ID_Compra = @ID_Compra AND SKU = @SKU;
+END;
+GO
+---
+-- Cierra la recepción: cambia el estado (Pendiente -> Confirmada / Reclamo) y
+-- registra cuándo y quién (Stock) la recepcionó.
+IF OBJECT_ID('SP_ActualizarEstadoCompra', 'P') IS NOT NULL DROP PROCEDURE SP_ActualizarEstadoCompra;
+GO
+IF OBJECT_ID('SP_CerrarRecepcionCompra', 'P') IS NOT NULL DROP PROCEDURE SP_CerrarRecepcionCompra;
+GO
+CREATE PROCEDURE SP_CerrarRecepcionCompra(
+    @ID_Compra INT, @Estado VARCHAR(20),
+    @FechaRecepcion DATETIME, @ID_UsuarioRecepcion INT
+)
+AS BEGIN
+    UPDATE tCompra
+    SET Estado = @Estado,
+        FechaRecepcion = @FechaRecepcion,
+        ID_UsuarioRecepcion = @ID_UsuarioRecepcion
+    WHERE ID_Compra = @ID_Compra;
+END;
+GO
+---
+-- Auditoría de faltante para un ítem recibido incompleto
+IF OBJECT_ID('SP_InsertarReclamoCompra', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarReclamoCompra;
+GO
+CREATE PROCEDURE SP_InsertarReclamoCompra(
+    @ID_Compra INT, @SKU INT,
+    @CantidadPedida INT, @CantidadRecibida INT, @CantidadFaltante INT
+)
+AS BEGIN
+    INSERT INTO tReclamoCompra (ID_Compra, SKU, CantidadPedida, CantidadRecibida, CantidadFaltante)
+    VALUES (@ID_Compra, @SKU, @CantidadPedida, @CantidadRecibida, @CantidadFaltante);
+END;
+GO
+
+
+-- PROVEEDOR_MARCA -----------------------------------------------------------
+-- Marcas que provee un proveedor.
+IF OBJECT_ID('SP_MarcasDeProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_MarcasDeProveedor;
+GO
+CREATE PROCEDURE SP_MarcasDeProveedor(@ID_Proveedor INT)
+AS BEGIN
+    SELECT Marca FROM tProveedorMarca WHERE ID_Proveedor = @ID_Proveedor ORDER BY Marca;
+END;
+GO
+---
+-- Variantes (catálogo en memoria) limitadas a las marcas del proveedor.
+IF OBJECT_ID('SP_ListarVariantesPorProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVariantesPorProveedor;
+GO
+CREATE PROCEDURE SP_ListarVariantesPorProveedor(@ID_Proveedor INT) AS BEGIN
+    SELECT pv.SKU, p.Nombre, p.Marca, p.PrecioVenta, p.PrecioCosto,
+           c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
+    FROM tProductoVariante pv
+    JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
+    JOIN tColor    c ON c.ID_Color    = pv.ID_Color
+    JOIN tTalle    t ON t.ID_Talle    = pv.ID_Talle
+    JOIN tProveedorMarca pm ON pm.Marca = p.Marca AND pm.ID_Proveedor = @ID_Proveedor;
+END;
+GO
+---
+-- Buscador de SKU limitado a las marcas del proveedor.
+IF OBJECT_ID('SP_ObtenerVariantesPorProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerVariantesPorProveedor;
+GO
+CREATE PROCEDURE SP_ObtenerVariantesPorProveedor(@Filtro VARCHAR(100), @ID_Proveedor INT)
+AS BEGIN
+    SELECT pv.SKU, p.Nombre, p.Marca, t.Valor AS Talle, c.Nombre AS Color,
+           pv.Cantidad, p.PrecioVenta
+    FROM tProductoVariante pv
+    JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
+    JOIN tColor    c ON c.ID_Color    = pv.ID_Color
+    JOIN tTalle    t ON t.ID_Talle    = pv.ID_Talle
+    JOIN tProveedorMarca pm ON pm.Marca = p.Marca AND pm.ID_Proveedor = @ID_Proveedor
+    WHERE CAST(pv.SKU AS VARCHAR(20)) LIKE '%' + @Filtro + '%'
+       OR p.Nombre LIKE '%' + @Filtro + '%'
+    ORDER BY p.Nombre;
 END;
 GO

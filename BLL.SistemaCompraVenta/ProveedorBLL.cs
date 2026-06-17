@@ -1,6 +1,7 @@
 using DAL.SistemaCompraVenta;
 using ENT.SistemaCompraVenta;
 using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace BLL.SistemaCompraVenta
@@ -8,6 +9,18 @@ namespace BLL.SistemaCompraVenta
     public class ProveedorBLL
     {
         private ProveedorDAL oProveedorDAL = new ProveedorDAL();
+
+        // Catálogo en memoria para resolver el CUIT tipeado en FormCompras.
+        public List<Proveedor> ListarProveedores()
+        {
+            return oProveedorDAL.ListarProveedores();
+        }
+
+        // Marcas que provee un proveedor (para filtrar los productos en la compra).
+        public List<string> MarcasDeProveedor(int idProveedor)
+        {
+            return oProveedorDAL.MarcasDeProveedor(idProveedor);
+        }
 
         public bool ExisteProveedor(string cuit)
         {
