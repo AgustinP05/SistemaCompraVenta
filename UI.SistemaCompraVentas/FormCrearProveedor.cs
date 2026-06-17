@@ -132,19 +132,11 @@ namespace UI.SistemaCompraVentas
             if (_cargando || dgvProveedores.CurrentRow == null || dgvProveedores.Columns.Count == 0) return;
 
             var fila = dgvProveedores.CurrentRow;
-            txtEditCuit.Text        = ObtenerCelda(fila, "CUIT");
-            txtEditRazonSocial.Text = ObtenerCelda(fila, "RazonSocial", "Razon_Social");
-            txtEditTelefono.Text    = ObtenerCelda(fila, "Telefono");
-            txtEditEmail.Text       = ObtenerCelda(fila, "Email");
-            txtEditDireccion.Text   = ObtenerCelda(fila, "Direccion");
-        }
-
-        private string ObtenerCelda(DataGridViewRow fila, params string[] nombres)
-        {
-            foreach (var nombre in nombres)
-                if (dgvProveedores.Columns.Contains(nombre))
-                    return fila.Cells[nombre].Value?.ToString() ?? "";
-            return "";
+            txtEditCuit.Text        = GrillaHelper.LeerCelda(dgvProveedores, fila, "CUIT");
+            txtEditRazonSocial.Text = GrillaHelper.LeerCelda(dgvProveedores, fila, "RazonSocial", "Razon_Social");
+            txtEditTelefono.Text    = GrillaHelper.LeerCelda(dgvProveedores, fila, "Telefono");
+            txtEditEmail.Text       = GrillaHelper.LeerCelda(dgvProveedores, fila, "Email");
+            txtEditDireccion.Text   = GrillaHelper.LeerCelda(dgvProveedores, fila, "Direccion");
         }
 
         private void btnGuardarCambios_Click(object sender, EventArgs e)

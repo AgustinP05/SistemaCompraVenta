@@ -208,33 +208,25 @@ namespace UI.SistemaCompraVentas
             txtEditDni.Text         = _dniUsuarioSeleccionado;
             txtEditNombre.Text      = fila.Cells["Nombre"].Value?.ToString() ?? "";
             txtEditApellido.Text    = fila.Cells["Apellido"].Value?.ToString() ?? "";
-            txtEditEmail.Text       = LeerCelda(fila, "Email", "email", "Mail");
+            txtEditEmail.Text       = GrillaHelper.LeerCelda(dgvUsuarios, fila, "Email", "email", "Mail");
 
             // Seleccionar rol: por ID_Rol si el SP lo devuelve, si no por nombre
-            string idRolStr = LeerCelda(fila, "ID_Rol");
+            string idRolStr = GrillaHelper.LeerCelda(dgvUsuarios, fila, "ID_Rol");
             if (int.TryParse(idRolStr, out int idRol) && idRol > 0)
             {
                 cboEditRoles.SelectedValue = idRol;
             }
             else
             {
-                string rolNombre = LeerCelda(fila, "Rol");
+                string rolNombre = GrillaHelper.LeerCelda(dgvUsuarios, fila, "Rol");
                 foreach (DataRow dr in ((System.Data.DataTable)cboEditRoles.DataSource).Rows)
                     if (dr["NombreRol"].ToString() == rolNombre)
                     { cboEditRoles.SelectedValue = dr["ID_Rol"]; break; }
             }
 
-            string fechaStr = LeerCelda(fila, "FechaNacimiento", "Fecha_Nacimiento", "FechaNac");
+            string fechaStr = GrillaHelper.LeerCelda(dgvUsuarios, fila, "FechaNacimiento", "Fecha_Nacimiento", "FechaNac");
             if (DateTime.TryParse(fechaStr, out DateTime fecha))
                 dtpEditFechaNacimiento.Value = fecha;
-        }
-
-        private string LeerCelda(DataGridViewRow fila, params string[] nombres)
-        {
-            foreach (var nombre in nombres)
-                if (dgvUsuarios.Columns.Contains(nombre))
-                    return fila.Cells[nombre].Value?.ToString() ?? "";
-            return "";
         }
 
         private void btnGuardarCambios_Click(object sender, EventArgs e)

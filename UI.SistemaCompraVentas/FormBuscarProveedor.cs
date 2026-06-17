@@ -103,28 +103,16 @@ namespace UI.SistemaCompraVentas
 
             ProveedorSeleccionado = new Proveedor
             {
-                IdProveedor = LeerEntero(fila, "ID_Proveedor"),
-                Cuit        = LeerCelda(fila, "CUIT"),
-                RazonSocial = LeerCelda(fila, "RazonSocial"),
-                Direccion   = LeerCelda(fila, "Direccion"),
-                Telefono    = LeerCelda(fila, "Telefono"),
-                Email       = LeerCelda(fila, "Email")
+                IdProveedor = GrillaHelper.LeerEntero(dgvResultados, fila, "ID_Proveedor"),
+                Cuit        = GrillaHelper.LeerCelda(dgvResultados, fila, "CUIT"),
+                RazonSocial = GrillaHelper.LeerCelda(dgvResultados, fila, "RazonSocial"),
+                Direccion   = GrillaHelper.LeerCelda(dgvResultados, fila, "Direccion"),
+                Telefono    = GrillaHelper.LeerCelda(dgvResultados, fila, "Telefono"),
+                Email       = GrillaHelper.LeerCelda(dgvResultados, fila, "Email")
             };
 
             DialogResult = DialogResult.OK;
             Close();
-        }
-
-        private string LeerCelda(DataGridViewRow fila, string columna)
-        {
-            if (dgvResultados.Columns.Contains(columna))
-                return fila.Cells[columna].Value?.ToString() ?? "";
-            return "";
-        }
-
-        private int LeerEntero(DataGridViewRow fila, string columna)
-        {
-            return int.TryParse(LeerCelda(fila, columna), out int valor) ? valor : 0;
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)

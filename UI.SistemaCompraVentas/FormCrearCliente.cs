@@ -136,26 +136,14 @@ namespace UI.SistemaCompraVentas
             if (_cargando || dgvClientes.CurrentRow == null || dgvClientes.Columns.Count == 0) return;
 
             var fila = dgvClientes.CurrentRow;
-            string idStr = ObtenerCelda(fila, "ID_Cliente", "IdCliente", "ID");
-            _idClienteSeleccionado = int.TryParse(idStr, out int idP) ? idP : 0;
+            _idClienteSeleccionado = GrillaHelper.LeerEntero(dgvClientes, fila, "ID_Cliente", "IdCliente", "ID");
 
-            txtEditDni.Text       = ObtenerCelda(fila, "DNI", "Dni");
-            txtEditNombre.Text    = ObtenerCelda(fila, "Nombre", "nombre");
-            txtEditApellido.Text  = ObtenerCelda(fila, "Apellido", "apellido");
-            txtEditDireccion.Text = ObtenerCelda(fila, "Direccion", "Dirección");
-            txtEditTelefono.Text  = ObtenerCelda(fila, "Telefono", "Teléfono", "Tel");
-            txtEditEmail.Text     = ObtenerCelda(fila, "Email", "email", "Mail");
-        }
-
-        // Intenta leer la celda por varios nombres posibles; devuelve "" si ninguno existe.
-        private string ObtenerCelda(DataGridViewRow fila, params string[] nombres)
-        {
-            foreach (var nombre in nombres)
-            {
-                if (dgvClientes.Columns.Contains(nombre))
-                    return fila.Cells[nombre].Value?.ToString() ?? "";
-            }
-            return "";
+            txtEditDni.Text       = GrillaHelper.LeerCelda(dgvClientes, fila, "DNI", "Dni");
+            txtEditNombre.Text    = GrillaHelper.LeerCelda(dgvClientes, fila, "Nombre", "nombre");
+            txtEditApellido.Text  = GrillaHelper.LeerCelda(dgvClientes, fila, "Apellido", "apellido");
+            txtEditDireccion.Text = GrillaHelper.LeerCelda(dgvClientes, fila, "Direccion", "Dirección");
+            txtEditTelefono.Text  = GrillaHelper.LeerCelda(dgvClientes, fila, "Telefono", "Teléfono", "Tel");
+            txtEditEmail.Text     = GrillaHelper.LeerCelda(dgvClientes, fila, "Email", "email", "Mail");
         }
 
         private void btnGuardarCambios_Click(object sender, EventArgs e)

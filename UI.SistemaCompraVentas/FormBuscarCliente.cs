@@ -105,29 +105,17 @@ namespace UI.SistemaCompraVentas
 
             ClienteSeleccionado = new Cliente
             {
-                IdCliente = LeerEntero(fila, "ID_Cliente"),
-                Dni       = LeerCelda(fila, "DNI"),
-                Nombre    = LeerCelda(fila, "Nombre"),
-                Apellido  = LeerCelda(fila, "Apellido"),
-                Direccion = LeerCelda(fila, "Direccion"),
-                Telefono  = LeerCelda(fila, "Telefono"),
-                Email     = LeerCelda(fila, "Email")
+                IdCliente = GrillaHelper.LeerEntero(dgvResultados, fila, "ID_Cliente"),
+                Dni       = GrillaHelper.LeerCelda(dgvResultados, fila, "DNI"),
+                Nombre    = GrillaHelper.LeerCelda(dgvResultados, fila, "Nombre"),
+                Apellido  = GrillaHelper.LeerCelda(dgvResultados, fila, "Apellido"),
+                Direccion = GrillaHelper.LeerCelda(dgvResultados, fila, "Direccion"),
+                Telefono  = GrillaHelper.LeerCelda(dgvResultados, fila, "Telefono"),
+                Email     = GrillaHelper.LeerCelda(dgvResultados, fila, "Email")
             };
 
             DialogResult = DialogResult.OK;
             Close();
-        }
-
-        private string LeerCelda(DataGridViewRow fila, string columna)
-        {
-            if (dgvResultados.Columns.Contains(columna))
-                return fila.Cells[columna].Value?.ToString() ?? "";
-            return "";
-        }
-
-        private int LeerEntero(DataGridViewRow fila, string columna)
-        {
-            return int.TryParse(LeerCelda(fila, columna), out int valor) ? valor : 0;
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)

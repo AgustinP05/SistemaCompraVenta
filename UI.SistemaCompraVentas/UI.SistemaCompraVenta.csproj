@@ -90,6 +90,7 @@
     <Compile Include="FormRecepcionCompras.Designer.cs">
       <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
     </Compile>
+    <Compile Include="GrillaHelper.cs" />
     <Compile Include="FormStock.cs">
       <SubType>Form</SubType>
     </Compile>
