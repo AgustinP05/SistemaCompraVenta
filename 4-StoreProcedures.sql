@@ -278,9 +278,15 @@ IF OBJECT_ID('SP_RestarStock', 'P') IS NOT NULL DROP PROCEDURE SP_RestarStock;
 GO
 CREATE PROCEDURE SP_RestarStock(@SKU INT, @Cantidad INT)
 AS BEGIN
+    -- Solo descuenta si hay stock suficiente: la condición Cantidad >= @Cantidad
+    -- evita dejar el stock negativo (también protege ante ventas concurrentes).
     UPDATE tProductoVariante
     SET Cantidad = Cantidad - @Cantidad
-    WHERE SKU = @SKU;
+    WHERE SKU = @SKU AND Cantidad >= @Cantidad;
+
+    -- Si no actualizó nada, no había stock suficiente: corta la transacción.
+    IF @@ROWCOUNT = 0
+        THROW 50001, 'Stock insuficiente: la venta dejaría stock negativo.', 1;
 END;
 GO
 ---
@@ -826,7 +832,7 @@ AS BEGIN
         r.CantidadPedida                     AS Pedido,
         r.CantidadRecibida                   AS Recibido,
         r.CantidadFaltante                   AS Faltante,
-        r.Fecha                              AS FechaReclamo
+        co.FechaRecepcion                    AS FechaReclamo
     FROM tReclamoCompra r
     JOIN tCompra co            ON co.ID_Compra   = r.ID_Compra
     JOIN tProveedor pr         ON pr.ID_Proveedor = co.ID_Proveedor

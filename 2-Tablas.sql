@@ -142,6 +142,7 @@ CREATE TABLE tProductoVariante (
     ID_Color INT NOT NULL,
     ID_Talle INT NOT NULL,
     Cantidad INT NOT NULL DEFAULT 0,
+    CONSTRAINT CK_tProductoVariante_Cantidad CHECK (Cantidad >= 0),
     CONSTRAINT UQ_tProductoVariante UNIQUE (ID_Producto, ID_Color, ID_Talle),
     FOREIGN KEY (ID_Producto) REFERENCES tProducto(ID_Producto),
     FOREIGN KEY (ID_Color) REFERENCES tColor(ID_Color),
@@ -223,7 +224,6 @@ CREATE TABLE tReclamoCompra (
     CantidadPedida INT NOT NULL,
     CantidadRecibida INT NOT NULL,
     CantidadFaltante INT NOT NULL,
-    Fecha DATETIME NOT NULL DEFAULT GETDATE(),
     FOREIGN KEY (ID_Compra) REFERENCES tCompra(ID_Compra),
     FOREIGN KEY (SKU) REFERENCES tProductoVariante(SKU)
 );
