@@ -13,6 +13,12 @@ namespace DAL.SistemaCompraVenta
 
         // Registra la orden completa (cabecera + detalles) de forma atómica: si falla
         // algún detalle, no queda la cabecera suelta. Nace en estado 'Pendiente'.
+        // Lista los reclamos por compras incompletas (faltantes registrados en recepción).
+        public DataTable ListarReclamos()
+        {
+            return conexion.LeerPorStoreProcedure("SP_ListarReclamos", null);
+        }
+
         public int RegistrarCompra(Compra c)
         {
             conexion.IniciarTransaccion();

@@ -11,28 +11,6 @@ namespace DAL.SistemaCompraVentas
     {
         private Conexion conexion = new Conexion();
 
-        /* METODOS DEL DASHBOARD  */
-
-        public DataTable ObtenerVentasMensuales()
-        {
-            return conexion.LeerPorStoreProcedure("SP_ReporteVentasMensuales", null);
-        }
-
-        public DataTable ObtenerTopProductos()
-        {
-            return conexion.LeerPorStoreProcedure("SP_ReporteTopProductos", null);
-        }
-
-        public DataTable ObtenerTotalOperaciones()
-        {
-            return conexion.LeerPorStoreProcedure("SP_ContarVentas", null);
-        }
-
-        public DataTable ObtenerProductosStockCritico()
-        {
-            return conexion.LeerPorStoreProcedure("SP_ProductosStockMinimo", null);
-        }
-
         /*
          * CASO DE USO CU-GER0001 (Reporte Filtrado)
          */
@@ -47,7 +25,8 @@ namespace DAL.SistemaCompraVentas
                 ParametroSql.Crear("@Hasta", f.FechaHasta),
                 ParametroSql.Crear("@IdVendedor", f.IdVendedor.HasValue ? (object)f.IdVendedor.Value : DBNull.Value),
                 ParametroSql.Crear("@IdProducto", f.IdProducto.HasValue ? (object)f.IdProducto.Value : DBNull.Value),
-                ParametroSql.Crear("@IdCliente", f.IdCliente.HasValue ? (object)f.IdCliente.Value : DBNull.Value)
+                ParametroSql.Crear("@IdCliente", f.IdCliente.HasValue ? (object)f.IdCliente.Value : DBNull.Value),
+                ParametroSql.Crear("@IdCategoria", f.IdCategoria.HasValue ? (object)f.IdCategoria.Value : DBNull.Value)
             };
 
             // SP
@@ -68,6 +47,8 @@ namespace DAL.SistemaCompraVentas
                     nuevaVenta.NombreCliente = fila["NombreCliente"].ToString();
                     nuevaVenta.NombreVendedor = fila["NombreVendedor"].ToString();
                     nuevaVenta.TotalVenta = 0;
+                    nuevaVenta.Descuento = Convert.ToDecimal(fila["Descuento"]);
+                    nuevaVenta.TipoDescuento = fila["TipoDescuento"].ToString();
 
                     diccionarioVentas.Add(idVenta, nuevaVenta);
                 }
@@ -77,6 +58,7 @@ namespace DAL.SistemaCompraVentas
                 detalle.DescripcionProducto = fila["DescripcionProducto"].ToString();
                 detalle.Cantidad = Convert.ToInt32(fila["Cantidad"]);
                 detalle.Subtotal = Convert.ToDecimal(fila["Subtotal"]);
+                detalle.Costo = Convert.ToDecimal(fila["Costo"]);
 
                 diccionarioVentas[idVenta].Detalles.Add(detalle);
             }

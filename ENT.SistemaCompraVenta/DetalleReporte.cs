@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +8,34 @@ namespace ENT.SistemaCompraVenta
 {
     public class DetalleReporte
     {
-        public string DescripcionProducto { get; set; }
-        public int Cantidad { get; set; }
-        public decimal Subtotal { get; set; }
+        private string descripcionProducto;
+        private int cantidad;
+        private decimal subtotal;
+        private decimal costo;
+
+        public string DescripcionProducto
+        {
+            get { return descripcionProducto; }
+            set { descripcionProducto = value; }
+        }
+
+        public int Cantidad
+        {
+            get { return cantidad; }
+            set { cantidad = value; }
+        }
+
+        public decimal Subtotal
+        {
+            get { return subtotal; }
+            set { subtotal = value; }
+        }
+
+        // Costo de la línea (cantidad * precio de costo del producto).
+        public decimal Costo
+        {
+            get { return costo; }
+            set { costo = value; }
+        }
     }
 }

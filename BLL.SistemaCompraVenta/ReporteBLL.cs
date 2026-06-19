@@ -10,34 +10,7 @@ namespace BLL.SistemaCompraVentas
     {
         private ReporteDAL oReporteDAL = new ReporteDAL();
 
-        /*DASHHH*/
-
-        public DataTable ObtenerVentasMensuales()
-        {
-            return oReporteDAL.ObtenerVentasMensuales();
-        }
-
-        public DataTable ObtenerTopProductos()
-        {
-            return oReporteDAL.ObtenerTopProductos();
-        }
-
-        public int ObtenerTotalOperaciones()
-        {
-            DataTable dt = oReporteDAL.ObtenerTotalOperaciones();
-            if (dt != null && dt.Rows.Count > 0)
-            {
-                return Convert.ToInt32(dt.Rows[0][0]);
-            }
-            return 0;
-        }
-
-        public DataTable ObtenerProductosStockCritico()
-        {
-            return oReporteDAL.ObtenerProductosStockCritico();
-        }
-
-        /* 
+        /*
          * CASO DE USO CU-GER0001
          */
 
@@ -49,11 +22,8 @@ namespace BLL.SistemaCompraVentas
             // pide datos a la capa DAL
             List<EntidadReporte> lista = oReporteDAL.ObtenerDatosReporte(f);
 
-            // Mensaje por si no hay registros
-            if (lista == null || lista.Count == 0)
-            {
-                throw new Exception("No hay datos para el periodo seleccionado.");
-            }
+            // Un periodo sin ventas no es un error: se devuelve la lista vacía y la UI
+            // muestra "No hay datos para mostrar" (Alternativa 1 del CU).
             CalcularTotales(lista);
 
             return lista;
@@ -74,15 +44,17 @@ namespace BLL.SistemaCompraVentas
             foreach (var reporte in data)
             {
                 decimal totalAcumulado = 0;
+                decimal costoAcumulado = 0;
 
-              
                 foreach (var detalle in reporte.Detalles)
                 {
                     totalAcumulado += detalle.Subtotal;
+                    costoAcumulado += detalle.Costo;
                 }
 
-                //resultado en la cabecera
+                //resultado en la cabecera (TotalVenta bruto y costo para el margen)
                 reporte.TotalVenta = totalAcumulado;
+                reporte.Costo = costoAcumulado;
             }
         }
     }

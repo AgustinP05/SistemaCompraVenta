@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using ENT.SistemaCompraVenta;
 using ENT.SistemaCompraVenta.Descuentos;
 using BLL.SistemaCompraVenta;
+using BLL.SistemaCompraVenta.Descuentos;
 using BLL.SistemaCompraVenta.Sesion;
 
 namespace UI.SistemaCompraVentas
@@ -53,11 +54,11 @@ namespace UI.SistemaCompraVentas
             lblFecha.Text = "Fecha: " + DateTime.Now.ToString("dd/MM/yyyy");
             timerFecha.Start();
 
-            // Opciones de descuento (patrón Strategy). El orden coincide con AplicarDescuento().
-            cboDescuento.Items.Add("Sin descuento");
-            cboDescuento.Items.Add("Porcentaje (%)");
-            cboDescuento.Items.Add("Monto fijo ($)");
-            cboDescuento.Items.Add("Por volumen (automático)");
+            // Opciones de descuento (patrón Strategy). Los tipos, sus etiquetas y la
+            // estrategia concreta los define el DescuentoFactory de la BLL.
+            cboDescuento.DataSource    = DescuentoFactory.Opciones();
+            cboDescuento.DisplayMember = "Etiqueta";
+            cboDescuento.ValueMember   = "Tipo";
             cboDescuento.SelectedIndex = 0; // dispara AplicarDescuento()
         }
 
@@ -66,18 +67,13 @@ namespace UI.SistemaCompraVentas
 
         private void AplicarDescuento()
         {
-            double valor = (double)nmDescuento.Value;
+            if (!(cboDescuento.SelectedValue is TipoDescuento tipo)) return;
 
-            switch (cboDescuento.SelectedIndex)
-            {
-                case 1: ventaActual.Descuento = new DescuentoPorcentaje(valor); break;
-                case 2: ventaActual.Descuento = new DescuentoFijo(valor);       break;
-                case 3: ventaActual.Descuento = new DescuentoPorVolumen();      break;
-                default: ventaActual.Descuento = new SinDescuento();            break;
-            }
+            // La UI no instancia estrategias: delega la creación al Factory de la BLL.
+            ventaActual.Descuento = DescuentoFactory.Crear(tipo, (double)nmDescuento.Value);
 
-            // El valor solo aplica a porcentaje o monto fijo.
-            nmDescuento.Enabled = cboDescuento.SelectedIndex == 1 || cboDescuento.SelectedIndex == 2;
+            // Qué tipos usan el valor cargado a mano también lo decide la BLL.
+            nmDescuento.Enabled = DescuentoFactory.RequiereValor(tipo);
 
             ActualizarGrilla();
         }

@@ -5,6 +5,7 @@ namespace ENT.SistemaCompraVenta
     public class Cliente
     {
 
+        private int idCliente;
         private string dni;
         private string nombre;
         private string apellido;
@@ -12,8 +13,11 @@ namespace ENT.SistemaCompraVenta
         private string email;
         private string direccion;
 
-        // Propiedad IdCliente auto-implementada
-        public int IdCliente { get; set; }
+        public int IdCliente
+        {
+            get { return idCliente; }
+            set { idCliente = value; }
+        }
 
         public string Dni
         {

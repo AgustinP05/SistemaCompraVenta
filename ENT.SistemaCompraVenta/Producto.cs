@@ -3,7 +3,7 @@ using System;
 namespace ENT.SistemaCompraVenta
 {
 
-    public abstract class Producto
+    public class Producto
     {
 
         private int id;

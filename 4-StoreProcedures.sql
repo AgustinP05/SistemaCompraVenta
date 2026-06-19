@@ -474,7 +474,8 @@ CREATE PROCEDURE sp_GenerarReporteVentas(
     @Hasta DATETIME,
     @IdVendedor INT = NULL,
     @IdProducto INT = NULL,
-    @IdCliente INT = NULL
+    @IdCliente INT = NULL,
+    @IdCategoria INT = NULL
 )
 AS BEGIN
     SELECT 
@@ -484,72 +485,25 @@ AS BEGIN
         u.Nombre + ' ' + u.Apellido AS NombreVendedor,
         p.Nombre AS DescripcionProducto,
         dv.Cantidad,
-        (dv.Cantidad * dv.PrecioUnitario) AS Subtotal
+        (dv.Cantidad * dv.PrecioUnitario) AS Subtotal,
+        (dv.Cantidad * p.PrecioCosto) AS Costo,
+        ISNULL(dvto.Monto, 0) AS Descuento,
+        ISNULL(dvto.Tipo, '') AS TipoDescuento
     FROM tVenta v
     JOIN tCliente c ON v.ID_Cliente = c.ID_Cliente
     JOIN tUsuario u ON v.ID_Usuario = u.ID
     JOIN tDetalleVenta dv ON v.ID_Venta = dv.ID_Venta
     JOIN tProductoVariante pv ON dv.SKU = pv.SKU
     JOIN tProducto p ON pv.ID_Producto = p.ID_Producto
-    WHERE 
+    LEFT JOIN tDescuentoVenta dvto ON dvto.ID_Venta = v.ID_Venta
+    WHERE
         v.Fecha >= @Desde AND v.Fecha <= @Hasta
         -- Si el parámetro es NULL, ignora el filtro. Si tiene un número, filtra por ese ID.
         AND (@IdVendedor IS NULL OR v.ID_Usuario = @IdVendedor)
         AND (@IdProducto IS NULL OR p.ID_Producto = @IdProducto)
         AND (@IdCliente IS NULL OR v.ID_Cliente = @IdCliente)
+        AND (@IdCategoria IS NULL OR p.ID_Categoria = @IdCategoria)
     ORDER BY v.Fecha DESC;
-END;
-GO
------estos sp no estan mal, tampoco ocupan espacio, ni hacen mas lenta la app, pero no estan documentados, su funcionalidad a futuro seria capaz, mostrar graficos o un dashboard. dejarlos asi, o voletearlos. pero no hacen daño...
-IF OBJECT_ID('SP_ReporteVentasMensuales', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteVentasMensuales;
-GO
-CREATE PROCEDURE SP_ReporteVentasMensuales
-AS
-BEGIN
-    SELECT FORMAT(v.Fecha, 'MMMM') AS Mes, u.Nombre AS Usuario,
-           SUM(dv.Cantidad * dv.PrecioUnitario) AS VentasTotales
-    FROM tVenta v
-    JOIN tUsuario u ON v.ID_Usuario = u.ID
-    JOIN tDetalleVenta dv ON dv.ID_Venta = v.ID_Venta
-    GROUP BY FORMAT(v.Fecha, 'MMMM'), MONTH(v.Fecha), u.Nombre
-    ORDER BY MONTH(v.Fecha);
-END;
-GO
----
-IF OBJECT_ID('SP_ReporteTopProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteTopProductos;
-GO
-CREATE PROCEDURE SP_ReporteTopProductos
-AS
-BEGIN
-    SELECT TOP 5 p.Nombre, SUM(dv.Cantidad) AS TotalVendidos
-    FROM tDetalleVenta dv
-    JOIN tProductoVariante pv ON pv.SKU = dv.SKU
-    JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
-    GROUP BY p.Nombre
-    ORDER BY TotalVendidos DESC;
-END;
-GO
----
-IF OBJECT_ID('SP_ContarVentas', 'P') IS NOT NULL DROP PROCEDURE SP_ContarVentas;
-GO
-CREATE PROCEDURE SP_ContarVentas
-AS
-BEGIN
-    SELECT COUNT(*) AS TotalOperaciones FROM tVenta;
-END;
-GO
----
-IF OBJECT_ID('SP_ProductosStockMinimo', 'P') IS NOT NULL DROP PROCEDURE SP_ProductosStockMinimo;
-GO
-CREATE PROCEDURE SP_ProductosStockMinimo
-AS
-BEGIN
-    SELECT pv.SKU, p.Nombre, c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
-    FROM tProductoVariante pv
-    JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
-    JOIN tColor    c ON c.ID_Color    = pv.ID_Color
-    JOIN tTalle    t ON t.ID_Talle    = pv.ID_Talle
-    WHERE pv.Cantidad < 5;
 END;
 GO
 
@@ -854,6 +808,33 @@ CREATE PROCEDURE SP_InsertarReclamoCompra(
 AS BEGIN
     INSERT INTO tReclamoCompra (ID_Compra, SKU, CantidadPedida, CantidadRecibida, CantidadFaltante)
     VALUES (@ID_Compra, @SKU, @CantidadPedida, @CantidadRecibida, @CantidadFaltante);
+END;
+GO
+---
+-- Lista los reclamos por compras incompletas (faltantes en la recepción).
+IF OBJECT_ID('SP_ListarReclamos', 'P') IS NOT NULL DROP PROCEDURE SP_ListarReclamos;
+GO
+CREATE PROCEDURE SP_ListarReclamos
+AS BEGIN
+    SELECT
+        r.ID_Compra                          AS NroCompra,
+        co.Fecha                             AS FechaCompra,
+        pr.RazonSocial                       AS Proveedor,
+        p.Nombre                             AS Producto,
+        cl.Nombre                            AS Color,
+        t.Valor                              AS Talle,
+        r.CantidadPedida                     AS Pedido,
+        r.CantidadRecibida                   AS Recibido,
+        r.CantidadFaltante                   AS Faltante,
+        r.Fecha                              AS FechaReclamo
+    FROM tReclamoCompra r
+    JOIN tCompra co            ON co.ID_Compra   = r.ID_Compra
+    JOIN tProveedor pr         ON pr.ID_Proveedor = co.ID_Proveedor
+    JOIN tProductoVariante pv  ON pv.SKU         = r.SKU
+    JOIN tProducto p           ON p.ID_Producto  = pv.ID_Producto
+    JOIN tColor cl             ON cl.ID_Color    = pv.ID_Color
+    JOIN tTalle t              ON t.ID_Talle     = pv.ID_Talle
+    ORDER BY r.Fecha DESC, r.ID_Compra;
 END;
 GO
 

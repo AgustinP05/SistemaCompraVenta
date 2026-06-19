@@ -47,7 +47,7 @@ namespace UI.SistemaCompraVentas
         {
             try
             {
-                Producto p = CrearInstanciaPorCategoria(cboCategoria.Text);
+                Producto p = new Producto();
                 p.Nombre       = txtNombre.Text.Trim();
                 p.Marca        = cboMarca.Text;
                 p.ID_Categoria = IdCategoria(cboCategoria.Text);
@@ -178,7 +178,7 @@ namespace UI.SistemaCompraVentas
 
             try
             {
-                Producto p = CrearInstanciaPorCategoria(_categoriaSeleccionada);
+                Producto p = new Producto();
                 p.Id           = _idProductoSeleccionado;
                 p.Nombre       = txtEditNombre.Text.Trim();
                 p.Marca        = cboEditMarca.Text;
@@ -354,11 +354,6 @@ namespace UI.SistemaCompraVentas
         }
 
         // ── Helpers ──────────────────────────────────────────────────────
-
-        private static Producto CrearInstanciaPorCategoria(string categoria) =>
-            categoria.Equals("Calzado", StringComparison.OrdinalIgnoreCase)
-                ? (Producto)new Calzado()
-                : new Vestimenta();
 
         // ID_Categoria: VESTIMENTA=1, CALZADO=2 (orden del INSERT en 3-DatosIniciales.sql)
         private static int IdCategoria(string categoria) =>

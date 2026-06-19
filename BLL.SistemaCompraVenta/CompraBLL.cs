@@ -23,6 +23,9 @@ namespace BLL.SistemaCompraVenta
         // Órdenes pendientes de recepción (grilla del encargado de Stock).
         public DataTable ListarPendientes() => oCompraDAL.ListarPendientes();
 
+        // Reclamos por compras recibidas incompletas (grilla del gerente).
+        public DataTable ListarReclamos() => oCompraDAL.ListarReclamos();
+
         public Compra ObtenerCompraPorId(int idCompra) => oCompraDAL.ObtenerCompraPorId(idCompra);
 
         // Procesa la recepción de una orden pendiente. Cada detalle trae la

@@ -13,9 +13,7 @@ namespace DAL.SistemaCompraVenta
         private Producto MapearProducto(DataRow fila)
         {
             string categoria = fila["Categoria"].ToString();
-            Producto p = categoria.Equals("CALZADO", StringComparison.OrdinalIgnoreCase)
-                ? (Producto)new Calzado()
-                : new Vestimenta();
+            Producto p = new Producto();
 
             p.Id           = Convert.ToInt32(fila["ID_Producto"]);
             p.Nombre       = fila["Nombre"].ToString();

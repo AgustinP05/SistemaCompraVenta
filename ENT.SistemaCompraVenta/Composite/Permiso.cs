@@ -1,10 +1,16 @@
-﻿using System;
+using System;
 
 namespace ENT.SistemaCompraVenta
 {
     public class Permiso : Componente
     {
-        public int ID_Permiso { get; set; }
+        private int idPermiso;
+
+        public int ID_Permiso
+        {
+            get { return idPermiso; }
+            set { idPermiso = value; }
+        }
 
         // REQUERIDO: Compara su propio nombre
         public override bool TienePermiso(string nombrePermiso)
@@ -16,5 +22,3 @@ namespace ENT.SistemaCompraVenta
         public override string ToString() => Nombre;
     }
 }
-
-

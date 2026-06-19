@@ -5,11 +5,12 @@ namespace DAL.SistemaCompraVenta
     internal static class ConfiguracionBD
     {
         public static string CadenaConexion =>
-            @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=DESKTOP-31EJQH0\SQLEXPRESS";
+            @"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=SistemaCompraVenta;Data Source=JULAZARO\SQLEXPRESS";
 
         // Otras máquinas del equipo (descomentar la que corresponda):
         //   ...Data Source=SOFI\SQLEXPRESS
         //   ...Data Source=JULAZARO\SQLEXPRESS
         //   ...Data Source=AgusPC
+        //Data Source=DESKTOP-31EJQH0\SQLEXPRESS
     }
 }
