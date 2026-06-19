@@ -15,6 +15,11 @@ namespace BLL.SistemaCompraVenta
         // el encargado de Stock la recepciona.
         public int RegistrarCompra(Compra nuevaCompra)
         {
+            if (nuevaCompra == null)
+                throw new ArgumentNullException(nameof(nuevaCompra));
+            if (nuevaCompra.Detalles == null || nuevaCompra.Detalles.Count == 0)
+                throw new InvalidOperationException("La orden de compra debe tener al menos un producto.");
+
             return oCompraDAL.RegistrarCompra(nuevaCompra);
         }
 

@@ -312,29 +312,32 @@ INSERT INTO tDetalleVenta (ID_Venta, SKU, Cantidad, PrecioUnitario) VALUES
 (22,  2, 2, 120000.00), (22,  5, 1, 110000.00), (22,  9, 1, 110000.00);
 GO
 
----- DESCUENTO_VENTA (auditoría: a lo sumo UN descuento por venta; Fecha por DEFAULT).
-----  Solo 5 tipos: Cliente frecuente, Temporada, Pago contado, Cupón, Por volumen. ----
+---- DESCUENTO_VENTA (auditoría del descuento aplicado; a lo sumo UNO por venta; Fecha por DEFAULT).
+----  Coincide con las 3 estrategias del código (Strategy / DescuentoFactory):
+----    - 'Porcentaje N%'  -> Monto = N% del subtotal de la venta
+----    - 'Monto fijo $X'  -> Monto = X (importe fijo, <= subtotal)
+----    - 'Por volumen'    -> Monto = 10% si subtotal >= 200.000 ; 15% si >= 400.000
 INSERT INTO tDescuentoVenta (ID_Venta, Tipo, Monto) VALUES
-( 1, 'Cliente frecuente',  6000.00),
-( 2, 'Temporada',          5000.00),
-( 3, 'Pago contado',      12000.00),
-( 4, 'Cupón',              2500.00),
-( 5, 'Por volumen',       12000.00),
-( 6, 'Temporada',         20000.00),
-( 7, 'Cliente frecuente',  7000.00),
-( 8, 'Temporada',          9000.00),
-( 9, 'Pago contado',       8000.00),
-(10, 'Pago contado',      15000.00),
-(11, 'Cupón',              3600.00),
-(12, 'Temporada',         14000.00),
-(13, 'Temporada',          7500.00),
-(14, 'Pago contado',      18000.00),
-(16, 'Por volumen',       12000.00),
-(18, 'Temporada',         13000.00),
-(19, 'Pago contado',       9000.00),
-(20, 'Cupón',              2000.00),
-(21, 'Cliente frecuente', 10000.00),
-(22, 'Por volumen',       16000.00);
+( 1, 'Monto fijo $6000',   6000.00),   -- subtotal 120.000
+( 2, 'Porcentaje 5%',     10700.00),   -- 5% de 214.000
+( 3, 'Por volumen',       31500.00),   -- 10% de 315.000
+( 4, 'Monto fijo $2500',   2500.00),   -- subtotal 130.000
+( 5, 'Por volumen',       60750.00),   -- 15% de 405.000
+( 6, 'Por volumen',       23400.00),   -- 10% de 234.000
+( 7, 'Porcentaje 10%',    27000.00),   -- 10% de 270.000
+( 8, 'Monto fijo $9000',   9000.00),   -- subtotal 183.000
+( 9, 'Monto fijo $8000',   8000.00),   -- subtotal 85.000
+(10, 'Porcentaje 10%',    27500.00),   -- 10% de 275.000
+(11, 'Monto fijo $3600',   3600.00),   -- subtotal 72.000
+(12, 'Monto fijo $14000', 14000.00),   -- subtotal 143.000
+(13, 'Porcentaje 5%',      7500.00),   -- 5% de 150.000
+(14, 'Porcentaje 5%',     20250.00),   -- 5% de 405.000
+(16, 'Monto fijo $12000', 12000.00),   -- subtotal 137.000
+(18, 'Por volumen',       26000.00),   -- 10% de 260.000
+(19, 'Por volumen',       35700.00),   -- 10% de 357.000
+(20, 'Monto fijo $2000',   2000.00),   -- subtotal 60.000
+(21, 'Porcentaje 5%',     10500.00),   -- 5% de 210.000
+(22, 'Por volumen',       69000.00);   -- 15% de 460.000
 GO
 
 ---- COMPRA (22; distribución realista: 15 Confirmada, 4 Reclamo, 3 Pendiente):
