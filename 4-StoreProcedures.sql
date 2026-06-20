@@ -9,12 +9,16 @@ GO
 -- LOGIN ---------------------------------------------------------------------
 IF OBJECT_ID('SP_LoginUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_LoginUsuario;
 GO
-CREATE PROCEDURE SP_LoginUsuario(@DNI VARCHAR(20), @Password VARCHAR(256))
+-- Busca al usuario por su nombre de usuario = la parte del email anterior al '@'
+-- (ej: 'aperea'). Devuelve sus datos (incluida FechaNacimiento y DNI). La contraseña
+-- NO se guarda: la BLL la deriva (ddMM de la fecha de nacimiento + primeros 4 dígitos
+-- del DNI) y la valida contra lo ingresado.
+CREATE PROCEDURE SP_LoginUsuario(@Usuario VARCHAR(150))
 AS BEGIN
-    SELECT u.ID, u.Nombre, u.Apellido, u.Password, u.ID_Rol, r.NombreRol AS Rol, u.DNI
+    SELECT u.ID, u.Nombre, u.Apellido, u.ID_Rol, r.NombreRol AS Rol, u.DNI, u.FechaNacimiento
     FROM tUsuario u
     JOIN tRol r ON r.ID_Rol = u.ID_Rol
-    WHERE u.DNI = @DNI AND u.Password = @Password;
+    WHERE LEFT(u.Email, CHARINDEX('@', u.Email) - 1) = @Usuario;
 END;
 GO
 ---
@@ -31,28 +35,12 @@ GO
 -- USUARIO -------------------------------------------------------------------
 IF OBJECT_ID('SP_ObtenerUsuarios', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerUsuarios;
 GO
+-- Devuelve u.ID al principio (lo usan la grilla de gestión de usuarios y el
+-- combo de vendedores del reporte de gerente).
 CREATE PROCEDURE SP_ObtenerUsuarios
     @Filtro VARCHAR(20) = ''
 AS
 BEGIN
-    SELECT u.DNI, u.Nombre, u.Apellido, u.Email, r.NombreRol AS Rol,
-           u.ID_Rol, u.FechaNacimiento
-    FROM tUsuario u
-    JOIN tRol r ON r.ID_Rol = u.ID_Rol
-    WHERE @Filtro = '' OR u.DNI LIKE '%' + @Filtro + '%'
-    ORDER BY u.Nombre;
-END;
-GO
-
----Esto sirve para la vista de gerente... Agus o Agos, o Juli, reveer...
-USE SistemaCompraVenta;
-GO
-
-ALTER PROCEDURE SP_ObtenerUsuarios
-    @Filtro VARCHAR(20) = ''
-AS
-BEGIN
-    -- Agregamos u.ID al principio del SELECT
     SELECT u.ID, u.DNI, u.Nombre, u.Apellido, u.Email, r.NombreRol AS Rol,
            u.ID_Rol, u.FechaNacimiento
     FROM tUsuario u
@@ -69,14 +57,13 @@ CREATE PROCEDURE SP_InsertarUsuario(
     @DNI VARCHAR(20),
     @Nombre VARCHAR(50),
     @Apellido VARCHAR(100),
-    @Password VARCHAR(256),
     @ID_Rol INT,
     @Email VARCHAR(150),
     @FechaNacimiento DATE
 )
 AS BEGIN
-    INSERT INTO tUsuario (DNI, Nombre, Apellido, Password, ID_Rol, Email, FechaNacimiento)
-    VALUES (@DNI, @Nombre, @Apellido, @Password, @ID_Rol, @Email, @FechaNacimiento);
+    INSERT INTO tUsuario (DNI, Nombre, Apellido, ID_Rol, Email, FechaNacimiento)
+    VALUES (@DNI, @Nombre, @Apellido, @ID_Rol, @Email, @FechaNacimiento);
     SELECT SCOPE_IDENTITY() AS ID_Usuario;
 END;
 GO
@@ -96,14 +83,28 @@ IF OBJECT_ID('SP_ModificarUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_Modificar
 GO
 CREATE PROCEDURE SP_ModificarUsuario
     @DNI VARCHAR(20), @Nombre VARCHAR(50), @Apellido VARCHAR(100),
-    @Password VARCHAR(256), @ID_Rol INT, @Email VARCHAR(150),
+    @ID_Rol INT, @Email VARCHAR(150),
     @FechaNacimiento DATE
 AS
 BEGIN
     UPDATE tUsuario
-    SET Nombre = @Nombre, Apellido = @Apellido, Password = @Password,
+    SET Nombre = @Nombre, Apellido = @Apellido,
         ID_Rol = @ID_Rol, Email = @Email, FechaNacimiento = @FechaNacimiento
     WHERE DNI = @DNI;
+END;
+GO
+---
+-- ¿Ya existe ese email en otro usuario? Lo usa la BLL para garantizar la unicidad
+-- del mail autogenerado (si choca, le agrega un sufijo). @DniExcluir permite
+-- ignorar al propio usuario cuando se está editando.
+IF OBJECT_ID('SP_ExisteEmail', 'P') IS NOT NULL DROP PROCEDURE SP_ExisteEmail;
+GO
+CREATE PROCEDURE SP_ExisteEmail
+    @Email VARCHAR(150), @DniExcluir VARCHAR(20) = NULL
+AS
+BEGIN
+    SELECT TOP 1 ID FROM tUsuario
+    WHERE Email = @Email AND (@DniExcluir IS NULL OR DNI <> @DniExcluir);
 END;
 GO
 
@@ -278,9 +279,15 @@ IF OBJECT_ID('SP_RestarStock', 'P') IS NOT NULL DROP PROCEDURE SP_RestarStock;
 GO
 CREATE PROCEDURE SP_RestarStock(@SKU INT, @Cantidad INT)
 AS BEGIN
+    -- Solo descuenta si hay stock suficiente: la condición Cantidad >= @Cantidad
+    -- evita dejar el stock negativo (también protege ante ventas concurrentes).
     UPDATE tProductoVariante
     SET Cantidad = Cantidad - @Cantidad
-    WHERE SKU = @SKU;
+    WHERE SKU = @SKU AND Cantidad >= @Cantidad;
+
+    -- Si no actualizó nada, no había stock suficiente: corta la transacción.
+    IF @@ROWCOUNT = 0
+        THROW 50001, 'Stock insuficiente: la venta dejaría stock negativo.', 1;
 END;
 GO
 ---
@@ -298,7 +305,7 @@ GO
 IF OBJECT_ID('SP_ListarProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ListarProductos;
 GO
 CREATE PROCEDURE SP_ListarProductos AS BEGIN
-    SELECT p.ID_Producto, p.Nombre, p.Marca, c.Nombre AS Categoria,
+    SELECT p.ID_Producto, p.Nombre, p.Marca, p.ID_Categoria, c.Nombre AS Categoria,
            p.PrecioVenta, p.PrecioCosto
     FROM tProducto p
     JOIN tCategoria c ON c.ID_Categoria = p.ID_Categoria;
@@ -315,6 +322,59 @@ AS BEGIN
     INSERT INTO tProducto (Nombre, Marca, ID_Categoria, PrecioVenta, PrecioCosto)
     VALUES (@Nombre, @Marca, @ID_Categoria, @PrecioVenta, @PrecioCosto);
     SELECT SCOPE_IDENTITY() AS ID_Producto;
+END;
+GO
+---
+IF OBJECT_ID('SP_ObtenerProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerProductos;
+GO
+-- Busca productos por ID, nombre o marca (para la solapa Buscar / Editar)
+CREATE PROCEDURE SP_ObtenerProductos
+    @Filtro VARCHAR(100)
+AS BEGIN
+    SELECT p.ID_Producto, p.Nombre, p.Marca, p.ID_Categoria, c.Nombre AS Categoria,
+           p.PrecioVenta, p.PrecioCosto
+    FROM tProducto p
+    JOIN tCategoria c ON c.ID_Categoria = p.ID_Categoria
+    WHERE p.Nombre LIKE '%' + @Filtro + '%'
+       OR p.Marca  LIKE '%' + @Filtro + '%'
+       OR CAST(p.ID_Producto AS VARCHAR(20)) LIKE '%' + @Filtro + '%'
+    ORDER BY p.Nombre;
+END;
+GO
+---
+IF OBJECT_ID('SP_ObtenerProductoPorId', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerProductoPorId;
+GO
+-- Trae un producto puntual por su ID (para la solapa Crear Variante)
+CREATE PROCEDURE SP_ObtenerProductoPorId
+    @ID_Producto INT
+AS BEGIN
+    SELECT p.ID_Producto, p.Nombre, p.Marca, p.ID_Categoria, c.Nombre AS Categoria,
+           p.PrecioVenta, p.PrecioCosto
+    FROM tProducto p
+    JOIN tCategoria c ON c.ID_Categoria = p.ID_Categoria
+    WHERE p.ID_Producto = @ID_Producto;
+END;
+GO
+---
+IF OBJECT_ID('SP_ModificarProducto', 'P') IS NOT NULL DROP PROCEDURE SP_ModificarProducto;
+GO
+CREATE PROCEDURE SP_ModificarProducto
+    @ID_Producto INT, @Nombre VARCHAR(100), @Marca VARCHAR(100),
+    @ID_Categoria INT, @PrecioVenta DECIMAL(10,2), @PrecioCosto DECIMAL(10,2)
+AS BEGIN
+    UPDATE tProducto
+    SET Nombre = @Nombre, Marca = @Marca, ID_Categoria = @ID_Categoria,
+        PrecioVenta = @PrecioVenta, PrecioCosto = @PrecioCosto
+    WHERE ID_Producto = @ID_Producto;
+END;
+GO
+---
+IF OBJECT_ID('SP_EliminarProducto', 'P') IS NOT NULL DROP PROCEDURE SP_EliminarProducto;
+GO
+CREATE PROCEDURE SP_EliminarProducto
+    @ID_Producto INT
+AS BEGIN
+    DELETE FROM tProducto WHERE ID_Producto = @ID_Producto;
 END;
 GO
 
@@ -349,6 +409,64 @@ AS BEGIN
     ORDER BY p.Nombre;
 END;
 GO
+---
+IF OBJECT_ID('SP_ListarVariantesPorProducto', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVariantesPorProducto;
+GO
+-- Variantes (SKU) de un producto, para la solapa Crear Variante
+CREATE PROCEDURE SP_ListarVariantesPorProducto
+    @ID_Producto INT
+AS BEGIN
+    SELECT pv.SKU, c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
+    FROM tProductoVariante pv
+    JOIN tColor c ON c.ID_Color = pv.ID_Color
+    JOIN tTalle t ON t.ID_Talle = pv.ID_Talle
+    WHERE pv.ID_Producto = @ID_Producto
+    ORDER BY t.Valor, c.Nombre;
+END;
+GO
+---
+IF OBJECT_ID('SP_ExisteVariante', 'P') IS NOT NULL DROP PROCEDURE SP_ExisteVariante;
+GO
+-- Chequeo previo: ¿ya existe esa combinación producto+color+talle?
+-- Se consulta ANTES de insertar para no "quemar" un número de SKU con un INSERT
+-- que iba a fallar por el UNIQUE (en SQL Server el IDENTITY se consume igual al fallar).
+CREATE PROCEDURE SP_ExisteVariante
+    @ID_Producto INT, @ID_Color INT, @ID_Talle INT
+AS BEGIN
+    SELECT SKU FROM tProductoVariante
+    WHERE ID_Producto = @ID_Producto AND ID_Color = @ID_Color AND ID_Talle = @ID_Talle;
+END;
+GO
+---
+IF OBJECT_ID('SP_InsertarVariante', 'P') IS NOT NULL DROP PROCEDURE SP_InsertarVariante;
+GO
+-- Crea un SKU para un producto. El stock arranca en 0 (Cantidad tiene DEFAULT 0).
+-- El UNIQUE (ID_Producto, ID_Color, ID_Talle) queda como red de seguridad.
+CREATE PROCEDURE SP_InsertarVariante
+    @ID_Producto INT, @ID_Color INT, @ID_Talle INT
+AS BEGIN
+    INSERT INTO tProductoVariante (ID_Producto, ID_Color, ID_Talle)
+    VALUES (@ID_Producto, @ID_Color, @ID_Talle);
+    SELECT SCOPE_IDENTITY() AS SKU;
+END;
+GO
+---
+IF OBJECT_ID('SP_ListarColores', 'P') IS NOT NULL DROP PROCEDURE SP_ListarColores;
+GO
+CREATE PROCEDURE SP_ListarColores AS BEGIN
+    SELECT ID_Color, Nombre FROM tColor ORDER BY Nombre;
+END;
+GO
+---
+IF OBJECT_ID('SP_ListarTallesPorCategoria', 'P') IS NOT NULL DROP PROCEDURE SP_ListarTallesPorCategoria;
+GO
+-- Talles válidos para la categoría del producto (Calzado vs Vestimenta)
+CREATE PROCEDURE SP_ListarTallesPorCategoria
+    @ID_Categoria INT
+AS BEGIN
+    SELECT ID_Talle, Valor FROM tTalle WHERE ID_Categoria = @ID_Categoria ORDER BY Valor;
+END;
+GO
 
 
 -- VISTA DE GERENTE ----------------------------------------------------------
@@ -363,7 +481,8 @@ CREATE PROCEDURE sp_GenerarReporteVentas(
     @Hasta DATETIME,
     @IdVendedor INT = NULL,
     @IdProducto INT = NULL,
-    @IdCliente INT = NULL
+    @IdCliente INT = NULL,
+    @IdCategoria INT = NULL
 )
 AS BEGIN
     SELECT 
@@ -373,72 +492,42 @@ AS BEGIN
         u.Nombre + ' ' + u.Apellido AS NombreVendedor,
         p.Nombre AS DescripcionProducto,
         dv.Cantidad,
-        (dv.Cantidad * dv.PrecioUnitario) AS Subtotal
+        (dv.Cantidad * dv.PrecioUnitario) AS Subtotal,
+        (dv.Cantidad * p.PrecioCosto) AS Costo,
+        ISNULL(dvto.Monto, 0) AS Descuento,
+        ISNULL(dvto.Tipo, '') AS TipoDescuento
     FROM tVenta v
     JOIN tCliente c ON v.ID_Cliente = c.ID_Cliente
     JOIN tUsuario u ON v.ID_Usuario = u.ID
     JOIN tDetalleVenta dv ON v.ID_Venta = dv.ID_Venta
-    JOIN tProductoVariante pv ON dv.ID_ProductoVariante = pv.ID_ProductoVariante
+    JOIN tProductoVariante pv ON dv.SKU = pv.SKU
     JOIN tProducto p ON pv.ID_Producto = p.ID_Producto
-    WHERE 
+    LEFT JOIN tDescuentoVenta dvto ON dvto.ID_Venta = v.ID_Venta
+    WHERE
         v.Fecha >= @Desde AND v.Fecha <= @Hasta
         -- Si el parámetro es NULL, ignora el filtro. Si tiene un número, filtra por ese ID.
         AND (@IdVendedor IS NULL OR v.ID_Usuario = @IdVendedor)
         AND (@IdProducto IS NULL OR p.ID_Producto = @IdProducto)
         AND (@IdCliente IS NULL OR v.ID_Cliente = @IdCliente)
+        AND (@IdCategoria IS NULL OR p.ID_Categoria = @IdCategoria)
     ORDER BY v.Fecha DESC;
 END;
 GO
------estos sp no estan mal, tampoco ocupan espacio, ni hacen mas lenta la app, pero no estan documentados, su funcionalidad a futuro seria capaz, mostrar graficos o un dashboard. dejarlos asi, o voletearlos. pero no hacen daño...
-IF OBJECT_ID('SP_ReporteVentasMensuales', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteVentasMensuales;
-GO
-CREATE PROCEDURE SP_ReporteVentasMensuales
-AS
-BEGIN
-    SELECT FORMAT(v.Fecha, 'MMMM') AS Mes, u.Nombre AS Usuario,
-           SUM(dv.Cantidad * dv.PrecioUnitario) AS VentasTotales
-    FROM tVenta v
-    JOIN tUsuario u ON v.ID_Usuario = u.ID
-    JOIN tDetalleVenta dv ON dv.ID_Venta = v.ID_Venta
-    GROUP BY FORMAT(v.Fecha, 'MMMM'), MONTH(v.Fecha), u.Nombre
-    ORDER BY MONTH(v.Fecha);
-END;
-GO
 ---
-IF OBJECT_ID('SP_ReporteTopProductos', 'P') IS NOT NULL DROP PROCEDURE SP_ReporteTopProductos;
+-- Vendedores para el combo del reporte: los usuarios con rol 'Vendedor' (siempre)
+-- MÁS cualquier usuario que tenga al menos una venta registrada, aunque hoy tenga
+-- otro rol (ej.: cambió de puesto en la empresa, pero sus ventas viejas siguen
+-- contando). Así el combo nunca ofrece a alguien sin ventas que dé reporte vacío.
+IF OBJECT_ID('SP_ListarVendedores', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVendedores;
 GO
-CREATE PROCEDURE SP_ReporteTopProductos
-AS
-BEGIN
-    SELECT TOP 5 p.Nombre, SUM(dv.Cantidad) AS TotalVendidos
-    FROM tDetalleVenta dv
-    JOIN tProductoVariante pv ON pv.SKU = dv.SKU
-    JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
-    GROUP BY p.Nombre
-    ORDER BY TotalVendidos DESC;
-END;
-GO
----
-IF OBJECT_ID('SP_ContarVentas', 'P') IS NOT NULL DROP PROCEDURE SP_ContarVentas;
-GO
-CREATE PROCEDURE SP_ContarVentas
-AS
-BEGIN
-    SELECT COUNT(*) AS TotalOperaciones FROM tVenta;
-END;
-GO
----
-IF OBJECT_ID('SP_ProductosStockMinimo', 'P') IS NOT NULL DROP PROCEDURE SP_ProductosStockMinimo;
-GO
-CREATE PROCEDURE SP_ProductosStockMinimo
-AS
-BEGIN
-    SELECT pv.SKU, p.Nombre, c.Nombre AS Color, t.Valor AS Talle, pv.Cantidad
-    FROM tProductoVariante pv
-    JOIN tProducto p ON p.ID_Producto = pv.ID_Producto
-    JOIN tColor    c ON c.ID_Color    = pv.ID_Color
-    JOIN tTalle    t ON t.ID_Talle    = pv.ID_Talle
-    WHERE pv.Cantidad < 5;
+CREATE PROCEDURE SP_ListarVendedores
+AS BEGIN
+    SELECT u.ID, (u.Nombre + ' ' + u.Apellido) AS Nombre, r.NombreRol AS Rol
+    FROM tUsuario u
+    JOIN tRol r ON r.ID_Rol = u.ID_Rol
+    WHERE r.NombreRol = 'Vendedor'
+       OR EXISTS (SELECT 1 FROM tVenta v WHERE v.ID_Usuario = u.ID)
+    ORDER BY Nombre;
 END;
 GO
 
@@ -745,6 +834,33 @@ AS BEGIN
     VALUES (@ID_Compra, @SKU, @CantidadPedida, @CantidadRecibida, @CantidadFaltante);
 END;
 GO
+---
+-- Lista los reclamos por compras incompletas (faltantes en la recepción).
+IF OBJECT_ID('SP_ListarReclamos', 'P') IS NOT NULL DROP PROCEDURE SP_ListarReclamos;
+GO
+CREATE PROCEDURE SP_ListarReclamos
+AS BEGIN
+    SELECT
+        r.ID_Compra                          AS NroCompra,
+        co.Fecha                             AS FechaCompra,
+        pr.RazonSocial                       AS Proveedor,
+        p.Nombre                             AS Producto,
+        cl.Nombre                            AS Color,
+        t.Valor                              AS Talle,
+        r.CantidadPedida                     AS Pedido,
+        r.CantidadRecibida                   AS Recibido,
+        r.CantidadFaltante                   AS Faltante,
+        co.FechaRecepcion                    AS FechaReclamo
+    FROM tReclamoCompra r
+    JOIN tCompra co            ON co.ID_Compra   = r.ID_Compra
+    JOIN tProveedor pr         ON pr.ID_Proveedor = co.ID_Proveedor
+    JOIN tProductoVariante pv  ON pv.SKU         = r.SKU
+    JOIN tProducto p           ON p.ID_Producto  = pv.ID_Producto
+    JOIN tColor cl             ON cl.ID_Color    = pv.ID_Color
+    JOIN tTalle t              ON t.ID_Talle     = pv.ID_Talle
+    ORDER BY co.FechaRecepcion DESC, r.ID_Compra;
+END;
+GO
 
 
 -- PROVEEDOR_MARCA -----------------------------------------------------------
@@ -754,6 +870,42 @@ GO
 CREATE PROCEDURE SP_MarcasDeProveedor(@ID_Proveedor INT)
 AS BEGIN
     SELECT Marca FROM tProveedorMarca WHERE ID_Proveedor = @ID_Proveedor ORDER BY Marca;
+END;
+GO
+---
+-- Catálogo de marcas disponibles: las que provee al menos un proveedor
+-- (alimenta el desplegable de marca al crear/editar un producto).
+IF OBJECT_ID('SP_ListarMarcas', 'P') IS NOT NULL DROP PROCEDURE SP_ListarMarcas;
+GO
+CREATE PROCEDURE SP_ListarMarcas AS BEGIN
+    SELECT DISTINCT Marca FROM tProveedorMarca ORDER BY Marca;
+END;
+GO
+---
+-- Alta de marca: la asocia a un proveedor. Como Marca es PK, si la marca ya existe
+-- (la provee otro proveedor) el INSERT viola la PK y la BLL lo traduce a un mensaje claro.
+IF OBJECT_ID('SP_AsociarMarcaProveedor', 'P') IS NOT NULL DROP PROCEDURE SP_AsociarMarcaProveedor;
+GO
+CREATE PROCEDURE SP_AsociarMarcaProveedor
+    @ID_Proveedor INT, @Marca VARCHAR(100)
+AS BEGIN
+    INSERT INTO tProveedorMarca (ID_Proveedor, Marca) VALUES (@ID_Proveedor, @Marca);
+END;
+GO
+---
+-- Proveedor que provee un SKU (modo "SKU primero" en la carga de compras).
+-- Como cada marca pertenece a un único proveedor, el SKU determina un solo proveedor.
+IF OBJECT_ID('SP_ObtenerProveedorPorSku', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerProveedorPorSku;
+GO
+CREATE PROCEDURE SP_ObtenerProveedorPorSku
+    @SKU INT
+AS BEGIN
+    SELECT pr.ID_Proveedor, pr.CUIT, pr.RazonSocial, pr.Telefono, pr.Email, pr.Direccion
+    FROM tProductoVariante pv
+    JOIN tProducto p        ON p.ID_Producto   = pv.ID_Producto
+    JOIN tProveedorMarca pm ON pm.Marca         = p.Marca
+    JOIN tProveedor pr      ON pr.ID_Proveedor  = pm.ID_Proveedor
+    WHERE pv.SKU = @SKU;
 END;
 GO
 ---

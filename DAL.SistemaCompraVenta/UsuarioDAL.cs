@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using ENT.SistemaCompraVenta;
 
 namespace DAL.SistemaCompraVenta
 {
@@ -20,13 +21,23 @@ namespace DAL.SistemaCompraVenta
             return conexion.LeerPorStoreProcedure("SP_ObtenerUsuarios", parametros);
         }
 
-        public DataTable LoginUsuario(string dni, string password)
+        // usuario = parte del email anterior al '@' (ej: 'aperea').
+        public DataTable LoginUsuario(string usuario)
         {
-            SqlParameter[] sp = {
-                ParametroSql.Crear("@DNI",      dni),
-                ParametroSql.Crear("@Password", password)
-            };
+            SqlParameter[] sp = { ParametroSql.Crear("@Usuario", usuario) };
             return conexion.LeerPorStoreProcedure("SP_LoginUsuario", sp);
+        }
+
+        // ¿El email ya existe en otro usuario? (para garantizar la unicidad del mail
+        // autogenerado). dniExcluir ignora al propio usuario cuando se edita.
+        public bool ExisteEmail(string email, string dniExcluir)
+        {
+            SqlParameter[] parametros = {
+                ParametroSql.Crear("@Email",      email),
+                ParametroSql.Crear("@DniExcluir", (object)dniExcluir ?? DBNull.Value)
+            };
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ExisteEmail", parametros);
+            return dt != null && dt.Rows.Count > 0;
         }
 
         public void RegistrarLogin(int idUsuario, DateTime fechaHora)
@@ -43,15 +54,19 @@ namespace DAL.SistemaCompraVenta
             return conexion.LeerPorStoreProcedure("SP_ListarRoles", null);
         }
 
+        // Vendedores para el combo del reporte: rol 'Vendedor' + cualquiera con ventas.
+        public DataTable ObtenerVendedores()
+        {
+            return conexion.LeerPorStoreProcedure("SP_ListarVendedores", null);
+        }
+
         public int InsertarUsuario(string dni, string nombre, string apellido,
-                                   string password, int idRol, string email,
-                                   DateTime? fechaNacimiento)
+                                   int idRol, string email, DateTime? fechaNacimiento)
         {
             SqlParameter[] parametros = {
                 ParametroSql.Crear("@DNI",             dni),
                 ParametroSql.Crear("@Nombre",          nombre),
                 ParametroSql.Crear("@Apellido",        apellido),
-                ParametroSql.Crear("@Password",        password),
                 ParametroSql.Crear("@ID_Rol",          idRol),
                 ParametroSql.Crear("@Email",           email),
                 ParametroSql.Crear("@FechaNacimiento", (object)fechaNacimiento ?? DBNull.Value)
@@ -60,14 +75,12 @@ namespace DAL.SistemaCompraVenta
         }
 
         public int ModificarUsuario(string dni, string nombre, string apellido,
-                                    string password, int idRol, string email,
-                                    DateTime? fechaNacimiento)
+                                    int idRol, string email, DateTime? fechaNacimiento)
         {
             SqlParameter[] parametros = {
                 ParametroSql.Crear("@DNI",             dni),
                 ParametroSql.Crear("@Nombre",          nombre),
                 ParametroSql.Crear("@Apellido",        apellido),
-                ParametroSql.Crear("@Password",        password),
                 ParametroSql.Crear("@ID_Rol",          idRol),
                 ParametroSql.Crear("@Email",           email),
                 ParametroSql.Crear("@FechaNacimiento", (object)fechaNacimiento ?? DBNull.Value)
@@ -78,7 +91,15 @@ namespace DAL.SistemaCompraVenta
         public int EliminarUsuario(string dni)
         {
             SqlParameter[] parametros = { ParametroSql.Crear("@DNI", dni) };
-            return conexion.EscribirPorStoreProcedure("SP_EliminarUsuario", parametros);
+            try
+            {
+                return conexion.EscribirPorStoreProcedure("SP_EliminarUsuario", parametros);
+            }
+            catch (SqlException ex) when (ErrorSql.EsViolacionFK(ex))
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el usuario porque tiene operaciones registradas en el sistema.");
+            }
         }
     }
 }

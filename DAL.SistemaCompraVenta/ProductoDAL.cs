@@ -13,16 +13,15 @@ namespace DAL.SistemaCompraVenta
         private Producto MapearProducto(DataRow fila)
         {
             string categoria = fila["Categoria"].ToString();
-            Producto p = categoria.Equals("CALZADO", StringComparison.OrdinalIgnoreCase)
-                ? (Producto)new Calzado()
-                : new Vestimenta();
+            Producto p = new Producto();
 
-            p.Id          = Convert.ToInt32(fila["ID_Producto"]);
-            p.Nombre      = fila["Nombre"].ToString();
-            p.Marca       = fila["Marca"].ToString();
-            p.Categoria   = categoria;
-            p.PrecioVenta = (double)Convert.ToDecimal(fila["PrecioVenta"]);
-            p.PrecioCosto = (double)Convert.ToDecimal(fila["PrecioCosto"]);
+            p.Id           = Convert.ToInt32(fila["ID_Producto"]);
+            p.Nombre       = fila["Nombre"].ToString();
+            p.Marca        = fila["Marca"].ToString();
+            p.ID_Categoria = Convert.ToInt32(fila["ID_Categoria"]);
+            p.Categoria    = categoria;
+            p.PrecioVenta  = (double)Convert.ToDecimal(fila["PrecioVenta"]);
+            p.PrecioCosto  = (double)Convert.ToDecimal(fila["PrecioCosto"]);
             return p;
         }
 
@@ -35,7 +34,8 @@ namespace DAL.SistemaCompraVenta
             return lista;
         }
 
-        public void Guardar(Producto p)
+        // Inserta y devuelve el ID generado (SP_InsertarProducto hace SELECT SCOPE_IDENTITY).
+        public int Guardar(Producto p)
         {
             SqlParameter[] param = {
                 ParametroSql.Crear("@Nombre",       p.Nombre),
@@ -44,7 +44,52 @@ namespace DAL.SistemaCompraVenta
                 ParametroSql.Crear("@PrecioVenta",  p.PrecioVenta),
                 ParametroSql.Crear("@PrecioCosto",  p.PrecioCosto)
             };
-            conexion.EscribirPorStoreProcedure("SP_InsertarProducto", param);
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_InsertarProducto", param);
+            if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["ID_Producto"] != DBNull.Value)
+                return Convert.ToInt32(dt.Rows[0]["ID_Producto"]);
+            return 0;
+        }
+
+        public Producto ObtenerPorId(int idProducto)
+        {
+            SqlParameter[] param = { ParametroSql.Crear("@ID_Producto", idProducto) };
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_ObtenerProductoPorId", param);
+            if (dt == null || dt.Rows.Count == 0) return null;
+            return MapearProducto(dt.Rows[0]);
+        }
+
+        public DataTable ObtenerProductos(string filtro)
+        {
+            SqlParameter[] param = { ParametroSql.Crear("@Filtro", filtro ?? "") };
+            return conexion.LeerPorStoreProcedure("SP_ObtenerProductos", param);
+        }
+
+        public int Modificar(Producto p)
+        {
+            SqlParameter[] param = {
+                ParametroSql.Crear("@ID_Producto",  p.Id),
+                ParametroSql.Crear("@Nombre",       p.Nombre),
+                ParametroSql.Crear("@Marca",        p.Marca),
+                ParametroSql.Crear("@ID_Categoria", p.ID_Categoria),
+                ParametroSql.Crear("@PrecioVenta",  p.PrecioVenta),
+                ParametroSql.Crear("@PrecioCosto",  p.PrecioCosto)
+            };
+            return conexion.EscribirPorStoreProcedure("SP_ModificarProducto", param);
+        }
+
+        public int Eliminar(int idProducto)
+        {
+            SqlParameter[] param = { ParametroSql.Crear("@ID_Producto", idProducto) };
+            try
+            {
+                return conexion.EscribirPorStoreProcedure("SP_EliminarProducto", param);
+            }
+            catch (SqlException ex) when (ErrorSql.EsViolacionFK(ex))
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el producto porque tiene variantes o movimientos registrados. " +
+                    "Eliminá primero sus variantes (SKU).");
+            }
         }
 
         public int BuscarStockPorVariante(int idVariante)

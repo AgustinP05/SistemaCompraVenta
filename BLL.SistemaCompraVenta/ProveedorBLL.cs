@@ -3,7 +3,6 @@ using ENT.SistemaCompraVenta;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace BLL.SistemaCompraVenta
 {
@@ -21,6 +20,32 @@ namespace BLL.SistemaCompraVenta
         public List<string> MarcasDeProveedor(int idProveedor)
         {
             return oProveedorDAL.MarcasDeProveedor(idProveedor);
+        }
+
+        // Proveedor que provee un SKU (la marca del producto lo determina de forma única).
+        public Proveedor ObtenerProveedorPorSku(int sku)
+        {
+            return oProveedorDAL.ObtenerPorSku(sku);
+        }
+
+        // Catálogo de marcas disponibles (para el desplegable al crear/editar producto).
+        public List<string> ListarMarcas()
+        {
+            return oProveedorDAL.ListarMarcas();
+        }
+
+        // Alta de marca nueva: la asocia a un proveedor existente.
+        // Regla: una marca pertenece a un único proveedor (no se cruza).
+        public void AsociarMarca(int idProveedor, string marca)
+        {
+            if (idProveedor <= 0)
+                throw new Exception("Seleccioná un proveedor.");
+            if (string.IsNullOrWhiteSpace(marca))
+                throw new Exception("Ingresá el nombre de la marca.");
+
+            // Si la marca ya pertenece a otro proveedor (Marca es PK), la DAL traduce
+            // la violación de unicidad a una OperacionNoPermitidaException.
+            oProveedorDAL.AsociarMarca(idProveedor, marca.Trim());
         }
 
         public bool ExisteProveedor(string cuit)
@@ -70,15 +95,9 @@ namespace BLL.SistemaCompraVenta
             if (string.IsNullOrWhiteSpace(cuit))
                 throw new Exception("CUIT inválido.");
 
-            try
-            {
-                return oProveedorDAL.EliminarProveedor(cuit) > 0;
-            }
-            catch (SqlException ex) when (ex.Number == 547) // violación de FK
-            {
-                throw new OperacionNoPermitidaException(
-                    "No se puede eliminar el proveedor porque tiene compras registradas en el sistema.");
-            }
+            // La DAL traduce la violación de FK (proveedor con compras) a una
+            // OperacionNoPermitidaException con el mensaje correspondiente.
+            return oProveedorDAL.EliminarProveedor(cuit) > 0;
         }
 
     }

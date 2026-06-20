@@ -41,12 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Categorias.cs" />
     <Compile Include="ClienteBLL.cs" />
     <Compile Include="CompraBLL.cs" />
     <Compile Include="ComprobanteBLL.cs" />
+    <Compile Include="Credenciales.cs" />
+    <Compile Include="ExportadorCsv.cs" />
     <Compile Include="PermisoBLL.cs" />
     <Compile Include="RolComposicionBLL.cs" />
     <Compile Include="Componente\PermisosFactory.cs" />
+    <Compile Include="Descuentos\DescuentoFactory.cs" />
     <Compile Include="ProductoBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProveedorBLL.cs" />

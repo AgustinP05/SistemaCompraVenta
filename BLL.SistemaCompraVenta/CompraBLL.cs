@@ -15,6 +15,11 @@ namespace BLL.SistemaCompraVenta
         // el encargado de Stock la recepciona.
         public int RegistrarCompra(Compra nuevaCompra)
         {
+            if (nuevaCompra == null)
+                throw new ArgumentNullException(nameof(nuevaCompra));
+            if (nuevaCompra.Detalles == null || nuevaCompra.Detalles.Count == 0)
+                throw new InvalidOperationException("La orden de compra debe tener al menos un producto.");
+
             return oCompraDAL.RegistrarCompra(nuevaCompra);
         }
 
@@ -22,6 +27,9 @@ namespace BLL.SistemaCompraVenta
 
         // Órdenes pendientes de recepción (grilla del encargado de Stock).
         public DataTable ListarPendientes() => oCompraDAL.ListarPendientes();
+
+        // Reclamos por compras recibidas incompletas (grilla del gerente).
+        public DataTable ListarReclamos() => oCompraDAL.ListarReclamos();
 
         public Compra ObtenerCompraPorId(int idCompra) => oCompraDAL.ObtenerCompraPorId(idCompra);
 

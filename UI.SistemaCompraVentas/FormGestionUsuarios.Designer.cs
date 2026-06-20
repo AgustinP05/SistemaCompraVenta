@@ -148,7 +148,7 @@ namespace UI.SistemaCompraVentas
             this.txtNombre.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtNombre.Location = new System.Drawing.Point(100, 27);
             this.txtNombre.Name = "txtNombre";
-            this.txtNombre.Size = new System.Drawing.Size(137, 20);
+            this.txtNombre.Size = new System.Drawing.Size(153, 20);
             this.txtNombre.TabIndex = 1;
             // 
             // apellido
@@ -186,7 +186,7 @@ namespace UI.SistemaCompraVentas
             this.txtDni.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtDni.Location = new System.Drawing.Point(100, 57);
             this.txtDni.Name = "txtDni";
-            this.txtDni.Size = new System.Drawing.Size(137, 20);
+            this.txtDni.Size = new System.Drawing.Size(153, 20);
             this.txtDni.TabIndex = 5;
             // 
             // rol
@@ -213,7 +213,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.lblPassword.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
             this.lblPassword.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lblPassword.Location = new System.Drawing.Point(24, 88);
+            this.lblPassword.Location = new System.Drawing.Point(527, 132);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(70, 20);
             this.lblPassword.TabIndex = 8;
@@ -223,7 +223,7 @@ namespace UI.SistemaCompraVentas
             // txtPassword
             // 
             this.txtPassword.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtPassword.Location = new System.Drawing.Point(100, 88);
+            this.txtPassword.Location = new System.Drawing.Point(603, 132);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(137, 20);
@@ -233,7 +233,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.lblEmail.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
             this.lblEmail.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lblEmail.Location = new System.Drawing.Point(24, 120);
+            this.lblEmail.Location = new System.Drawing.Point(24, 88);
             this.lblEmail.Name = "lblEmail";
             this.lblEmail.Size = new System.Drawing.Size(70, 20);
             this.lblEmail.TabIndex = 12;
@@ -243,9 +243,9 @@ namespace UI.SistemaCompraVentas
             // txtEmail
             // 
             this.txtEmail.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtEmail.Location = new System.Drawing.Point(100, 120);
+            this.txtEmail.Location = new System.Drawing.Point(100, 88);
             this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(272, 20);
+            this.txtEmail.Size = new System.Drawing.Size(153, 20);
             this.txtEmail.TabIndex = 13;
             // 
             // lblFechaNacimiento
@@ -300,7 +300,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.dgvUsuariosCargados.AllowUserToAddRows = false;
             this.dgvUsuariosCargados.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvUsuariosCargados.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvUsuariosCargados.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvUsuariosCargados.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvUsuariosCargados.Location = new System.Drawing.Point(8, 191);
             this.dgvUsuariosCargados.Name = "dgvUsuariosCargados";
@@ -371,7 +371,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.dgvUsuarios.AllowUserToAddRows = false;
             this.dgvUsuarios.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvUsuarios.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            this.dgvUsuarios.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvUsuarios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvUsuarios.Location = new System.Drawing.Point(8, 70);
             this.dgvUsuarios.MultiSelect = false;
@@ -426,7 +426,7 @@ namespace UI.SistemaCompraVentas
             this.txtEditDni.Location = new System.Drawing.Point(100, 27);
             this.txtEditDni.Name = "txtEditDni";
             this.txtEditDni.ReadOnly = true;
-            this.txtEditDni.Size = new System.Drawing.Size(137, 20);
+            this.txtEditDni.Size = new System.Drawing.Size(154, 20);
             this.txtEditDni.TabIndex = 1;
             // 
             // lblEditNombre
@@ -464,7 +464,7 @@ namespace UI.SistemaCompraVentas
             this.txtEditApellido.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.txtEditApellido.Location = new System.Drawing.Point(100, 57);
             this.txtEditApellido.Name = "txtEditApellido";
-            this.txtEditApellido.Size = new System.Drawing.Size(137, 20);
+            this.txtEditApellido.Size = new System.Drawing.Size(154, 20);
             this.txtEditApellido.TabIndex = 5;
             // 
             // lblEditRol
@@ -491,7 +491,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.lblEditPassword.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
             this.lblEditPassword.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lblEditPassword.Location = new System.Drawing.Point(24, 88);
+            this.lblEditPassword.Location = new System.Drawing.Point(585, 118);
             this.lblEditPassword.Name = "lblEditPassword";
             this.lblEditPassword.Size = new System.Drawing.Size(70, 20);
             this.lblEditPassword.TabIndex = 8;
@@ -501,7 +501,7 @@ namespace UI.SistemaCompraVentas
             // txtEditPassword
             // 
             this.txtEditPassword.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtEditPassword.Location = new System.Drawing.Point(100, 88);
+            this.txtEditPassword.Location = new System.Drawing.Point(585, 118);
             this.txtEditPassword.Name = "txtEditPassword";
             this.txtEditPassword.PasswordChar = '*';
             this.txtEditPassword.Size = new System.Drawing.Size(137, 20);
@@ -511,7 +511,7 @@ namespace UI.SistemaCompraVentas
             // 
             this.lblEditEmail.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
             this.lblEditEmail.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.lblEditEmail.Location = new System.Drawing.Point(24, 122);
+            this.lblEditEmail.Location = new System.Drawing.Point(24, 87);
             this.lblEditEmail.Name = "lblEditEmail";
             this.lblEditEmail.Size = new System.Drawing.Size(70, 20);
             this.lblEditEmail.TabIndex = 12;
@@ -521,9 +521,9 @@ namespace UI.SistemaCompraVentas
             // txtEditEmail
             // 
             this.txtEditEmail.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.txtEditEmail.Location = new System.Drawing.Point(100, 122);
+            this.txtEditEmail.Location = new System.Drawing.Point(100, 87);
             this.txtEditEmail.Name = "txtEditEmail";
-            this.txtEditEmail.Size = new System.Drawing.Size(231, 20);
+            this.txtEditEmail.Size = new System.Drawing.Size(154, 20);
             this.txtEditEmail.TabIndex = 13;
             // 
             // lblEditFechaNacimiento
@@ -682,7 +682,7 @@ namespace UI.SistemaCompraVentas
             this.lblPermisosFamilia.AutoSize = true;
             this.lblPermisosFamilia.Location = new System.Drawing.Point(8, 263);
             this.lblPermisosFamilia.Name = "lblPermisosFamilia";
-            this.lblPermisosFamilia.Size = new System.Drawing.Size(176, 13);
+            this.lblPermisosFamilia.Size = new System.Drawing.Size(149, 13);
             this.lblPermisosFamilia.TabIndex = 9;
             this.lblPermisosFamilia.Text = "Permisos del rol seleccionado:";
             // 
@@ -691,6 +691,7 @@ namespace UI.SistemaCompraVentas
             this.dgvPermisosFamilia.AllowUserToAddRows = false;
             this.dgvPermisosFamilia.AllowUserToDeleteRows = false;
             this.dgvPermisosFamilia.AllowUserToResizeRows = false;
+            this.dgvPermisosFamilia.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvPermisosFamilia.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPermisosFamilia.Location = new System.Drawing.Point(8, 283);
             this.dgvPermisosFamilia.MultiSelect = false;

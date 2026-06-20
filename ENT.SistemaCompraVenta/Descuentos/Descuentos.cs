@@ -2,6 +2,16 @@ using System;
 
 namespace ENT.SistemaCompraVenta.Descuentos
 {
+    // Tipos de descuento que puede elegir el usuario. El DescuentoFactory (BLL) los
+    // traduce a la estrategia concreta; así la UI no conoce las clases concretas.
+    public enum TipoDescuento
+    {
+        Ninguno,
+        Porcentaje,
+        Fijo,
+        PorVolumen
+    }
+
     // Patrón Strategy: cada forma de calcular el descuento es una estrategia
     // intercambiable. La Venta solo conoce esta interfaz, no el cálculo concreto.
     public interface IDescuentoStrategy

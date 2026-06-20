@@ -91,11 +91,23 @@
       <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
     </Compile>
     <Compile Include="GrillaHelper.cs" />
-    <Compile Include="FormStock.cs">
+    <Compile Include="FormCrearProducto.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormStock.Designer.cs">
-      <DependentUpon>FormStock.cs</DependentUpon>
+    <Compile Include="FormCrearProducto.Designer.cs">
+      <DependentUpon>FormCrearProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormBuscarProductoBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarProductoBase.Designer.cs">
+      <DependentUpon>FormBuscarProductoBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormNuevaMarca.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNuevaMarca.Designer.cs">
+      <DependentUpon>FormNuevaMarca.cs</DependentUpon>
     </Compile>
     <Compile Include="FormGerente.cs">
       <SubType>Form</SubType>
@@ -138,6 +150,9 @@
     <EmbeddedResource Include="FormBuscarProveedor.resx">
       <DependentUpon>FormBuscarProveedor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormCompras.resx">
+      <DependentUpon>FormCompras.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormCrearCliente.resx">
       <DependentUpon>FormCrearCliente.cs</DependentUpon>
     </EmbeddedResource>
@@ -147,8 +162,14 @@
     <EmbeddedResource Include="FormRecepcionCompras.resx">
       <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormStock.resx">
-      <DependentUpon>FormStock.cs</DependentUpon>
+    <EmbeddedResource Include="FormCrearProducto.resx">
+      <DependentUpon>FormCrearProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormBuscarProductoBase.resx">
+      <DependentUpon>FormBuscarProductoBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNuevaMarca.resx">
+      <DependentUpon>FormNuevaMarca.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormGerente.resx">
       <DependentUpon>FormGerente.cs</DependentUpon>
@@ -169,14 +190,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -199,9 +214,6 @@
       <Project>{11342c5c-edc0-4dc4-9348-13723bb5e150}</Project>
       <Name>ENT.SistemaCompraVenta</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\back-image.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

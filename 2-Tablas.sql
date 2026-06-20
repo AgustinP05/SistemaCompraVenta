@@ -2,8 +2,6 @@
 /* =========================================================
    SistemaCompraVenta - Script de tablas (versión final)
    Nomenclatura 2-Tablas: prefijo t, PascalCase, FKs inline.
-   Incluye: ROL/PERMISO, CATEGORIA, COLOR/TALLE/VARIANTE/STOCK,
-            circuito de COMPRA. Correr una vez, crea todo desde cero.
 ========================================================= */
 
 USE SistemaCompraVenta;
@@ -23,15 +21,16 @@ CREATE TABLE tPermiso (
 );
 GO
 
----- USUARIO (rol por FK; Email y FechaNacimiento NOT NULL; pass 256) ----
+---- USUARIO (rol por FK; Email y FechaNacimiento NOT NULL).
+----  Sin columna Password: la contraseña NO se almacena. Se deriva y valida en la
+----  BLL como ddMM (de FechaNacimiento) + los primeros 4 dígitos del DNI. ----
 CREATE TABLE tUsuario (
     ID INT PRIMARY KEY IDENTITY(1,1),
     DNI VARCHAR(20) NOT NULL UNIQUE,
     Nombre VARCHAR(50) NOT NULL,
     Apellido VARCHAR(100) NOT NULL,
-    Password VARCHAR(256) NOT NULL,
     ID_Rol INT NOT NULL,
-    Email VARCHAR(150) NOT NULL,
+    Email VARCHAR(150) NOT NULL UNIQUE,
     FechaNacimiento DATE NOT NULL,
     FOREIGN KEY (ID_Rol) REFERENCES tRol(ID_Rol)
 );
@@ -110,11 +109,13 @@ CREATE TABLE tProducto (
 );
 GO
 
----- PROVEEDOR_MARCA (qué marcas provee cada proveedor; Marca = mismo texto que tProducto.Marca) ----
+---- PROVEEDOR_MARCA (qué marcas provee cada proveedor; Marca = mismo texto que tProducto.Marca).
+----  REGLA: una marca pertenece a un ÚNICO proveedor (Marca es PK). Un proveedor sí puede
+----  tener varias marcas (multimarca), pero la misma marca no se cruza entre proveedores. ----
 CREATE TABLE tProveedorMarca (
     ID_Proveedor INT NOT NULL,
     Marca VARCHAR(100) NOT NULL,
-    PRIMARY KEY (ID_Proveedor, Marca),
+    CONSTRAINT PK_tProveedorMarca PRIMARY KEY (Marca),
     FOREIGN KEY (ID_Proveedor) REFERENCES tProveedor(ID_Proveedor)
 );
 GO
@@ -142,6 +143,7 @@ CREATE TABLE tProductoVariante (
     ID_Color INT NOT NULL,
     ID_Talle INT NOT NULL,
     Cantidad INT NOT NULL DEFAULT 0,
+    CONSTRAINT CK_tProductoVariante_Cantidad CHECK (Cantidad >= 0),
     CONSTRAINT UQ_tProductoVariante UNIQUE (ID_Producto, ID_Color, ID_Talle),
     FOREIGN KEY (ID_Producto) REFERENCES tProducto(ID_Producto),
     FOREIGN KEY (ID_Color) REFERENCES tColor(ID_Color),
@@ -172,13 +174,16 @@ CREATE TABLE tDetalleVenta (
 );
 GO
 
----- DESCUENTO_VENTA (auditoría: solo se cargan las ventas que tuvieron descuento) ----
+---- DESCUENTO_VENTA (auditoría: solo se cargan las ventas que tuvieron descuento).
+----  Una venta tiene a lo sumo UN descuento (la Venta maneja una única estrategia),
+----  por eso ID_Venta es UNIQUE. ----
 CREATE TABLE tDescuentoVenta (
     ID_Descuento INT PRIMARY KEY IDENTITY(1,1),
     ID_Venta INT NOT NULL,
     Tipo VARCHAR(100) NOT NULL,
     Monto DECIMAL(10,2) NOT NULL,
     Fecha DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT UQ_tDescuentoVenta_Venta UNIQUE (ID_Venta),
     FOREIGN KEY (ID_Venta) REFERENCES tVenta(ID_Venta)
 );
 GO
@@ -212,7 +217,9 @@ CREATE TABLE tDetalleCompra (
 );
 GO
 
----- RECLAMO_COMPRA (auditoría: faltantes detectados al recepcionar una orden) ----
+---- RECLAMO_COMPRA (auditoría: faltantes detectados al recepcionar una orden.
+----  No lleva Fecha propia: la fecha del reclamo es la FechaRecepcion de la compra
+----  (tCompra), que es la misma; así se evita duplicarla.) ----
 CREATE TABLE tReclamoCompra (
     ID_Reclamo INT PRIMARY KEY IDENTITY(1,1),
     ID_Compra INT NOT NULL,
@@ -220,7 +227,6 @@ CREATE TABLE tReclamoCompra (
     CantidadPedida INT NOT NULL,
     CantidadRecibida INT NOT NULL,
     CantidadFaltante INT NOT NULL,
-    Fecha DATETIME NOT NULL DEFAULT GETDATE(),
     FOREIGN KEY (ID_Compra) REFERENCES tCompra(ID_Compra),
     FOREIGN KEY (SKU) REFERENCES tProductoVariante(SKU)
 );
@@ -229,7 +235,6 @@ GO
 
 /* ---------------------------------------------------------
    DATOS BASE (las dos categorías fijas del dominio)
-   Si tenés un script de datos aparte, podés borrar este bloque.
 --------------------------------------------------------- */
-INSERT INTO tCategoria (Nombre) VALUES ('VESTIMENTA'), ('CALZADO');
+INSERT INTO tCategoria (Nombre) VALUES ('Vestimenta'), ('Calzado');
 GO

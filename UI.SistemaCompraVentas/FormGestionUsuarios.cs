@@ -55,7 +55,32 @@ namespace UI.SistemaCompraVentas
 
             dgvUsuarios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
+            ConfigurarCamposCredenciales();
+
+            // Fecha de nacimiento siempre como dd/MM/yyyy (en vez del formato corto del
+            // sistema, que mostraba el mes en una sola cifra: "19/ 6/2026").
+            dtpFechaNacimiento.Format = DateTimePickerFormat.Custom;
+            dtpFechaNacimiento.CustomFormat = "dd/MM/yyyy";
+            dtpEditFechaNacimiento.Format = DateTimePickerFormat.Custom;
+            dtpEditFechaNacimiento.CustomFormat = "dd/MM/yyyy";
+
             LimpiarEdicion();
+        }
+
+        // La contraseña ya no se ingresa (se deriva al loguear) y el email se autogenera:
+        // ocultamos los campos de password y dejamos los de email en solo lectura.
+        private void ConfigurarCamposCredenciales()
+        {
+            lblPassword.Visible     = false;
+            txtPassword.Visible     = false;
+            lblEditPassword.Visible = false;
+            txtEditPassword.Visible = false;
+
+            txtEmail.ReadOnly     = true;
+            txtEmail.BackColor    = System.Drawing.SystemColors.Control;
+            txtEmail.Text         = "(se genera automáticamente)";
+            txtEditEmail.ReadOnly = true;
+            txtEditEmail.BackColor = System.Drawing.SystemColors.Control;
         }
 
         private void CargarCombosRoles()
@@ -113,26 +138,33 @@ namespace UI.SistemaCompraVentas
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
 
                 int idRol = (int)cboRoles.SelectedValue;
-                bool exito = bll.CrearUsuario(
+                string emailAsignado = bll.CrearUsuario(
                     txtDni.Text,
                     txtNombre.Text,
                     txtApellido.Text,
-                    txtPassword.Text,
                     idRol,
-                    txtEmail.Text,
                     dtpFechaNacimiento.Value
                 );
-                if (exito)
+                if (emailAsignado != null)
                 {
+                    txtEmail.Text = emailAsignado;
+
+                    // La contraseña no se guarda; se la mostramos al admin para que pueda
+                    // comunicársela al usuario (se deriva: ddMM nac. + 4 primeros del DNI).
+                    string pass = BLL.SistemaCompraVenta.Credenciales
+                        .GenerarPassword(dtpFechaNacimiento.Value, txtDni.Text);
+
                     MessageBox.Show("Usuario " + txtNombre.Text + " " + txtApellido.Text +
-                                    " registrado correctamente en la base de datos.");
+                                    " registrado correctamente.\n\n" +
+                                    "Email asignado: " + emailAsignado + "\n" +
+                                    "Contraseña: " + pass);
                     _usuariosCargados.Add(new string[]
                     {
                         txtDni.Text,
                         txtNombre.Text,
                         txtApellido.Text,
                         cboRoles.Text,
-                        txtEmail.Text,
+                        emailAsignado,
                         dtpFechaNacimiento.Value.ToShortDateString()
                     });
                     LimpiarCarga();
@@ -159,8 +191,7 @@ namespace UI.SistemaCompraVentas
             txtDni.Clear();
             txtNombre.Clear();
             txtApellido.Clear();
-            txtPassword.Clear();
-            txtEmail.Clear();
+            txtEmail.Text = "(se genera automáticamente)";
             dtpFechaNacimiento.Value = System.DateTime.Today;
             if (cboRoles.Items.Count > 0) cboRoles.SelectedIndex = 0;
         }
@@ -248,18 +279,17 @@ namespace UI.SistemaCompraVentas
                 BLL.SistemaCompraVenta.Services.UsuarioBLL bll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
 
                 int idRolEdit = (int)cboEditRoles.SelectedValue;
-                bool exito = bll.ModificarUsuario(
+                string emailAsignado = bll.ModificarUsuario(
                     _dniUsuarioSeleccionado,
                     txtEditNombre.Text,
                     txtEditApellido.Text,
-                    txtEditPassword.Text,
                     idRolEdit,
-                    txtEditEmail.Text,
                     dtpEditFechaNacimiento.Value
                 );
-                if (exito)
+                if (emailAsignado != null)
                 {
-                    MessageBox.Show("Usuario modificado con éxito.");
+                    txtEditEmail.Text = emailAsignado;
+                    MessageBox.Show("Usuario modificado con éxito.\n\nEmail: " + emailAsignado);
                     ActualizarGrillaEdicion();
                     CargarGrillaUsuarios();
                 }

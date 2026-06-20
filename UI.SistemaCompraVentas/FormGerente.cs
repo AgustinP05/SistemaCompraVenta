@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
-using BLL.SistemaCompraVentas;
+using BLL.SistemaCompraVenta;
 using ENT.SistemaCompraVenta;
 
 namespace UI.SistemaCompraVentas
@@ -10,15 +11,21 @@ namespace UI.SistemaCompraVentas
     public partial class FormGerente : Form
     {
         private ReporteBLL _reporteBLL = new ReporteBLL();
+        private List<EntidadReporte> _ultimoResultado;
 
         public FormGerente()
         {
             InitializeComponent();
-            CargarReportes();
         }
 
         private void FormGerente_Load(object sender, EventArgs e)
         {
+            // Días y meses siempre en 2 cifras (dd/MM/yyyy).
+            dtpDesde.Format = DateTimePickerFormat.Custom;
+            dtpDesde.CustomFormat = "dd/MM/yyyy";
+            dtpHasta.Format = DateTimePickerFormat.Custom;
+            dtpHasta.CustomFormat = "dd/MM/yyyy";
+
             dtpDesde.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             dtpHasta.Value = DateTime.Now;
             ////////////////////////
@@ -28,50 +35,32 @@ namespace UI.SistemaCompraVentas
             cboCategoria.Items.Add("Vestimenta");
             cboCategoria.SelectedIndex = 0;
 
+            cboAgrupar.Items.Clear();
+            cboAgrupar.Items.Add("Sin agrupar");
+            cboAgrupar.Items.Add("Vendedor");
+            cboAgrupar.Items.Add("Cliente");
+            cboAgrupar.Items.Add("Producto");
+            cboAgrupar.SelectedIndex = 0;
+
             CargarCombosFiltros();
+
+            // El texto de las etiquetas es solo de ejemplo (para verlas en el diseñador);
+            // en ejecución arrancan vacías hasta que se genera un reporte.
+            LimpiarResumen();
+
+            CargarReclamos();
         }
 
-        // --- TAB 1: DASHBOARD --- si lo queremos voletear lo volamos, no rompe la logica ni nada...
-
-        private void CargarReportes()
-        {
-            try
-            {
-                DataTable datos = _reporteBLL.ObtenerVentasMensuales();
-                dgvCrecimiento.DataSource = datos;
-
-                if (dgvCrecimiento.Columns.Contains("VentasTotales"))
-                {
-                    dgvCrecimiento.Columns["VentasTotales"].DefaultCellStyle.Format = "C2";
-                }
-
-                decimal totalGeneral = 0;
-                foreach (DataRow fila in datos.Rows)
-                {
-                    totalGeneral += Convert.ToDecimal(fila["VentasTotales"]);
-                }
-                labelCantidadVentas.Text = totalGeneral.ToString("C2");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar reportes: " + ex.Message);
-            }
-        }
-
-        private void FormGerente_Activated(object sender, EventArgs e)
-        {
-            CargarReportes();
-        }
-
-        // --- TAB 2: REPORTE DETALLADO ---
+        // --- REPORTE DETALLADO ---
 
         private void CargarCombosFiltros()
         {
             try
             {
-                // 1. VENDEDORES
+                // 1. VENDEDORES: solo rol Vendedor + quienes tengan ventas (aunque hayan
+                //    cambiado de rol). Evita ofrecer usuarios que darían reporte vacío.
                 BLL.SistemaCompraVenta.Services.UsuarioBLL uBll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
-                DataTable dtVendedores = uBll.ObtenerUsuarios("");
+                DataTable dtVendedores = uBll.ObtenerVendedores();
 
                 DataRow filaVendedor = dtVendedores.NewRow();
                 filaVendedor["ID"] = 0;
@@ -105,23 +94,18 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-        // Reutilizacion de productos por la clase abstracta
         private void CargarProductosPorCategoria()
         {
             BLL.SistemaCompraVenta.ProductoBLL pBll = new BLL.SistemaCompraVenta.ProductoBLL();
             List<ENT.SistemaCompraVenta.Producto> listaProductos = pBll.ListarProductos();
 
-            ENT.SistemaCompraVenta.Producto prodTodos;
+            // Filtra el combo de productos según la categoría elegida.
+            int? idCategoria = IdCategoriaSeleccionada();
+            if (idCategoria.HasValue)
+                listaProductos = listaProductos.Where(p => p.ID_Categoria == idCategoria.Value).ToList();
 
-            // polimorfismo
-            if (cboCategoria.Text == "Calzado")
-            {
-                prodTodos = new ENT.SistemaCompraVenta.Calzado();
-            }
-            else
-            {
-                prodTodos = new ENT.SistemaCompraVenta.Vestimenta();
-            }
+            // Item placeholder "Todos los Productos" al tope del combo.
+            ENT.SistemaCompraVenta.Producto prodTodos = new ENT.SistemaCompraVenta.Producto();
 
             prodTodos.Id = 0;
             prodTodos.Nombre = "Todos los Productos";
@@ -130,6 +114,72 @@ namespace UI.SistemaCompraVentas
             cboProducto.DisplayMember = "Nombre";
             cboProducto.ValueMember = "Id";
             cboProducto.DataSource = listaProductos;
+        }
+
+        // Mapeo centralizado en la BLL (Categorias). "Todas" (u otro) => null = sin filtro.
+        private int? IdCategoriaSeleccionada()
+        {
+            return BLL.SistemaCompraVenta.Categorias.IdPorNombre(cboCategoria.Text);
+        }
+
+        // --- RECLAMOS (compras recibidas incompletas) ---
+
+        private void CargarReclamos()
+        {
+            try
+            {
+                BLL.SistemaCompraVenta.CompraBLL cBll = new BLL.SistemaCompraVenta.CompraBLL();
+                dgvReclamos.DataSource = cBll.ListarReclamos();
+                FormatearGrillaReclamos();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar los reclamos: " + ex.Message, "Reclamos",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void FormatearGrillaReclamos()
+        {
+            if (dgvReclamos.Columns.Count == 0) return;
+
+            // Pesos proporcionales: Proveedor/Producto anchos; Talle y numéricos mínimos.
+            if (dgvReclamos.Columns.Contains("NroCompra"))
+            {
+                dgvReclamos.Columns["NroCompra"].HeaderText = "N° Compra";
+                dgvReclamos.Columns["NroCompra"].FillWeight = 9;
+            }
+            if (dgvReclamos.Columns.Contains("FechaCompra"))
+            {
+                dgvReclamos.Columns["FechaCompra"].HeaderText = "Fecha Compra";
+                dgvReclamos.Columns["FechaCompra"].FillWeight = 15;
+                dgvReclamos.Columns["FechaCompra"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
+            if (dgvReclamos.Columns.Contains("Proveedor"))
+                dgvReclamos.Columns["Proveedor"].FillWeight = 26;
+            if (dgvReclamos.Columns.Contains("Producto"))
+                dgvReclamos.Columns["Producto"].FillWeight = 28;
+            if (dgvReclamos.Columns.Contains("Color"))
+                dgvReclamos.Columns["Color"].FillWeight = 11;
+            if (dgvReclamos.Columns.Contains("Talle"))
+                dgvReclamos.Columns["Talle"].FillWeight = 8;
+            if (dgvReclamos.Columns.Contains("Pedido"))
+                dgvReclamos.Columns["Pedido"].FillWeight = 9;
+            if (dgvReclamos.Columns.Contains("Recibido"))
+                dgvReclamos.Columns["Recibido"].FillWeight = 9;
+            if (dgvReclamos.Columns.Contains("Faltante"))
+                dgvReclamos.Columns["Faltante"].FillWeight = 9;
+            if (dgvReclamos.Columns.Contains("FechaReclamo"))
+            {
+                dgvReclamos.Columns["FechaReclamo"].HeaderText = "Fecha Reclamo";
+                dgvReclamos.Columns["FechaReclamo"].FillWeight = 15;
+                dgvReclamos.Columns["FechaReclamo"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
+        }
+
+        private void btnActualizarReclamos_Click(object sender, EventArgs e)
+        {
+            CargarReclamos();
         }
 
         private void btnGenerarReporte_Click(object sender, EventArgs e)
@@ -149,16 +199,25 @@ namespace UI.SistemaCompraVentas
                 if (cboCliente.SelectedValue != null && cboCliente.SelectedIndex > 0)
                     filtro.IdCliente = Convert.ToInt32(cboCliente.SelectedValue);
 
+                filtro.IdCategoria = IdCategoriaSeleccionada();
+
                 List<EntidadReporte> resultado = _reporteBLL.GenerarReporte(filtro);
 
-                dgvReporte.DataSource = null;
-                dgvReporte.DataSource = resultado;
+                // Alternativa 1 del CU: no hay ventas para los criterios elegidos.
+                if (resultado == null || resultado.Count == 0)
+                {
+                    _ultimoResultado = null;
+                    dgvReporte.DataSource = null;
+                    LimpiarResumen();
+                    MessageBox.Show("No hay datos para mostrar.", "Generar Reporte",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
 
-                if (dgvReporte.Columns.Contains("Detalles"))
-                    dgvReporte.Columns["Detalles"].Visible = false;
+                _ultimoResultado = resultado;
 
-                if (dgvReporte.Columns.Contains("TotalVenta"))
-                    dgvReporte.Columns["TotalVenta"].DefaultCellStyle.Format = "C2";
+                MostrarResumen(resultado);
+                RenderResultado();
             }
             catch (Exception ex)
             {
@@ -167,7 +226,145 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-       
+        // Encabezados, anchos y formato de la grilla del reporte.
+        private void FormatearGrilla()
+        {
+            if (dgvReporte.Columns.Contains("Detalles"))
+                dgvReporte.Columns["Detalles"].Visible = false;
+            if (dgvReporte.Columns.Contains("Costo"))
+                dgvReporte.Columns["Costo"].Visible = false;
+            if (dgvReporte.Columns.Contains("Ganancia"))
+                dgvReporte.Columns["Ganancia"].Visible = false;
+
+            if (dgvReporte.Columns.Contains("IdVenta"))
+            {
+                dgvReporte.Columns["IdVenta"].HeaderText = "ID Venta";
+                dgvReporte.Columns["IdVenta"].FillWeight = 12; // angosta
+            }
+            if (dgvReporte.Columns.Contains("Fecha"))
+            {
+                dgvReporte.Columns["Fecha"].HeaderText = "Fecha";
+                dgvReporte.Columns["Fecha"].FillWeight = 22;
+                dgvReporte.Columns["Fecha"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
+            if (dgvReporte.Columns.Contains("NombreCliente"))
+            {
+                dgvReporte.Columns["NombreCliente"].HeaderText = "Cliente";
+                dgvReporte.Columns["NombreCliente"].FillWeight = 28;
+            }
+            if (dgvReporte.Columns.Contains("NombreVendedor"))
+            {
+                dgvReporte.Columns["NombreVendedor"].HeaderText = "Vendedor";
+                dgvReporte.Columns["NombreVendedor"].FillWeight = 28;
+            }
+            if (dgvReporte.Columns.Contains("TotalVenta"))
+            {
+                dgvReporte.Columns["TotalVenta"].HeaderText = "Total Bruto";
+                dgvReporte.Columns["TotalVenta"].FillWeight = 22;
+                dgvReporte.Columns["TotalVenta"].DefaultCellStyle.Format = "C2";
+            }
+            if (dgvReporte.Columns.Contains("TipoDescuento"))
+            {
+                dgvReporte.Columns["TipoDescuento"].HeaderText = "Tipo Desc.";
+                dgvReporte.Columns["TipoDescuento"].FillWeight = 24;
+            }
+            if (dgvReporte.Columns.Contains("Descuento"))
+            {
+                dgvReporte.Columns["Descuento"].HeaderText = "Descuento";
+                dgvReporte.Columns["Descuento"].FillWeight = 20;
+                dgvReporte.Columns["Descuento"].DefaultCellStyle.Format = "C2";
+            }
+            if (dgvReporte.Columns.Contains("TotalNeto"))
+            {
+                dgvReporte.Columns["TotalNeto"].HeaderText = "Total Neto";
+                dgvReporte.Columns["TotalNeto"].FillWeight = 22;
+                dgvReporte.Columns["TotalNeto"].DefaultCellStyle.Format = "C2";
+            }
+        }
+
+        // Totales (KPIs) del reporte en etiquetas.
+        private void MostrarResumen(List<EntidadReporte> ventas)
+        {
+            // El cálculo de los KPIs vive en la BLL; el form solo los muestra.
+            ResumenReporte r = _reporteBLL.CalcularResumen(ventas);
+
+            lblFacturadoBruto.Text = r.FacturadoBruto.ToString("C2");
+            lblDescuento.Text      = r.Descuentos.ToString("C2");
+            lblFacturado.Text      = r.FacturadoNeto.ToString("C2");
+            lblCosto.Text          = r.Costo.ToString("C2");
+            lblGanancia.Text       = r.GananciaNeta.ToString("C2");
+            lblTicket.Text         = "Ticket promedio: " + r.TicketPromedio.ToString("C2");
+            lblUnidades.Text       = "Unidades: " + r.Unidades + "     |     Ventas: " + r.CantidadVentas;
+
+            string top = "";
+            if (!string.IsNullOrEmpty(r.TopProductoNombre))
+                top += "Top producto: " + r.TopProductoNombre + " (" + r.TopProductoUnidades + "u)";
+            if (!string.IsNullOrEmpty(r.TopVendedorNombre))
+                top += (top.Length > 0 ? "     |     " : "") + "Top vendedor: " + r.TopVendedorNombre;
+            lblTop.Text = top;
+        }
+
+        private void LimpiarResumen()
+        {
+            lblFacturadoBruto.Text = "";
+            lblDescuento.Text = "";
+            lblFacturado.Text = "";
+            lblCosto.Text = "";
+            lblGanancia.Text = "";
+            lblTicket.Text = "";
+            lblUnidades.Text = "";
+            lblTop.Text = "";
+        }
+
+        // Punto 2: muestra la grilla en detalle o agrupada según el combo, sin volver a consultar.
+        private void RenderResultado()
+        {
+            if (_ultimoResultado == null) return;
+
+            string criterio = cboAgrupar.SelectedItem != null ? cboAgrupar.SelectedItem.ToString() : "Sin agrupar";
+
+            if (criterio == "Sin agrupar")
+            {
+                dgvReporte.DataSource = null;
+                dgvReporte.DataSource = _ultimoResultado;
+                FormatearGrilla();
+            }
+            else
+            {
+                dgvReporte.DataSource = null;
+                dgvReporte.DataSource = _reporteBLL.Agrupar(_ultimoResultado, criterio);
+                FormatearGrillaAgrupada();
+            }
+        }
+
+        private void cboAgrupar_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RenderResultado();
+        }
+
+
+        private void FormatearGrillaAgrupada()
+        {
+            if (dgvReporte.Columns.Contains("Grupo"))
+                dgvReporte.Columns["Grupo"].FillWeight = 42;
+            if (dgvReporte.Columns.Contains("Unidades"))
+                dgvReporte.Columns["Unidades"].FillWeight = 14;
+            if (dgvReporte.Columns.Contains("Descuento"))
+            {
+                dgvReporte.Columns["Descuento"].FillWeight = 18;
+                dgvReporte.Columns["Descuento"].DefaultCellStyle.Format = "C2";
+            }
+            if (dgvReporte.Columns.Contains("Total Neto"))
+            {
+                dgvReporte.Columns["Total Neto"].FillWeight = 24;
+                dgvReporte.Columns["Total Neto"].DefaultCellStyle.Format = "C2";
+            }
+            if (dgvReporte.Columns.Contains("Ganancia"))
+            {
+                dgvReporte.Columns["Ganancia"].FillWeight = 24;
+                dgvReporte.Columns["Ganancia"].DefaultCellStyle.Format = "C2";
+            }
+        }
 
         private void cboCategoria_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -198,38 +395,24 @@ namespace UI.SistemaCompraVentas
             {
                 try
                 {
-                    // 3. Escribir el archivo usando StreamWriter (System.IO)
-                    // Usamos UTF8
-                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(sfd.FileName, false, System.Text.Encoding.UTF8))
-                    {
-                        // A. Escribir los ENCABEZADOS
-                        string encabezados = "";
-                        foreach (DataGridViewColumn col in dgvReporte.Columns)
-                        {
-                            if (col.Visible)
-                            {
-                                // Usamos punto y coma
-                                encabezados += col.HeaderText + ";";
-                            }
-                        }
-                        sw.WriteLine(encabezados.TrimEnd(';'));
+                    // 3. El form solo junta lo VISIBLE en la grilla (tarea de UI). El
+                    //    formato CSV y la escritura del archivo los hace la BLL.
+                    List<string> encabezados = new List<string>();
+                    foreach (DataGridViewColumn col in dgvReporte.Columns)
+                        if (col.Visible) encabezados.Add(col.HeaderText);
 
-                        // B. Escribir las FILAS de datos
-                        foreach (DataGridViewRow fila in dgvReporte.Rows)
-                        {
-                            string linea = "";
-                            foreach (DataGridViewCell celda in fila.Cells)
-                            {
-                                if (dgvReporte.Columns[celda.ColumnIndex].Visible)
-                                {
-                                    // Leemos el valor, lo pasamos a string y evitamos que un salto de línea rompa el Excel
-                                    string valor = celda.Value != null ? celda.Value.ToString().Replace("\n", " ").Replace("\r", "") : "";
-                                    linea += valor + ";";
-                                }
-                            }
-                            sw.WriteLine(linea.TrimEnd(';'));
-                        }
+                    List<IList<string>> filas = new List<IList<string>>();
+                    foreach (DataGridViewRow fila in dgvReporte.Rows)
+                    {
+                        if (fila.IsNewRow) continue;
+                        List<string> celdas = new List<string>();
+                        foreach (DataGridViewColumn col in dgvReporte.Columns)
+                            if (col.Visible)
+                                celdas.Add(fila.Cells[col.Index].Value?.ToString() ?? "");
+                        filas.Add(celdas);
                     }
+
+                    BLL.SistemaCompraVenta.ExportadorCsv.Exportar(sfd.FileName, encabezados, filas);
 
                     MessageBox.Show("¡Reporte exportado con éxito!", "Exportación Finalizada", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -241,6 +424,12 @@ namespace UI.SistemaCompraVentas
                     MessageBox.Show("Ocurrió un error al intentar guardar el archivo: " + ex.Message, "Error de Archivo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        // Alternativa 3 del CU: descarta lo ingresado y cierra la interfaz (vuelve a Gerente).
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

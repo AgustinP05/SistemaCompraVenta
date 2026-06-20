@@ -40,6 +40,7 @@ namespace UI.SistemaCompraVentas
             this.dgvPendientes.AllowUserToAddRows = false;
             this.dgvPendientes.AllowUserToDeleteRows = false;
             this.dgvPendientes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvPendientes.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvPendientes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPendientes.Location = new System.Drawing.Point(12, 25);
             this.dgvPendientes.MultiSelect = false;
@@ -76,6 +77,7 @@ namespace UI.SistemaCompraVentas
             this.dgvDetalle.AllowUserToAddRows = false;
             this.dgvDetalle.AllowUserToDeleteRows = false;
             this.dgvDetalle.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvDetalle.BackgroundColor = System.Drawing.SystemColors.ControlDark;
             this.dgvDetalle.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvDetalle.Location = new System.Drawing.Point(12, 254);
             this.dgvDetalle.MultiSelect = false;

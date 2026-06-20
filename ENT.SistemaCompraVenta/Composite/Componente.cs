@@ -1,10 +1,16 @@
-﻿using System;
+using System;
 
 namespace ENT.SistemaCompraVenta
 {
     public abstract class Componente
     {
-        public string Nombre { get; set; }
+        private string nombre;
+
+        public string Nombre
+        {
+            get { return nombre; }
+            set { nombre = value; }
+        }
 
         // REQUERIDO: Para verificar si contiene un permiso por nombre
         public abstract bool TienePermiso(string nombrePermiso);

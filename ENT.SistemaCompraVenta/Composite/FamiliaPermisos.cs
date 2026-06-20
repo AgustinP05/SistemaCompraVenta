@@ -7,9 +7,14 @@ namespace ENT.SistemaCompraVenta
     // y/o otros roles-familia. ID_Familia lleva el ID del rol que representa.
     public class FamiliaPermisos : Componente
     {
-        public int ID_Familia { get; set; }
-
+        private int idFamilia;
         private List<Componente> hijos = new List<Componente>();
+
+        public int ID_Familia
+        {
+            get { return idFamilia; }
+            set { idFamilia = value; }
+        }
 
         public void AgregarHijo(Componente componente)
         {

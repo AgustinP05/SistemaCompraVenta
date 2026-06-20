@@ -11,5 +11,6 @@ namespace DAL.SistemaCompraVenta
         //   ...Data Source=SOFI\SQLEXPRESS
         //   ...Data Source=JULAZARO\SQLEXPRESS
         //   ...Data Source=AgusPC
+        //Data Source=DESKTOP-31EJQH0\SQLEXPRESS
     }
 }
