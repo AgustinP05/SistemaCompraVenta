@@ -3,7 +3,6 @@ using ENT.SistemaCompraVenta;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace BLL.SistemaCompraVenta
 {
@@ -84,15 +83,9 @@ namespace BLL.SistemaCompraVenta
             if (idCliente <= 0)
                 throw new Exception("Cliente inválido.");
 
-            try
-            {
-                return oClienteDAL.EliminarCliente(idCliente) > 0;
-            }
-            catch (SqlException ex) when (ex.Number == 547) // violación de FK
-            {
-                throw new OperacionNoPermitidaException(
-                    "No se puede eliminar el cliente porque tiene ventas registradas en el sistema.");
-            }
+            // Si el cliente tiene ventas, la DAL traduce la violación de FK a una
+            // OperacionNoPermitidaException con el mensaje correspondiente.
+            return oClienteDAL.EliminarCliente(idCliente) > 0;
         }
 
         public List<Cliente> ListarClientes()

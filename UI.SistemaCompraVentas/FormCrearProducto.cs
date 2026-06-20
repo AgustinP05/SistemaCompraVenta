@@ -355,15 +355,12 @@ namespace UI.SistemaCompraVentas
 
         // ── Helpers ──────────────────────────────────────────────────────
 
-        // ID_Categoria: VESTIMENTA=1, CALZADO=2 (orden del INSERT en 3-DatosIniciales.sql)
+        // Mapeo nombre -> ID centralizado en la BLL (Categorias). El combo solo tiene
+        // "Calzado"/"Vestimenta", así que el ?? nunca cae al default.
         private static int IdCategoria(string categoria) =>
-            categoria.Equals("Calzado", StringComparison.OrdinalIgnoreCase) ? 2 : 1;
+            BLL.SistemaCompraVenta.Categorias.IdPorNombre(categoria)
+            ?? BLL.SistemaCompraVenta.Categorias.Vestimenta;
 
         private void btnSalir_Click(object sender, EventArgs e) => this.Close();
-
-        private void tabCrear_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

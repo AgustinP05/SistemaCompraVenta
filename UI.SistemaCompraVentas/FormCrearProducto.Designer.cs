@@ -101,7 +101,6 @@ namespace UI.SistemaCompraVentas
             this.tabCrear.TabIndex = 0;
             this.tabCrear.Text = "Crear Producto";
             this.tabCrear.UseVisualStyleBackColor = true;
-            this.tabCrear.Click += new System.EventHandler(this.tabCrear_Click);
             // 
             // lblNombre
             // 

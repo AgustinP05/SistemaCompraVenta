@@ -80,7 +80,8 @@ namespace DAL.SistemaCompraVenta
             return dt != null && dt.Rows.Count > 0;
         }
 
-        // Crea un SKU con stock inicial 0 (lo pone el DEFAULT de la tabla).
+        // Crea un SKU con stock inicial 0 (lo pone el DEFAULT de la tabla) y devuelve
+        // el SKU generado (SP_InsertarVariante hace SELECT SCOPE_IDENTITY).
         public int Insertar(int idProducto, int idColor, int idTalle)
         {
             SqlParameter[] param = {
@@ -88,7 +89,18 @@ namespace DAL.SistemaCompraVenta
                 ParametroSql.Crear("@ID_Color",    idColor),
                 ParametroSql.Crear("@ID_Talle",    idTalle)
             };
-            return conexion.EscribirPorStoreProcedure("SP_InsertarVariante", param);
+            try
+            {
+                DataTable dt = conexion.LeerPorStoreProcedure("SP_InsertarVariante", param);
+                if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["SKU"] != DBNull.Value)
+                    return Convert.ToInt32(dt.Rows[0]["SKU"]);
+                return 0;
+            }
+            catch (SqlException ex) when (ErrorSql.EsViolacionUnica(ex)) // red de seguridad (UNIQUE)
+            {
+                throw new OperacionNoPermitidaException(
+                    "Ya existe una variante de ese producto con ese color y talle.");
+            }
         }
 
         public DataTable ListarColores()

@@ -513,6 +513,23 @@ AS BEGIN
     ORDER BY v.Fecha DESC;
 END;
 GO
+---
+-- Vendedores para el combo del reporte: los usuarios con rol 'Vendedor' (siempre)
+-- MÁS cualquier usuario que tenga al menos una venta registrada, aunque hoy tenga
+-- otro rol (ej.: cambió de puesto en la empresa, pero sus ventas viejas siguen
+-- contando). Así el combo nunca ofrece a alguien sin ventas que dé reporte vacío.
+IF OBJECT_ID('SP_ListarVendedores', 'P') IS NOT NULL DROP PROCEDURE SP_ListarVendedores;
+GO
+CREATE PROCEDURE SP_ListarVendedores
+AS BEGIN
+    SELECT u.ID, (u.Nombre + ' ' + u.Apellido) AS Nombre, r.NombreRol AS Rol
+    FROM tUsuario u
+    JOIN tRol r ON r.ID_Rol = u.ID_Rol
+    WHERE r.NombreRol = 'Vendedor'
+       OR EXISTS (SELECT 1 FROM tVenta v WHERE v.ID_Usuario = u.ID)
+    ORDER BY Nombre;
+END;
+GO
 
 
 -- ROL (necesario para poblar el combo de roles en la UI) --------------------

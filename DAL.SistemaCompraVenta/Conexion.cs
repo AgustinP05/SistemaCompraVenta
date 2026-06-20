@@ -108,15 +108,12 @@ namespace DAL.SistemaCompraVenta
                 objComando.Connection = this.objConexion;
                 if (enTransaccion) objComando.Transaction = objTransaccion;
 
-                if (pParametrosSql.Length > 0)
-                {
+                // Agregar parámetros es opcional (un SP de escritura puede no tenerlos);
+                // ejecutar el SP NO lo es: va siempre, afuera del if.
+                if (pParametrosSql != null && pParametrosSql.Length > 0)
                     objComando.Parameters.AddRange(pParametrosSql);
-                    filasAfectadas = objComando.ExecuteNonQuery();
-                }
-                else
-                {
-                    filasAfectadas = -1;
-                }
+
+                filasAfectadas = objComando.ExecuteNonQuery();
             }
             catch (Exception)
             {

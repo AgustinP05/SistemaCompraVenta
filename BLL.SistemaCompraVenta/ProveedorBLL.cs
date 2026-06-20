@@ -3,7 +3,6 @@ using ENT.SistemaCompraVenta;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace BLL.SistemaCompraVenta
 {
@@ -44,16 +43,9 @@ namespace BLL.SistemaCompraVenta
             if (string.IsNullOrWhiteSpace(marca))
                 throw new Exception("Ingresá el nombre de la marca.");
 
-            try
-            {
-                oProveedorDAL.AsociarMarca(idProveedor, marca.Trim());
-            }
-            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601) // PK/UNIQUE
-            {
-                throw new OperacionNoPermitidaException(
-                    "La marca \"" + marca.Trim() + "\" ya pertenece a un proveedor. " +
-                    "Cada marca puede estar asignada a un único proveedor.");
-            }
+            // Si la marca ya pertenece a otro proveedor (Marca es PK), la DAL traduce
+            // la violación de unicidad a una OperacionNoPermitidaException.
+            oProveedorDAL.AsociarMarca(idProveedor, marca.Trim());
         }
 
         public bool ExisteProveedor(string cuit)
@@ -103,15 +95,9 @@ namespace BLL.SistemaCompraVenta
             if (string.IsNullOrWhiteSpace(cuit))
                 throw new Exception("CUIT inválido.");
 
-            try
-            {
-                return oProveedorDAL.EliminarProveedor(cuit) > 0;
-            }
-            catch (SqlException ex) when (ex.Number == 547) // violación de FK
-            {
-                throw new OperacionNoPermitidaException(
-                    "No se puede eliminar el proveedor porque tiene compras registradas en el sistema.");
-            }
+            // La DAL traduce la violación de FK (proveedor con compras) a una
+            // OperacionNoPermitidaException con el mensaje correspondiente.
+            return oProveedorDAL.EliminarProveedor(cuit) > 0;
         }
 
     }

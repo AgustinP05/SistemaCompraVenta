@@ -54,6 +54,7 @@
     <Compile Include="OperacionNoPermitidaException.cs" />
     <Compile Include="EntidadReporte.cs" />
     <Compile Include="FiltroReporte.cs" />
+    <Compile Include="ResumenReporte.cs" />
     <Compile Include="Producto.cs" />
     <Compile Include="ProductoVariante.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -45,6 +45,7 @@
     <Compile Include="CompraDAL.cs" />
     <Compile Include="ConfiguracionBD.cs" />
     <Compile Include="Conexion.cs" />
+    <Compile Include="ErrorSql.cs" />
     <Compile Include="FabricaConexion.cs" />
     <Compile Include="ParametroSql.cs" />
     <Compile Include="PermisoDAL.cs" />

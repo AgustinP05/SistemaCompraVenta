@@ -26,8 +26,11 @@ namespace DAL.SistemaCompraVenta
                 ParametroSql.Crear("@Direccion", c.Direccion)
             };
 
-            // Ejecutamos la inserción usando la lógica de conexión ya existente
-            return conexion.EscribirPorStoreProcedure("SP_InsertarCliente", parametros);
+            // Insertamos y leemos el ID generado (SP_InsertarCliente hace SELECT SCOPE_IDENTITY).
+            DataTable dt = conexion.LeerPorStoreProcedure("SP_InsertarCliente", parametros);
+            if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["ID_Cliente"] != DBNull.Value)
+                return Convert.ToInt32(dt.Rows[0]["ID_Cliente"]);
+            return 0;
         }
 
         public bool ExisteCliente(string dni)
@@ -91,7 +94,15 @@ namespace DAL.SistemaCompraVenta
                     {
                 ParametroSql.Crear("@ID_Cliente", idCliente)
             };
-                    return conexion.EscribirPorStoreProcedure("SP_EliminarCliente", parametros);
+                    try
+                    {
+                        return conexion.EscribirPorStoreProcedure("SP_EliminarCliente", parametros);
+                    }
+                    catch (SqlException ex) when (ErrorSql.EsViolacionFK(ex))
+                    {
+                        throw new OperacionNoPermitidaException(
+                            "No se puede eliminar el cliente porque tiene ventas registradas en el sistema.");
+                    }
                 }
     }
 }

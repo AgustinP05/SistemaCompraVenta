@@ -80,7 +80,16 @@ namespace DAL.SistemaCompraVenta
         public int Eliminar(int idProducto)
         {
             SqlParameter[] param = { ParametroSql.Crear("@ID_Producto", idProducto) };
-            return conexion.EscribirPorStoreProcedure("SP_EliminarProducto", param);
+            try
+            {
+                return conexion.EscribirPorStoreProcedure("SP_EliminarProducto", param);
+            }
+            catch (SqlException ex) when (ErrorSql.EsViolacionFK(ex))
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el producto porque tiene variantes o movimientos registrados. " +
+                    "Eliminá primero sus variantes (SKU).");
+            }
         }
 
         public int BuscarStockPorVariante(int idVariante)

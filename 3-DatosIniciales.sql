@@ -290,7 +290,10 @@ INSERT INTO tVenta (Fecha, ID_Cliente, ID_Usuario) VALUES
 ('2026-06-02 16:05:00', 22, 2);  -- 22
 GO
 
----- DETALLE_VENTA (1, 2 o 3 detalles por venta; PrecioUnitario = precio de venta del producto) ----
+---- DETALLE_VENTA (1, 2 o 3 detalles por venta. PrecioUnitario = precio facturado
+----  (histórico) de cada línea; es una foto del momento de la venta y puede no
+----  coincidir con el PrecioVenta actual del producto. En este dataset de prueba los
+----  valores se eligieron para que cuadren los subtotales de los descuentos.) ----
 INSERT INTO tDetalleVenta (ID_Venta, SKU, Cantidad, PrecioUnitario) VALUES
 ( 1,  1, 1, 120000.00),
 ( 2,  4, 2,  32000.00), ( 2,  6, 1, 150000.00),

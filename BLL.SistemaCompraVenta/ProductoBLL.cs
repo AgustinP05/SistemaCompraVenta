@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using ENT.SistemaCompraVenta;
 using DAL.SistemaCompraVenta;
 
@@ -41,16 +40,9 @@ namespace BLL.SistemaCompraVenta
             if (idProducto <= 0)
                 throw new Exception("Producto inválido.");
 
-            try
-            {
-                return oProductoDAL.Eliminar(idProducto) > 0;
-            }
-            catch (SqlException ex) when (ex.Number == 547) // violación de FK
-            {
-                throw new OperacionNoPermitidaException(
-                    "No se puede eliminar el producto porque tiene variantes o movimientos registrados. " +
-                    "Eliminá primero sus variantes (SKU).");
-            }
+            // La DAL traduce la violación de FK (producto con variantes/movimientos)
+            // a una OperacionNoPermitidaException con el mensaje correspondiente.
+            return oProductoDAL.Eliminar(idProducto) > 0;
         }
 
         // ── Variantes (SKU) ──────────────────────────────────────────────
@@ -74,15 +66,9 @@ namespace BLL.SistemaCompraVenta
                 throw new OperacionNoPermitidaException(
                     "Ya existe una variante de ese producto con ese color y talle.");
 
-            try
-            {
-                return oVarianteDAL.Insertar(idProducto, idColor, idTalle) > 0;
-            }
-            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601) // red de seguridad
-            {
-                throw new OperacionNoPermitidaException(
-                    "Ya existe una variante de ese producto con ese color y talle.");
-            }
+            // La red de seguridad ante el UNIQUE (carrera entre el chequeo y el insert)
+            // la maneja la DAL, que traduce el SqlException a OperacionNoPermitidaException.
+            return oVarianteDAL.Insertar(idProducto, idColor, idTalle) > 0;
         }
 
         private void ValidarProducto(Producto p)

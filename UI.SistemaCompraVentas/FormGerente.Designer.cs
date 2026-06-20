@@ -258,7 +258,6 @@ namespace UI.SistemaCompraVentas
             this.fecha_inicio.Size = new System.Drawing.Size(126, 25);
             this.fecha_inicio.TabIndex = 1;
             this.fecha_inicio.Text = "Fecha desde";
-            this.fecha_inicio.Click += new System.EventHandler(this.fecha_inicio_Click);
             // 
             // btnGenerarReporte
             // 
@@ -413,7 +412,6 @@ namespace UI.SistemaCompraVentas
             this.lblCosto.TabIndex = 0;
             this.lblCosto.Text = "Costo";
             this.lblCosto.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblCosto.Click += new System.EventHandler(this.lblCosto_Click);
             // 
             // groupBox1
             // 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using ENT.SistemaCompraVenta;
 
 namespace DAL.SistemaCompraVenta
 {
@@ -53,6 +54,12 @@ namespace DAL.SistemaCompraVenta
             return conexion.LeerPorStoreProcedure("SP_ListarRoles", null);
         }
 
+        // Vendedores para el combo del reporte: rol 'Vendedor' + cualquiera con ventas.
+        public DataTable ObtenerVendedores()
+        {
+            return conexion.LeerPorStoreProcedure("SP_ListarVendedores", null);
+        }
+
         public int InsertarUsuario(string dni, string nombre, string apellido,
                                    int idRol, string email, DateTime? fechaNacimiento)
         {
@@ -84,7 +91,15 @@ namespace DAL.SistemaCompraVenta
         public int EliminarUsuario(string dni)
         {
             SqlParameter[] parametros = { ParametroSql.Crear("@DNI", dni) };
-            return conexion.EscribirPorStoreProcedure("SP_EliminarUsuario", parametros);
+            try
+            {
+                return conexion.EscribirPorStoreProcedure("SP_EliminarUsuario", parametros);
+            }
+            catch (SqlException ex) when (ErrorSql.EsViolacionFK(ex))
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el usuario porque tiene operaciones registradas en el sistema.");
+            }
         }
     }
 }

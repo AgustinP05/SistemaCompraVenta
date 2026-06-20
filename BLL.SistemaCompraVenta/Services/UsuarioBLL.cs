@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using ENT.SistemaCompraVenta;
 using DAL.SistemaCompraVenta;
 using BLL.SistemaCompraVenta;
@@ -58,6 +57,7 @@ namespace BLL.SistemaCompraVenta.Services
         public DataTable ObtenerUsuarios()                      => oUsuarioDAL.ObtenerUsuarios();
         public DataTable ObtenerUsuarios(string filtro)         => oUsuarioDAL.ObtenerUsuarios(filtro);
         public DataTable ObtenerRoles()                         => oUsuarioDAL.ObtenerRoles();
+        public DataTable ObtenerVendedores()                    => oUsuarioDAL.ObtenerVendedores();
 
         // Alta de usuario. La contraseña no se pide (se deriva al loguear) y el email
         // se autogenera. Devuelve el email asignado (null si no se pudo insertar).
@@ -120,15 +120,9 @@ namespace BLL.SistemaCompraVenta.Services
             if (string.IsNullOrWhiteSpace(dni))
                 throw new Exception("DNI inválido.");
 
-            try
-            {
-                return oUsuarioDAL.EliminarUsuario(dni) > 0;
-            }
-            catch (SqlException ex) when (ex.Number == 547) // violación de FK
-            {
-                throw new OperacionNoPermitidaException(
-                    "No se puede eliminar el usuario porque tiene operaciones registradas en el sistema.");
-            }
+            // La DAL traduce la violación de FK (usuario con operaciones) a una
+            // OperacionNoPermitidaException con el mensaje correspondiente.
+            return oUsuarioDAL.EliminarUsuario(dni) > 0;
         }
     }
 }

@@ -66,7 +66,16 @@ namespace DAL.SistemaCompraVenta
                 ParametroSql.Crear("@ID_Proveedor", idProveedor),
                 ParametroSql.Crear("@Marca", marca)
             };
-            return conexion.EscribirPorStoreProcedure("SP_AsociarMarcaProveedor", param);
+            try
+            {
+                return conexion.EscribirPorStoreProcedure("SP_AsociarMarcaProveedor", param);
+            }
+            catch (SqlException ex) when (ErrorSql.EsViolacionUnica(ex)) // Marca es PK
+            {
+                throw new OperacionNoPermitidaException(
+                    "La marca \"" + marca + "\" ya pertenece a un proveedor. " +
+                    "Cada marca puede estar asignada a un único proveedor.");
+            }
         }
 
         // Marcas (texto, igual que tProducto.Marca) que provee un proveedor.
@@ -131,7 +140,15 @@ namespace DAL.SistemaCompraVenta
             {
                 ParametroSql.Crear("@CUIT", cuit)
             };
-            return conexion.EscribirPorStoreProcedure("SP_EliminarProveedor", parametros);
+            try
+            {
+                return conexion.EscribirPorStoreProcedure("SP_EliminarProveedor", parametros);
+            }
+            catch (SqlException ex) when (ErrorSql.EsViolacionFK(ex))
+            {
+                throw new OperacionNoPermitidaException(
+                    "No se puede eliminar el proveedor porque tiene compras registradas en el sistema.");
+            }
         }
     }
 }

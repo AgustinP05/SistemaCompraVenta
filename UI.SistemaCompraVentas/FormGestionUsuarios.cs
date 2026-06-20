@@ -56,6 +56,14 @@ namespace UI.SistemaCompraVentas
             dgvUsuarios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             ConfigurarCamposCredenciales();
+
+            // Fecha de nacimiento siempre como dd/MM/yyyy (en vez del formato corto del
+            // sistema, que mostraba el mes en una sola cifra: "19/ 6/2026").
+            dtpFechaNacimiento.Format = DateTimePickerFormat.Custom;
+            dtpFechaNacimiento.CustomFormat = "dd/MM/yyyy";
+            dtpEditFechaNacimiento.Format = DateTimePickerFormat.Custom;
+            dtpEditFechaNacimiento.CustomFormat = "dd/MM/yyyy";
+
             LimpiarEdicion();
         }
 

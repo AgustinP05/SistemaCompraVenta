@@ -1,11 +1,10 @@
-﻿using DAL.SistemaCompraVenta;
-using ENT.SistemaCompraVenta;
+﻿using ENT.SistemaCompraVenta;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace DAL.SistemaCompraVentas
+namespace DAL.SistemaCompraVenta
 {
     public class ReporteDAL
     {

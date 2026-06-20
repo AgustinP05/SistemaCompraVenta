@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using BLL.SistemaCompraVentas;
+using BLL.SistemaCompraVenta;
 using ENT.SistemaCompraVenta;
 
 namespace UI.SistemaCompraVentas
@@ -57,9 +57,10 @@ namespace UI.SistemaCompraVentas
         {
             try
             {
-                // 1. VENDEDORES
+                // 1. VENDEDORES: solo rol Vendedor + quienes tengan ventas (aunque hayan
+                //    cambiado de rol). Evita ofrecer usuarios que darían reporte vacío.
                 BLL.SistemaCompraVenta.Services.UsuarioBLL uBll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
-                DataTable dtVendedores = uBll.ObtenerUsuarios("");
+                DataTable dtVendedores = uBll.ObtenerVendedores();
 
                 DataRow filaVendedor = dtVendedores.NewRow();
                 filaVendedor["ID"] = 0;
@@ -115,12 +116,10 @@ namespace UI.SistemaCompraVentas
             cboProducto.DataSource = listaProductos;
         }
 
-        // Vestimenta = 1, Calzado = 2 (orden del INSERT en 3-DatosIniciales.sql). "Todas" => sin filtro.
+        // Mapeo centralizado en la BLL (Categorias). "Todas" (u otro) => null = sin filtro.
         private int? IdCategoriaSeleccionada()
         {
-            if (cboCategoria.Text == "Calzado") return 2;
-            if (cboCategoria.Text == "Vestimenta") return 1;
-            return null;
+            return BLL.SistemaCompraVenta.Categorias.IdPorNombre(cboCategoria.Text);
         }
 
         // --- RECLAMOS (compras recibidas incompletas) ---
@@ -286,48 +285,22 @@ namespace UI.SistemaCompraVentas
         // Totales (KPIs) del reporte en etiquetas.
         private void MostrarResumen(List<EntidadReporte> ventas)
         {
-            decimal facturadoBruto = 0;
-            decimal descuentos = 0;
-            decimal costo = 0;
-            int unidades = 0;
-            foreach (EntidadReporte v in ventas)
-            {
-                facturadoBruto += v.TotalVenta;
-                descuentos += v.Descuento;
-                costo += v.Costo;
-                foreach (DetalleReporte d in v.Detalles)
-                    unidades += d.Cantidad;
-            }
-            int cantidad = ventas.Count;
-            decimal facturadoNeto = facturadoBruto - descuentos;
-            decimal gananciaNeta = facturadoNeto - costo;
-            decimal ticket = cantidad > 0 ? facturadoNeto / cantidad : 0;
+            // El cálculo de los KPIs vive en la BLL; el form solo los muestra.
+            ResumenReporte r = _reporteBLL.CalcularResumen(ventas);
 
-            var topProducto = ventas.SelectMany(v => v.Detalles)
-                .GroupBy(d => d.DescripcionProducto)
-                .Select(g => new { Nombre = g.Key, Unidades = g.Sum(x => x.Cantidad) })
-                .OrderByDescending(x => x.Unidades)
-                .FirstOrDefault();
-
-            var topVendedor = ventas.GroupBy(v => v.NombreVendedor)
-                .Select(g => new { Nombre = g.Key, Total = g.Sum(x => x.TotalNeto) })
-                .OrderByDescending(x => x.Total)
-                .FirstOrDefault();
-
-            // Valores solos (las etiquetas descriptivas van aparte en el diseñador).
-            lblFacturadoBruto.Text = facturadoBruto.ToString("C2");
-            lblDescuento.Text      = descuentos.ToString("C2");
-            lblFacturado.Text      = facturadoNeto.ToString("C2");
-            lblCosto.Text          = costo.ToString("C2");
-            lblGanancia.Text       = gananciaNeta.ToString("C2");
-            lblTicket.Text         = "Ticket promedio: " + ticket.ToString("C2");
-            lblUnidades.Text  = "Unidades: " + unidades + "     |     Ventas: " + cantidad;
+            lblFacturadoBruto.Text = r.FacturadoBruto.ToString("C2");
+            lblDescuento.Text      = r.Descuentos.ToString("C2");
+            lblFacturado.Text      = r.FacturadoNeto.ToString("C2");
+            lblCosto.Text          = r.Costo.ToString("C2");
+            lblGanancia.Text       = r.GananciaNeta.ToString("C2");
+            lblTicket.Text         = "Ticket promedio: " + r.TicketPromedio.ToString("C2");
+            lblUnidades.Text       = "Unidades: " + r.Unidades + "     |     Ventas: " + r.CantidadVentas;
 
             string top = "";
-            if (topProducto != null)
-                top += "Top producto: " + topProducto.Nombre + " (" + topProducto.Unidades + "u)";
-            if (topVendedor != null)
-                top += (top.Length > 0 ? "     |     " : "") + "Top vendedor: " + topVendedor.Nombre;
+            if (!string.IsNullOrEmpty(r.TopProductoNombre))
+                top += "Top producto: " + r.TopProductoNombre + " (" + r.TopProductoUnidades + "u)";
+            if (!string.IsNullOrEmpty(r.TopVendedorNombre))
+                top += (top.Length > 0 ? "     |     " : "") + "Top vendedor: " + r.TopVendedorNombre;
             lblTop.Text = top;
         }
 
@@ -359,7 +332,7 @@ namespace UI.SistemaCompraVentas
             else
             {
                 dgvReporte.DataSource = null;
-                dgvReporte.DataSource = ConstruirAgrupado(_ultimoResultado, criterio);
+                dgvReporte.DataSource = _reporteBLL.Agrupar(_ultimoResultado, criterio);
                 FormatearGrillaAgrupada();
             }
         }
@@ -369,57 +342,6 @@ namespace UI.SistemaCompraVentas
             RenderResultado();
         }
 
-        // Construye la tabla de subtotales por el criterio elegido (Vendedor, Cliente o Producto).
-        private DataTable ConstruirAgrupado(List<EntidadReporte> ventas, string criterio)
-        {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Grupo", typeof(string));
-            dt.Columns.Add("Unidades", typeof(int));
-            dt.Columns.Add("Descuento", typeof(decimal));
-            dt.Columns.Add("Total Neto", typeof(decimal));
-            dt.Columns.Add("Ganancia", typeof(decimal));
-
-            if (criterio == "Producto")
-            {
-                // El descuento es por venta, no por producto: no se discrimina en este corte.
-                var grupos = ventas.SelectMany(v => v.Detalles)
-                    .GroupBy(d => d.DescripcionProducto)
-                    .Select(g => new
-                    {
-                        Grupo = g.Key,
-                        Unidades = g.Sum(x => x.Cantidad),
-                        Total = g.Sum(x => x.Subtotal),
-                        Ganancia = g.Sum(x => x.Subtotal - x.Costo)
-                    })
-                    .OrderByDescending(x => x.Total);
-
-                foreach (var g in grupos)
-                    dt.Rows.Add(g.Grupo, g.Unidades, 0m, g.Total, g.Ganancia);
-            }
-            else
-            {
-                System.Func<EntidadReporte, string> selector =
-                    criterio == "Cliente"
-                        ? (System.Func<EntidadReporte, string>)(v => v.NombreCliente)
-                        : (v => v.NombreVendedor);
-
-                var grupos = ventas.GroupBy(selector)
-                    .Select(g => new
-                    {
-                        Grupo = g.Key,
-                        Unidades = g.Sum(v => v.Detalles.Sum(d => d.Cantidad)),
-                        Descuento = g.Sum(v => v.Descuento),
-                        Total = g.Sum(v => v.TotalNeto),
-                        Ganancia = g.Sum(v => v.Ganancia)
-                    })
-                    .OrderByDescending(x => x.Total);
-
-                foreach (var g in grupos)
-                    dt.Rows.Add(g.Grupo, g.Unidades, g.Descuento, g.Total, g.Ganancia);
-            }
-
-            return dt;
-        }
 
         private void FormatearGrillaAgrupada()
         {
@@ -473,38 +395,24 @@ namespace UI.SistemaCompraVentas
             {
                 try
                 {
-                    // 3. Escribir el archivo usando StreamWriter (System.IO)
-                    // Usamos UTF8
-                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(sfd.FileName, false, System.Text.Encoding.UTF8))
-                    {
-                        // A. Escribir los ENCABEZADOS
-                        string encabezados = "";
-                        foreach (DataGridViewColumn col in dgvReporte.Columns)
-                        {
-                            if (col.Visible)
-                            {
-                                // Usamos punto y coma
-                                encabezados += col.HeaderText + ";";
-                            }
-                        }
-                        sw.WriteLine(encabezados.TrimEnd(';'));
+                    // 3. El form solo junta lo VISIBLE en la grilla (tarea de UI). El
+                    //    formato CSV y la escritura del archivo los hace la BLL.
+                    List<string> encabezados = new List<string>();
+                    foreach (DataGridViewColumn col in dgvReporte.Columns)
+                        if (col.Visible) encabezados.Add(col.HeaderText);
 
-                        // B. Escribir las FILAS de datos
-                        foreach (DataGridViewRow fila in dgvReporte.Rows)
-                        {
-                            string linea = "";
-                            foreach (DataGridViewCell celda in fila.Cells)
-                            {
-                                if (dgvReporte.Columns[celda.ColumnIndex].Visible)
-                                {
-                                    // Leemos el valor, lo pasamos a string y evitamos que un salto de línea rompa el Excel
-                                    string valor = celda.Value != null ? celda.Value.ToString().Replace("\n", " ").Replace("\r", "") : "";
-                                    linea += valor + ";";
-                                }
-                            }
-                            sw.WriteLine(linea.TrimEnd(';'));
-                        }
+                    List<IList<string>> filas = new List<IList<string>>();
+                    foreach (DataGridViewRow fila in dgvReporte.Rows)
+                    {
+                        if (fila.IsNewRow) continue;
+                        List<string> celdas = new List<string>();
+                        foreach (DataGridViewColumn col in dgvReporte.Columns)
+                            if (col.Visible)
+                                celdas.Add(fila.Cells[col.Index].Value?.ToString() ?? "");
+                        filas.Add(celdas);
                     }
+
+                    BLL.SistemaCompraVenta.ExportadorCsv.Exportar(sfd.FileName, encabezados, filas);
 
                     MessageBox.Show("¡Reporte exportado con éxito!", "Exportación Finalizada", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -522,16 +430,6 @@ namespace UI.SistemaCompraVentas
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void fecha_inicio_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblCosto_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
