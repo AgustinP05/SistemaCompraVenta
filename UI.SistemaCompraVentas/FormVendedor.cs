@@ -169,7 +169,14 @@ namespace UI.SistemaCompraVentas
                 }
 
                 int cantidad = (int)nmCantidad.Value;
-                oVentaBLL.ValidarStockDisponible(variante, cantidad);
+
+                // Valida contra el ACUMULADO de ese SKU en el carrito (no solo la línea
+                // nueva): así no se puede sobrepasar el stock agregándolo en varias líneas.
+                int yaEnCarrito = 0;
+                foreach (DetalleVenta d in ventaActual.Detalles)
+                    if (d.Variante.SKU == variante.SKU) yaEnCarrito += d.Cantidad;
+
+                oVentaBLL.ValidarStockDisponible(variante, yaEnCarrito + cantidad);
 
                 ventaActual.Detalles.Add(new DetalleVenta
                 {
@@ -275,11 +282,23 @@ namespace UI.SistemaCompraVentas
                 nmDescuento.Value = 0;
                 ActualizarGrilla();
                 ActualizarNumeroVenta();
+
+                // El stock cambió en la BD: recargamos el catálogo en memoria para que
+                // el lookup por SKU y el label de stock no muestren cantidades viejas.
+                RefrescarCatalogoVariantes();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error al confirmar: " + ex.Message);
             }
+        }
+
+        // Recarga las variantes (con su stock actual) desde la BD y re-muestra los
+        // datos del SKU tipeado. Se llama después de cada venta confirmada.
+        private void RefrescarCatalogoVariantes()
+        {
+            variantes = oProductoBLL.ListarVariantes();
+            txtSku_TextChanged(null, EventArgs.Empty);
         }
 
         private void GenerarComprobante(int nroVenta)

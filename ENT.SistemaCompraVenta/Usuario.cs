@@ -6,7 +6,6 @@ namespace ENT.SistemaCompraVenta
     {
         private int id;
         private string nombre;
-        private string password;
         private string dni;
         private DateTime fechaHoraLogin;
         private string apellido;
@@ -24,12 +23,6 @@ namespace ENT.SistemaCompraVenta
         {
             get { return nombre; }
             set { nombre = value; }
-        }
-
-        public string Password
-        {
-            get { return password; }
-            set { password = value; }
         }
 
         public string DNI

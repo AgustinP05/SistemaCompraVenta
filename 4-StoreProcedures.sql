@@ -9,12 +9,16 @@ GO
 -- LOGIN ---------------------------------------------------------------------
 IF OBJECT_ID('SP_LoginUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_LoginUsuario;
 GO
-CREATE PROCEDURE SP_LoginUsuario(@DNI VARCHAR(20), @Password VARCHAR(256))
+-- Busca al usuario por su nombre de usuario = la parte del email anterior al '@'
+-- (ej: 'aperea'). Devuelve sus datos (incluida FechaNacimiento y DNI). La contraseña
+-- NO se guarda: la BLL la deriva (ddMM de la fecha de nacimiento + primeros 4 dígitos
+-- del DNI) y la valida contra lo ingresado.
+CREATE PROCEDURE SP_LoginUsuario(@Usuario VARCHAR(150))
 AS BEGIN
-    SELECT u.ID, u.Nombre, u.Apellido, u.Password, u.ID_Rol, r.NombreRol AS Rol, u.DNI
+    SELECT u.ID, u.Nombre, u.Apellido, u.ID_Rol, r.NombreRol AS Rol, u.DNI, u.FechaNacimiento
     FROM tUsuario u
     JOIN tRol r ON r.ID_Rol = u.ID_Rol
-    WHERE u.DNI = @DNI AND u.Password = @Password;
+    WHERE LEFT(u.Email, CHARINDEX('@', u.Email) - 1) = @Usuario;
 END;
 GO
 ---
@@ -31,28 +35,12 @@ GO
 -- USUARIO -------------------------------------------------------------------
 IF OBJECT_ID('SP_ObtenerUsuarios', 'P') IS NOT NULL DROP PROCEDURE SP_ObtenerUsuarios;
 GO
+-- Devuelve u.ID al principio (lo usan la grilla de gestión de usuarios y el
+-- combo de vendedores del reporte de gerente).
 CREATE PROCEDURE SP_ObtenerUsuarios
     @Filtro VARCHAR(20) = ''
 AS
 BEGIN
-    SELECT u.DNI, u.Nombre, u.Apellido, u.Email, r.NombreRol AS Rol,
-           u.ID_Rol, u.FechaNacimiento
-    FROM tUsuario u
-    JOIN tRol r ON r.ID_Rol = u.ID_Rol
-    WHERE @Filtro = '' OR u.DNI LIKE '%' + @Filtro + '%'
-    ORDER BY u.Nombre;
-END;
-GO
-
----Esto sirve para la vista de gerente... Agus o Agos, o Juli, reveer...
-USE SistemaCompraVenta;
-GO
-
-ALTER PROCEDURE SP_ObtenerUsuarios
-    @Filtro VARCHAR(20) = ''
-AS
-BEGIN
-    -- Agregamos u.ID al principio del SELECT
     SELECT u.ID, u.DNI, u.Nombre, u.Apellido, u.Email, r.NombreRol AS Rol,
            u.ID_Rol, u.FechaNacimiento
     FROM tUsuario u
@@ -69,14 +57,13 @@ CREATE PROCEDURE SP_InsertarUsuario(
     @DNI VARCHAR(20),
     @Nombre VARCHAR(50),
     @Apellido VARCHAR(100),
-    @Password VARCHAR(256),
     @ID_Rol INT,
     @Email VARCHAR(150),
     @FechaNacimiento DATE
 )
 AS BEGIN
-    INSERT INTO tUsuario (DNI, Nombre, Apellido, Password, ID_Rol, Email, FechaNacimiento)
-    VALUES (@DNI, @Nombre, @Apellido, @Password, @ID_Rol, @Email, @FechaNacimiento);
+    INSERT INTO tUsuario (DNI, Nombre, Apellido, ID_Rol, Email, FechaNacimiento)
+    VALUES (@DNI, @Nombre, @Apellido, @ID_Rol, @Email, @FechaNacimiento);
     SELECT SCOPE_IDENTITY() AS ID_Usuario;
 END;
 GO
@@ -96,14 +83,28 @@ IF OBJECT_ID('SP_ModificarUsuario', 'P') IS NOT NULL DROP PROCEDURE SP_Modificar
 GO
 CREATE PROCEDURE SP_ModificarUsuario
     @DNI VARCHAR(20), @Nombre VARCHAR(50), @Apellido VARCHAR(100),
-    @Password VARCHAR(256), @ID_Rol INT, @Email VARCHAR(150),
+    @ID_Rol INT, @Email VARCHAR(150),
     @FechaNacimiento DATE
 AS
 BEGIN
     UPDATE tUsuario
-    SET Nombre = @Nombre, Apellido = @Apellido, Password = @Password,
+    SET Nombre = @Nombre, Apellido = @Apellido,
         ID_Rol = @ID_Rol, Email = @Email, FechaNacimiento = @FechaNacimiento
     WHERE DNI = @DNI;
+END;
+GO
+---
+-- ¿Ya existe ese email en otro usuario? Lo usa la BLL para garantizar la unicidad
+-- del mail autogenerado (si choca, le agrega un sufijo). @DniExcluir permite
+-- ignorar al propio usuario cuando se está editando.
+IF OBJECT_ID('SP_ExisteEmail', 'P') IS NOT NULL DROP PROCEDURE SP_ExisteEmail;
+GO
+CREATE PROCEDURE SP_ExisteEmail
+    @Email VARCHAR(150), @DniExcluir VARCHAR(20) = NULL
+AS
+BEGIN
+    SELECT TOP 1 ID FROM tUsuario
+    WHERE Email = @Email AND (@DniExcluir IS NULL OR DNI <> @DniExcluir);
 END;
 GO
 
@@ -840,7 +841,7 @@ AS BEGIN
     JOIN tProducto p           ON p.ID_Producto  = pv.ID_Producto
     JOIN tColor cl             ON cl.ID_Color    = pv.ID_Color
     JOIN tTalle t              ON t.ID_Talle     = pv.ID_Talle
-    ORDER BY r.Fecha DESC, r.ID_Compra;
+    ORDER BY co.FechaRecepcion DESC, r.ID_Compra;
 END;
 GO
 

@@ -21,15 +21,16 @@ CREATE TABLE tPermiso (
 );
 GO
 
----- USUARIO (rol por FK; Email y FechaNacimiento NOT NULL; pass 256) ----
+---- USUARIO (rol por FK; Email y FechaNacimiento NOT NULL).
+----  Sin columna Password: la contraseña NO se almacena. Se deriva y valida en la
+----  BLL como ddMM (de FechaNacimiento) + los primeros 4 dígitos del DNI. ----
 CREATE TABLE tUsuario (
     ID INT PRIMARY KEY IDENTITY(1,1),
     DNI VARCHAR(20) NOT NULL UNIQUE,
     Nombre VARCHAR(50) NOT NULL,
     Apellido VARCHAR(100) NOT NULL,
-    Password VARCHAR(256) NOT NULL,
     ID_Rol INT NOT NULL,
-    Email VARCHAR(150) NOT NULL,
+    Email VARCHAR(150) NOT NULL UNIQUE,
     FechaNacimiento DATE NOT NULL,
     FOREIGN KEY (ID_Rol) REFERENCES tRol(ID_Rol)
 );
@@ -216,7 +217,9 @@ CREATE TABLE tDetalleCompra (
 );
 GO
 
----- RECLAMO_COMPRA (auditoría: faltantes detectados al recepcionar una orden) ----
+---- RECLAMO_COMPRA (auditoría: faltantes detectados al recepcionar una orden.
+----  No lleva Fecha propia: la fecha del reclamo es la FechaRecepcion de la compra
+----  (tCompra), que es la misma; así se evita duplicarla.) ----
 CREATE TABLE tReclamoCompra (
     ID_Reclamo INT PRIMARY KEY IDENTITY(1,1),
     ID_Compra INT NOT NULL,

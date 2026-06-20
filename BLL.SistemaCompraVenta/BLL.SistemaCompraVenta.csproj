@@ -44,6 +44,7 @@
     <Compile Include="ClienteBLL.cs" />
     <Compile Include="CompraBLL.cs" />
     <Compile Include="ComprobanteBLL.cs" />
+    <Compile Include="Credenciales.cs" />
     <Compile Include="PermisoBLL.cs" />
     <Compile Include="RolComposicionBLL.cs" />
     <Compile Include="Componente\PermisosFactory.cs" />

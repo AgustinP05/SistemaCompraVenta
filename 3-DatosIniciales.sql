@@ -51,15 +51,19 @@ INSERT INTO tRolComposicion (ID_RolPadre, ID_RolHijo) VALUES
 (1, 2), (1, 3), (1, 4), (1, 5);
 GO
 
----- USUARIO (uno por rol + 3 vendedores; Password de ejemplo) ----
-INSERT INTO tUsuario (DNI, Nombre, Apellido, Password, ID_Rol, Email, FechaNacimiento) VALUES
-('11111111', 'Agustin',  'Perea',      '123', 1, 'agustin.perea@sportupe.com',  '1985-03-12'),  -- 1  Administrador
-('22222222', 'Julieta',  'Lazaro',     '123', 2, 'julieta.lazaro@sportupe.com', '1990-07-21'),  -- 2  Vendedor
-('27333444', 'Javier',   'Lopez',      '123', 2, 'javier.lopez@sportupe.com',   '1988-05-02'),  -- 3  Vendedor
-('28455667', 'Lucia',    'Gomez',      '123', 2, 'lucia.gomez@sportupe.com',    '1991-02-14'),  -- 4  Vendedor
-('33333333', 'Sofia',    'Schenone',   '123', 3, 'sofia.schenone@sportupe.com', '1993-11-05'),  -- 5  Gerente
-('44444444', 'Agostina', 'Villamayor', '123', 4, 'agostina.villa@sportupe.com', '1982-01-30'),  -- 6  Stock
-('35888999', 'Camila',   'Diaz',       '123', 5, 'camila.diaz@sportupe.com',    '1996-09-18');  -- 7  Compras
+---- USUARIO (uno por rol + 3 vendedores).
+----  Sin Password (se deriva en la BLL: ddMM nac. + 4 primeros del DNI).
+----  Email autogenerado = inicial del nombre + apellido + @sportupe.com.ar
+----  Contraseñas resultantes (referencia): Agustin 12031111, Julieta 21072222,
+----  Javier 02052733, Lucia 14022845, Sofia 05113333, Agostina 30014444, Camila 18093588.
+INSERT INTO tUsuario (DNI, Nombre, Apellido, ID_Rol, Email, FechaNacimiento) VALUES
+('11111111', 'Agustin',  'Perea',      1, 'aperea@sportupe.com.ar',    '1985-03-12'),  -- 1  Administrador
+('22222222', 'Julieta',  'Lazaro',     2, 'jlazaro@sportupe.com.ar',   '1990-07-21'),  -- 2  Vendedor
+('27333444', 'Javier',   'Lopez',      2, 'jlopez@sportupe.com.ar',    '1988-05-02'),  -- 3  Vendedor
+('28455667', 'Lucia',    'Gomez',      2, 'lgomez@sportupe.com.ar',    '1991-02-14'),  -- 4  Vendedor
+('33333333', 'Sofia',    'Schenone',   3, 'sschenone@sportupe.com.ar', '1993-11-05'),  -- 5  Gerente
+('44444444', 'Agostina', 'Villamayor', 4, 'avillamayor@sportupe.com.ar','1982-01-30'), -- 6  Stock
+('35888999', 'Camila',   'Diaz',       5, 'cdiaz@sportupe.com.ar',     '1996-09-18');  -- 7  Compras
 GO
 
 ---- LOGLOGIN (historial de accesos; usuarios 1-7) ----

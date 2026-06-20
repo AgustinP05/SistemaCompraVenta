@@ -152,9 +152,10 @@ namespace UI.SistemaCompraVentas
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            // Limpiamos la sesión y cerramos el menú. El LoginForm (form principal)
+            // detecta el cierre y, al ver la sesión vacía, vuelve a mostrarse.
+            // No creamos un LoginForm nuevo: así no quedan formularios huérfanos vivos.
             Sesion.ObtenerInstancia().Logout();
-            var login = new LoginForm();
-            login.Show();
             this.Close();
         }
     }
