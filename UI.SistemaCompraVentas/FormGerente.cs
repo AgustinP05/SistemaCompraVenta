@@ -20,7 +20,7 @@ namespace UI.SistemaCompraVentas
 
         private void FormGerente_Load(object sender, EventArgs e)
         {
-            // Días y meses siempre en 2 cifras (dd/MM/yyyy).
+
             dtpDesde.Format = DateTimePickerFormat.Custom;
             dtpDesde.CustomFormat = "dd/MM/yyyy";
             dtpHasta.Format = DateTimePickerFormat.Custom;
@@ -28,11 +28,12 @@ namespace UI.SistemaCompraVentas
 
             dtpDesde.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             dtpHasta.Value = DateTime.Now;
-            ////////////////////////
-            cboCategoria.Items.Clear();
-            cboCategoria.Items.Add("Todas");
-            cboCategoria.Items.Add("Calzado");
-            cboCategoria.Items.Add("Vestimenta");
+
+            var categorias = new BLL.SistemaCompraVenta.CategoriaBLL().ListarCategorias();
+            categorias.Insert(0, new ENT.SistemaCompraVenta.Categoria { ID_Categoria = 0, Nombre = "Todas" });
+            cboCategoria.DisplayMember = "Nombre";
+            cboCategoria.ValueMember = "ID_Categoria";
+            cboCategoria.DataSource = categorias;
             cboCategoria.SelectedIndex = 0;
 
             cboAgrupar.Items.Clear();
@@ -44,8 +45,7 @@ namespace UI.SistemaCompraVentas
 
             CargarCombosFiltros();
 
-            // El texto de las etiquetas es solo de ejemplo (para verlas en el diseñador);
-            // en ejecución arrancan vacías hasta que se genera un reporte.
+
             LimpiarResumen();
 
             CargarReclamos();
@@ -58,7 +58,7 @@ namespace UI.SistemaCompraVentas
             try
             {
                 // 1. VENDEDORES: solo rol Vendedor + quienes tengan ventas (aunque hayan
-                //    cambiado de rol). Evita ofrecer usuarios que darían reporte vacío.
+                //    cambiado de rol)
                 BLL.SistemaCompraVenta.Services.UsuarioBLL uBll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
                 DataTable dtVendedores = uBll.ObtenerVendedores();
 
@@ -116,10 +116,11 @@ namespace UI.SistemaCompraVentas
             cboProducto.DataSource = listaProductos;
         }
 
-        // Mapeo centralizado en la BLL (Categorias). "Todas" (u otro) => null = sin filtro.
+        // El combo trae el ID en el ValueMember. "Todas" = ID 0 => null = sin filtro.
         private int? IdCategoriaSeleccionada()
         {
-            return BLL.SistemaCompraVenta.Categorias.IdPorNombre(cboCategoria.Text);
+            int id = cboCategoria.SelectedValue != null ? Convert.ToInt32(cboCategoria.SelectedValue) : 0;
+            return id == 0 ? (int?)null : id;
         }
 
         // --- RECLAMOS (compras recibidas incompletas) ---
@@ -203,7 +204,6 @@ namespace UI.SistemaCompraVentas
 
                 List<EntidadReporte> resultado = _reporteBLL.GenerarReporte(filtro);
 
-                // Alternativa 1 del CU: no hay ventas para los criterios elegidos.
                 if (resultado == null || resultado.Count == 0)
                 {
                     _ultimoResultado = null;
@@ -226,7 +226,7 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-        // Encabezados, anchos y formato de la grilla del reporte.
+
         private void FormatearGrilla()
         {
             if (dgvReporte.Columns.Contains("Detalles"))
@@ -239,7 +239,7 @@ namespace UI.SistemaCompraVentas
             if (dgvReporte.Columns.Contains("IdVenta"))
             {
                 dgvReporte.Columns["IdVenta"].HeaderText = "ID Venta";
-                dgvReporte.Columns["IdVenta"].FillWeight = 12; // angosta
+                dgvReporte.Columns["IdVenta"].FillWeight = 12; 
             }
             if (dgvReporte.Columns.Contains("Fecha"))
             {
@@ -282,10 +282,10 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-        // Totales (KPIs) del reporte en etiquetas.
+
         private void MostrarResumen(List<EntidadReporte> ventas)
         {
-            // El cálculo de los KPIs vive en la BLL; el form solo los muestra.
+
             ResumenReporte r = _reporteBLL.CalcularResumen(ventas);
 
             lblFacturadoBruto.Text = r.FacturadoBruto.ToString("C2");
@@ -316,7 +316,7 @@ namespace UI.SistemaCompraVentas
             lblTop.Text = "";
         }
 
-        // Punto 2: muestra la grilla en detalle o agrupada según el combo, sin volver a consultar.
+
         private void RenderResultado()
         {
             if (_ultimoResultado == null) return;
@@ -368,7 +368,7 @@ namespace UI.SistemaCompraVentas
 
         private void cboCategoria_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Cada vez que el gerente cambie de categoría, recargamos el combo de productos
+
             if (cboProducto != null)
             {
                 CargarProductosPorCategoria();
@@ -388,15 +388,13 @@ namespace UI.SistemaCompraVentas
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Archivo de Excel (*.csv)|*.csv";
             sfd.Title = "Guardar Reporte Gerencial";
-            // Te arma un nombre automático con la fecha de hoy
+
             sfd.FileName = "Reporte_Gerencial_" + DateTime.Now.ToString("yyyyMMdd") + ".csv";
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    // 3. El form solo junta lo VISIBLE en la grilla (tarea de UI). El
-                    //    formato CSV y la escritura del archivo los hace la BLL.
                     List<string> encabezados = new List<string>();
                     foreach (DataGridViewColumn col in dgvReporte.Columns)
                         if (col.Visible) encabezados.Add(col.HeaderText);
@@ -416,7 +414,6 @@ namespace UI.SistemaCompraVentas
 
                     MessageBox.Show("¡Reporte exportado con éxito!", "Exportación Finalizada", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // 4. abre el excel luego del guardado exitoso
                     System.Diagnostics.Process.Start(sfd.FileName);
                 }
                 catch (Exception ex)
@@ -426,7 +423,6 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-        // Alternativa 3 del CU: descarta lo ingresado y cierra la interfaz (vuelve a Gerente).
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             this.Close();

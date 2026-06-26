@@ -10,12 +10,12 @@ namespace DAL.SistemaCompraVenta
     {
        
 
-        // Usamos la clase de conexión 
+
         private Conexion conexion = new Conexion();
 
         public int InsertarCliente(Cliente c)
         {
-            // Mapeamos las propiedades de la Entidad a los parámetros del SP
+
             SqlParameter[] parametros =
             {
                 ParametroSql.Crear("@DNI", c.Dni),
@@ -26,7 +26,7 @@ namespace DAL.SistemaCompraVenta
                 ParametroSql.Crear("@Direccion", c.Direccion)
             };
 
-            // Insertamos y leemos el ID generado (SP_InsertarCliente hace SELECT SCOPE_IDENTITY).
+
             DataTable dt = conexion.LeerPorStoreProcedure("SP_InsertarCliente", parametros);
             if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["ID_Cliente"] != DBNull.Value)
                 return Convert.ToInt32(dt.Rows[0]["ID_Cliente"]);
@@ -48,7 +48,6 @@ namespace DAL.SistemaCompraVenta
         public List<Cliente> ListarTodo()
         {
             List<Cliente> lista = new List<Cliente>();
-            // Llamamos a tu SP de listar (asegúrate de tener SP_ListarClientes en SQL)
             DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarClientes", null);
 
             foreach (DataRow fila in dt.Rows)
@@ -59,7 +58,6 @@ namespace DAL.SistemaCompraVenta
                     Dni = fila["DNI"].ToString(),
                     Nombre = fila["Nombre"].ToString(),
                     Apellido = fila["Apellido"].ToString()
-                    // Agregá los demás campos según tu tabla
                 });
             }
             return lista;
