@@ -9,6 +9,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL.SistemaCompraVenta", "D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.SistemaCompraVenta", "UI.SistemaCompraVentas\UI.SistemaCompraVenta.csproj", "{EDCD2434-E50C-49CD-96E6-7FCBC338DEC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ENT.SistemaCompraVenta", "ENT.SistemaCompraVenta\ENT.SistemaCompraVenta.csproj", "{11342C5C-EDC0-4DC4-9348-13723BB5E150}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsSQL", "ScriptsSQL", "{79BCA2F8-3041-4C08-9805-7AA57ACE633D}"
+	ProjectSection(SolutionItems) = preProject
+		1-BaseDatos.sql = 1-BaseDatos.sql
+		2-Tablas.sql = 2-Tablas.sql
+		3-DatosIniciales.sql = 3-DatosIniciales.sql
+		4-StoreProcedures.sql = 4-StoreProcedures.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +37,10 @@ Global
 		{EDCD2434-E50C-49CD-96E6-7FCBC338DEC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDCD2434-E50C-49CD-96E6-7FCBC338DEC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDCD2434-E50C-49CD-96E6-7FCBC338DEC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11342C5C-EDC0-4DC4-9348-13723BB5E150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11342C5C-EDC0-4DC4-9348-13723BB5E150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11342C5C-EDC0-4DC4-9348-13723BB5E150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11342C5C-EDC0-4DC4-9348-13723BB5E150}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

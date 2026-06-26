@@ -1,21 +1,20 @@
-﻿using BLL.SistemaCompraVenta.Entities;
+﻿using ENT.SistemaCompraVenta; 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.SistemaCompraVenta.Sesion
 {
     public class Sesion
     {
+
         private static Sesion instancia;
 
-        public Usuario UsuarioActual { get; private set; }
+        public Usuario UsuarioActual { get; set; }
 
-        private Sesion() { }
-
-        public static Sesion ObtenerInstancia()
+        private Sesion() { } 
+       
+        //Antes de iniciar sesion es null. Se instancia una sesion y se retorna
+        public static Sesion ObtenerInstancia() 
         {
             if (instancia == null)
                 instancia = new Sesion();
@@ -23,11 +22,7 @@ namespace BLL.SistemaCompraVenta.Sesion
             return instancia;
         }
 
-        public void Login(Usuario usuario)
-        {
-            UsuarioActual = usuario;
-        }
-
+        //Vuelve a ser null
         public void Logout()
         {
             UsuarioActual = null;

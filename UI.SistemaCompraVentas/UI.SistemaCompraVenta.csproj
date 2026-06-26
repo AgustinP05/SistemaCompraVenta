@@ -33,7 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,6 +48,85 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormBuscarCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarCliente.Designer.cs">
+      <DependentUpon>FormBuscarCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormBuscarProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarProducto.Designer.cs">
+      <DependentUpon>FormBuscarProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCrearCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCrearCliente.Designer.cs">
+      <DependentUpon>FormCrearCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCrearProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCrearProveedor.Designer.cs">
+      <DependentUpon>FormCrearProveedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormBuscarProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarProveedor.Designer.cs">
+      <DependentUpon>FormBuscarProveedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCompras.Designer.cs">
+      <DependentUpon>FormCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRecepcionCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRecepcionCompras.Designer.cs">
+      <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GrillaHelper.cs" />
+    <Compile Include="FormCrearProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCrearProducto.Designer.cs">
+      <DependentUpon>FormCrearProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormBuscarProductoBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBuscarProductoBase.Designer.cs">
+      <DependentUpon>FormBuscarProductoBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormNuevaMarca.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNuevaMarca.Designer.cs">
+      <DependentUpon>FormNuevaMarca.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormGerente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormGerente.Designer.cs">
+      <DependentUpon>FormGerente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormVendedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormVendedor.Designer.cs">
+      <DependentUpon>FormVendedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormGestionUsuarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormGestionUsuarios.Designer.cs">
+      <DependentUpon>FormGestionUsuarios.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -60,21 +141,57 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormBuscarCliente.resx">
+      <DependentUpon>FormBuscarCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormBuscarProducto.resx">
+      <DependentUpon>FormBuscarProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormBuscarProveedor.resx">
+      <DependentUpon>FormBuscarProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCompras.resx">
+      <DependentUpon>FormCompras.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCrearCliente.resx">
+      <DependentUpon>FormCrearCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCrearProveedor.resx">
+      <DependentUpon>FormCrearProveedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRecepcionCompras.resx">
+      <DependentUpon>FormRecepcionCompras.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCrearProducto.resx">
+      <DependentUpon>FormCrearProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormBuscarProductoBase.resx">
+      <DependentUpon>FormBuscarProductoBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNuevaMarca.resx">
+      <DependentUpon>FormNuevaMarca.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormGerente.resx">
+      <DependentUpon>FormGerente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormVendedor.resx">
+      <DependentUpon>FormVendedor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormGestionUsuarios.resx">
+      <DependentUpon>FormGestionUsuarios.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MenuPrincipal.resx">
       <DependentUpon>MenuPrincipal.cs</DependentUpon>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MenuPrincipal1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -92,6 +209,10 @@
     <ProjectReference Include="..\BLL.SistemaCompraVenta\BLL.SistemaCompraVenta.csproj">
       <Project>{9BD93DFD-D7EF-416B-80D3-709A43D95083}</Project>
       <Name>BLL.SistemaCompraVenta</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ENT.SistemaCompraVenta\ENT.SistemaCompraVenta.csproj">
+      <Project>{11342c5c-edc0-4dc4-9348-13723bb5e150}</Project>
+      <Name>ENT.SistemaCompraVenta</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

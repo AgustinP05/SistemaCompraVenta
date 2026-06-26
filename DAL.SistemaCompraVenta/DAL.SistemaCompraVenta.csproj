@@ -41,7 +41,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CategoriaDAL.cs" />
+    <Compile Include="ClienteDAL.cs" />
+    <Compile Include="CompraDAL.cs" />
+    <Compile Include="ConfiguracionBD.cs" />
+    <Compile Include="Conexion.cs" />
+    <Compile Include="ErrorSql.cs" />
+    <Compile Include="FabricaConexion.cs" />
+    <Compile Include="ParametroSql.cs" />
+    <Compile Include="PermisoDAL.cs" />
+    <Compile Include="RolComposicionDAL.cs" />
+    <Compile Include="ProductoDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProveedorDAL.cs" />
+    <Compile Include="ReporteDAL.cs" />
+    <Compile Include="UsuarioDAL.cs" />
+    <Compile Include="VarianteDAL.cs" />
+    <Compile Include="VentaDAL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ENT.SistemaCompraVenta\ENT.SistemaCompraVenta.csproj">
+      <Project>{11342c5c-edc0-4dc4-9348-13723bb5e150}</Project>
+      <Name>ENT.SistemaCompraVenta</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
