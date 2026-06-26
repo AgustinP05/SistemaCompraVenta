@@ -41,7 +41,7 @@ namespace UI.SistemaCompraVentas
             LimpiarEdicion();
         }
 
-        // ── Solapa 1: Crear Producto (CU-STK0002) ────────────────────────
+        // ── Solapa 1: Crear Producto ────────────────────────
 
         private void btnIngresar_Click(object sender, EventArgs e)
         {
@@ -106,7 +106,7 @@ namespace UI.SistemaCompraVentas
             cboMarca.SelectedIndex = cboMarca.Items.Count > 0 ? 0 : -1;
         }
 
-        // ── Solapa 2: Buscar / Editar / Eliminar (CU-STK0003/0004/0005) ──
+        // ── Solapa 2: Buscar / Editar / Eliminar ──
 
         private void btnBuscar_Click(object sender, EventArgs e)
         {

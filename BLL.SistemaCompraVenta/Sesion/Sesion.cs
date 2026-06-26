@@ -13,6 +13,7 @@ namespace BLL.SistemaCompraVenta.Sesion
 
         private Sesion() { } 
        
+        //Antes de iniciar sesion es null. Se instancia una sesion y se retorna
         public static Sesion ObtenerInstancia() 
         {
             if (instancia == null)
@@ -21,6 +22,7 @@ namespace BLL.SistemaCompraVenta.Sesion
             return instancia;
         }
 
+        //Vuelve a ser null
         public void Logout()
         {
             UsuarioActual = null;

@@ -9,11 +9,8 @@ namespace DAL.SistemaCompraVenta
     public class ReporteDAL
     {
         private Conexion conexion = new Conexion();
-
-        /*
-         * CASO DE USO CU-GER0001 (Reporte Filtrado)
-         */
-
+      
+        //Reporte Filtrado
         public List<EntidadReporte> ObtenerDatosReporte(FiltroReporte f)
         {
             List<EntidadReporte> listaReportes = new List<EntidadReporte>();
@@ -31,7 +28,7 @@ namespace DAL.SistemaCompraVenta
             // SP
             DataTable dt = conexion.LeerPorStoreProcedure("sp_GenerarReporteVentas", parametros);
 
-            // Agrupacion x diccionario.. esto lo vimos en la catedra? o lo vimos en eda? 
+            // Agrupacion x diccionario 
             Dictionary<int, EntidadReporte> diccionarioVentas = new Dictionary<int, EntidadReporte>();
 
             foreach (DataRow fila in dt.Rows)

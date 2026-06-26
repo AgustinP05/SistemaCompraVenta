@@ -57,7 +57,7 @@ namespace UI.SistemaCompraVentas
         {
             try
             {
-                // 1. VENDEDORES: solo rol Vendedor + quienes tengan ventas (aunque hayan
+                //    VENDEDORES: solo rol Vendedor + quienes tengan ventas (aunque hayan
                 //    cambiado de rol). Evita ofrecer usuarios que darían reporte vacío.
                 BLL.SistemaCompraVenta.Services.UsuarioBLL uBll = new BLL.SistemaCompraVenta.Services.UsuarioBLL();
                 DataTable dtVendedores = uBll.ObtenerVendedores();
@@ -71,7 +71,7 @@ namespace UI.SistemaCompraVentas
                 cboVendedor.ValueMember = "ID";
                 cboVendedor.DataSource = dtVendedores;
 
-                // 2. CLIENTES
+                //  CLIENTES
                 BLL.SistemaCompraVenta.ClienteBLL cBll = new BLL.SistemaCompraVenta.ClienteBLL();
                 List<ENT.SistemaCompraVenta.Cliente> listaClientes = cBll.ListarClientes();
 
@@ -85,7 +85,7 @@ namespace UI.SistemaCompraVentas
                 cboCliente.ValueMember = "IdCliente";
                 cboCliente.DataSource = listaClientes;
 
-                // 3. PRODUCTOS 
+                //  PRODUCTOS 
                 CargarProductosPorCategoria();
             }
             catch (Exception ex)
@@ -203,7 +203,7 @@ namespace UI.SistemaCompraVentas
 
                 List<EntidadReporte> resultado = _reporteBLL.GenerarReporte(filtro);
 
-                // Alternativa 1 del CU: no hay ventas para los criterios elegidos.
+                // Camino alternativo: no hay ventas para los criterios elegidos.
                 if (resultado == null || resultado.Count == 0)
                 {
                     _ultimoResultado = null;
@@ -316,7 +316,7 @@ namespace UI.SistemaCompraVentas
             lblTop.Text = "";
         }
 
-        // Punto 2: muestra la grilla en detalle o agrupada según el combo, sin volver a consultar.
+        // Muestra la grilla en detalle o agrupada según el combo, sin volver a consultar.
         private void RenderResultado()
         {
             if (_ultimoResultado == null) return;
@@ -377,14 +377,14 @@ namespace UI.SistemaCompraVentas
 
         private void btnGenerarExcel_Click(object sender, EventArgs e)
         {
-            // 1. Validar que la grilla tenga datos antes de intentar exportar
+            //  Validar que la grilla tenga datos antes de intentar exportar
             if (dgvReporte.Rows.Count == 0 || dgvReporte.DataSource == null)
             {
                 MessageBox.Show("No hay datos para exportar. Genere un reporte primero.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            // 2. Abrir la ventana para que el gerente elija dónde guardar el archivo
+            //  Abrir la ventana para que el gerente elija dónde guardar el archivo
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Archivo de Excel (*.csv)|*.csv";
             sfd.Title = "Guardar Reporte Gerencial";
@@ -395,7 +395,7 @@ namespace UI.SistemaCompraVentas
             {
                 try
                 {
-                    // 3. El form solo junta lo VISIBLE en la grilla (tarea de UI). El
+                    //    El form solo junta lo VISIBLE en la grilla (tarea de UI). El
                     //    formato CSV y la escritura del archivo los hace la BLL.
                     List<string> encabezados = new List<string>();
                     foreach (DataGridViewColumn col in dgvReporte.Columns)
@@ -416,7 +416,7 @@ namespace UI.SistemaCompraVentas
 
                     MessageBox.Show("¡Reporte exportado con éxito!", "Exportación Finalizada", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // 4. abre el excel luego del guardado exitoso
+                    //  Abre el excel luego del guardado exitoso
                     System.Diagnostics.Process.Start(sfd.FileName);
                 }
                 catch (Exception ex)
@@ -426,7 +426,7 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-        // Alternativa 3 del CU: descarta lo ingresado y cierra la interfaz (vuelve a Gerente).
+        // Camino alternativo: Descarta lo ingresado y cierra la interfaz (vuelve a Gerente).
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             this.Close();

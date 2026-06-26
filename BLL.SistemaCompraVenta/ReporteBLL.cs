@@ -11,10 +11,6 @@ namespace BLL.SistemaCompraVenta
     {
         private ReporteDAL oReporteDAL = new ReporteDAL();
 
-        /*
-         * CASO DE USO CU-GER0001
-         */
-
         public List<EntidadReporte> GenerarReporte(FiltroReporte f)
         {
             // Valida fechas antes de ir a la BD
@@ -23,8 +19,7 @@ namespace BLL.SistemaCompraVenta
             // pide datos a la capa DAL
             List<EntidadReporte> lista = oReporteDAL.ObtenerDatosReporte(f);
 
-            // Un periodo sin ventas no es un error: se devuelve la lista vacía y la UI
-            // muestra "No hay datos para mostrar" (Alternativa 1 del CU).
+            // Un periodo sin ventas no es un error: se devuelve la lista vacía y la UI muestra "No hay datos para mostrar".
             CalcularTotales(lista);
 
             return lista;
@@ -34,7 +29,7 @@ namespace BLL.SistemaCompraVenta
         {
             if (f.FechaDesde > f.FechaHasta)
             {
-                // Fechasin validas mensaje error
+                // Fechas invalidas mensaje error
                 throw new Exception("Seleccione un periodo válido.");
             }
         }
@@ -59,8 +54,8 @@ namespace BLL.SistemaCompraVenta
             }
         }
 
-        // KPIs del reporte (facturación, ganancia, ticket, tops). Antes vivían en el
-        // FormGerente; ahora el form solo muestra lo que devuelve este método.
+        // KPIs del reporte (facturación, ganancia, ticket, tops).
+        // FormGerente muestra lo que devuelve este método.
         public ResumenReporte CalcularResumen(List<EntidadReporte> ventas)
         {
             ResumenReporte r = new ResumenReporte();

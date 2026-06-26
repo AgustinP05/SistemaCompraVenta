@@ -22,7 +22,7 @@ namespace ENT.SistemaCompraVenta
         private DateTime? _fechaRecepcion;
         private Usuario _usuarioRecepcion;
 
-        // Propiedades públicas en PascalCase
+        // Propiedades públicas
         public int IdCompra
         {
             get { return idCompra; }

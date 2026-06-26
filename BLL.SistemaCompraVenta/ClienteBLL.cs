@@ -14,7 +14,7 @@ namespace BLL.SistemaCompraVenta
 
         public bool CrearCliente(Cliente c)
         {
-            // 1. Validaciones obligatorias 
+            // Validaciones obligatorias 
             if (string.IsNullOrWhiteSpace(c.Dni) ||
                 string.IsNullOrWhiteSpace(c.Nombre) ||
                 string.IsNullOrWhiteSpace(c.Apellido))
@@ -22,13 +22,13 @@ namespace BLL.SistemaCompraVenta
                 throw new Exception("Complete todos los datos obligatorios");
             }
 
-            // 2. Validación de formato de email
+            // Validación de formato de email
             if (!Validaciones.EmailValido(c.Email))
             {
                 throw new Exception("Email inválido");
             }
 
-            // 3. Persistencia a través de la DAL
+            // Persistencia a través de la DAL
             int resultado = oClienteDAL.InsertarCliente(c);
 
             return resultado > 0;
@@ -52,7 +52,7 @@ namespace BLL.SistemaCompraVenta
                 Email = email
             };
 
-            return CrearCliente(c); // reutiliza las validaciones del otro CrearCliente
+            return CrearCliente(c); // reutiliza las validaciones del CrearClient(Cliente c){...}
         }
 
         public DataTable ObtenerClientes(string filtro)
@@ -83,8 +83,7 @@ namespace BLL.SistemaCompraVenta
             if (idCliente <= 0)
                 throw new Exception("Cliente inválido.");
 
-            // Si el cliente tiene ventas, la DAL traduce la violación de FK a una
-            // OperacionNoPermitidaException con el mensaje correspondiente.
+            // Si el cliente tiene ventas, la DAL traduce la violación de FK a una OperacionNoPermitidaException con el mensaje correspondiente.
             return oClienteDAL.EliminarCliente(idCliente) > 0;
         }
 

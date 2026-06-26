@@ -12,12 +12,12 @@ namespace BLL.SistemaCompraVenta
 
         public int FinalizarVenta(Venta nuevaVenta)
         {
-            // 1. Validar stock ACUMULANDO por SKU: el mismo producto puede estar en
+            //    Validar stock ACUMULANDO por SKU: el mismo producto puede estar en
             //    varias líneas; validando línea por línea contra el stock total se
             //    permitiría sobrevender (cada línea pasa, pero la suma no entra).
             ValidarStockAcumulado(nuevaVenta);
 
-            // 2. Persistencia ATÓMICA en la DAL (cabecera + detalles + descuento de
+            //    Persistencia ATÓMICA en la DAL (cabecera + detalles + descuento de
             //    stock + auditoría de descuento). Todo o nada.
             return oVentaDAL.FinalizarVenta(nuevaVenta);
         }

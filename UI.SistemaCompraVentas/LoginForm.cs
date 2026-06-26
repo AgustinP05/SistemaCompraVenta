@@ -18,19 +18,19 @@ namespace UI.SistemaCompraVentas
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            // 1. Instanciamos el servicio de la BLL
+            //    Instanciamos el servicio de la BLL
             UsuarioBLL service = new UsuarioBLL();
 
-            // 2. Intentamos loguear. El usuario es la parte del email anterior al '@'
+            //    Intentamos loguear. El usuario es la parte del email anterior al '@'
             //    (ej: 'aperea'); la contraseña se deriva y valida en la BLL.
             var usuarioLogueado = service.Login(txtUsuario.Text.Trim(), txtPassword.Text.Trim());
 
             if (usuarioLogueado != null)
             {
-                // 3. Guardamos el usuario en el Singleton (BLL)
+                //    Guardamos el usuario en el Singleton (BLL)
                 Sesion.ObtenerInstancia().UsuarioActual = usuarioLogueado;
 
-                // 4. Abrimos el menú principal. Este LoginForm es el form principal
+                //    Abrimos el menú principal. Este LoginForm es el form principal
                 //    (Application.Run), así que NO lo cerramos: lo ocultamos y nos
                 //    enganchamos al cierre del menú para decidir qué hacer.
                 MenuPrincipal menu = new MenuPrincipal();

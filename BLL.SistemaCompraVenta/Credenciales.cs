@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BLL.SistemaCompraVenta
 {
-    // Reglas de credenciales del dominio (centralizadas en un solo lugar):
+    // Reglas de credenciales:
     //  - La contraseña NO se almacena: se deriva y se valida.
     //  - El email se autogenera a partir del nombre y apellido.
     public static class Credenciales

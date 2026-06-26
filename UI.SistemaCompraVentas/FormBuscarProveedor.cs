@@ -31,7 +31,7 @@ namespace UI.SistemaCompraVentas
         {
             try
             {
-                // SP_ObtenerProveedores filtra por CUIT o RazonSocial (LIKE %filtro%).
+                // SP_ObtenerProveedores filtra por CUIT o RazonSocial.
                 dgvResultados.DataSource = oProveedorBLL.ObtenerProveedores(txtBusqueda.Text.Trim());
                 OcultarColumnasExtra();
                 AjustarColumnas();

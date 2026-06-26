@@ -4,8 +4,8 @@ using DAL.SistemaCompraVenta;
 
 namespace BLL.SistemaCompraVenta
 {
-    // Cada rol ES una familia de permisos (Composite). Esta clase maneja qué otros
-    // roles contiene un rol y arma el árbol de permisos en cascada.
+    // Cada rol ES una familia de permisos (Composite). 
+    // Esta clase maneja qué otros roles contiene un rol y arma el árbol de permisos en cascada.
     // Resultado listo para bindear en el form de permisos: qué componentes (permisos
     // individuales + otros roles como sub-familias) tiene y cuáles no tiene un rol.
     public class ComponentesDeRol
@@ -22,7 +22,7 @@ namespace BLL.SistemaCompraVenta
 
         public List<Rol> SubRolesDeRol(int idRol) => oRolComposicionDAL.SubRolesDeRol(idRol);
 
-        // Arma los componentes de un rol (toda la lógica que antes estaba en el form):
+        // Arma los componentes de un rol:
         // separa permisos individuales y otros roles como sub-familias en
         // disponibles/otorgados, excluyendo los que crearían un ciclo (A→B→A).
         public ComponentesDeRol ArmarComponentes(int idRol)
@@ -58,8 +58,7 @@ namespace BLL.SistemaCompraVenta
             return resultado;
         }
 
-        // Guarda lo otorgado a un rol: separa permisos (hojas) de sub-roles (familias)
-        // y persiste cada parte.
+        // Guarda lo otorgado a un rol: separa permisos (hojas) de sub-roles (familias) y persiste cada parte.
         public void GuardarComponentes(int idRol, IEnumerable<Componente> otorgados)
         {
             List<int> idsSubRoles = new List<int>();
@@ -74,8 +73,7 @@ namespace BLL.SistemaCompraVenta
             GuardarSubRolesDeRol(idRol, idsSubRoles);
         }
 
-        // Resincroniza los sub-roles del rol (borra los actuales y asigna los recibidos),
-        // evitando la autocontención.
+        // Resincroniza los sub-roles del rol (borra los actuales y asigna los recibidos), evitando la autocontención.
         public void GuardarSubRolesDeRol(int idRol, List<int> idsSubRoles)
         {
             oRolComposicionDAL.QuitarSubRolesDeRol(idRol);

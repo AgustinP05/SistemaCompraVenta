@@ -5,11 +5,10 @@ namespace BLL.SistemaCompraVenta.Descuentos
 {
     // Factory del patrón Strategy: traduce el tipo elegido por el usuario en la
     // estrategia concreta (IDescuentoStrategy). Centraliza el único switch de
-    // creación —antes vivía en el FormVendedor— y la regla de qué tipos usan el
-    // valor cargado a mano. Mismo criterio que PermisosFactory.
+    // creación y la regla de qué tipos usan el valor cargado a mano.
     public static class DescuentoFactory
     {
-        // El único lugar del sistema que decide la clase concreta de descuento.
+        // Se decide la clase concreta de descuento.
         public static IDescuentoStrategy Crear(TipoDescuento tipo, double valor)
         {
             switch (tipo)
@@ -25,8 +24,7 @@ namespace BLL.SistemaCompraVenta.Descuentos
         public static bool RequiereValor(TipoDescuento tipo)
             => tipo == TipoDescuento.Porcentaje || tipo == TipoDescuento.Fijo;
 
-        // Opciones para bindear al combo: el orden y las etiquetas se definen acá,
-        // no en la UI (la pantalla solo las muestra).
+        // El orden de las etiquetas se definen acá
         public static List<OpcionDescuento> Opciones()
         {
             return new List<OpcionDescuento>
@@ -39,8 +37,7 @@ namespace BLL.SistemaCompraVenta.Descuentos
         }
     }
 
-    // Item del combo de descuentos: lleva el tipo (ValueMember) y la etiqueta
-    // visible (DisplayMember). El ToString permite mostrarlo sin DisplayMember.
+    // Item del combo de descuentos: lleva el tipo (ValueMember) y la etiqueta visible (DisplayMember)
     public class OpcionDescuento
     {
         public TipoDescuento Tipo { get; }
@@ -52,6 +49,6 @@ namespace BLL.SistemaCompraVenta.Descuentos
             Etiqueta = etiqueta;
         }
 
-        public override string ToString() => Etiqueta;
+        public override string ToString() => Etiqueta; //El ToString permite mostrarlo sin DisplayMember.
     }
 }

@@ -347,7 +347,7 @@ INSERT INTO tDescuentoVenta (ID_Venta, Tipo, Monto) VALUES
 (22, 'Por volumen',       69000.00);   -- 15% de 460.000
 GO
 
----- COMPRA (22; distribución realista: 15 Confirmada, 4 Reclamo, 3 Pendiente):
+---- COMPRA (22 en total; distribución: 15 Confirmada, 4 Reclamo, 3 Pendiente):
 ----   ID_Usuario = quien la generó (rol Compras = 7).
 ----   Recepcionadas (Confirmada/Reclamo) llevan FechaRecepcion y usuario de Stock (rol Stock = 6).
 ----   Cada orden solo compra productos de la(s) marca(s) que provee su proveedor.

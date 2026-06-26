@@ -1,7 +1,7 @@
 namespace DAL.SistemaCompraVenta
 {
     // Única responsabilidad: de dónde sale la cadena de conexión.
-    // Para cambiar de máquina se toca SOLO acá (a futuro, mover a App.config).
+    // Para cambiar de máquina se toca SOLO acá.
     internal static class ConfiguracionBD
     {
         public static string CadenaConexion =>

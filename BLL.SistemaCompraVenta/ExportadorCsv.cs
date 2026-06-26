@@ -4,8 +4,8 @@ using System.Text;
 
 namespace BLL.SistemaCompraVenta
 {
-    // Exportación a CSV: formato + escritura del archivo. Saca esa responsabilidad de
-    // la UI; el form solo junta los encabezados y filas visibles y los pasa acá.
+    // Exportación a CSV: formato + escritura del archivo.
+    // El form del UI solo junta los encabezados y filas visibles y los pasa acá.
     public static class ExportadorCsv
     {
         private const char Separador = ';';

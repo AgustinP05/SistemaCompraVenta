@@ -15,8 +15,7 @@ namespace DAL.SistemaCompraVenta
         private SqlTransaction objTransaccion;
         private bool enTransaccion = false;
 
-        // Abre la conexión (delegando la creación a la fábrica). Si hay una transacción
-        // en curso, reutiliza la conexión ya abierta por IniciarTransaccion().
+        // Abre la conexión. Si hay una transacción en curso, reutiliza la conexión ya abierta por IniciarTransaccion().
         private void Conectar()
         {
             if (enTransaccion) return;

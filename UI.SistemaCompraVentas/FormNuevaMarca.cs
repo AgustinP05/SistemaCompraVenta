@@ -6,7 +6,7 @@ using System.Windows.Forms;
 namespace UI.SistemaCompraVentas
 {
     // Alta de una marca nueva: se escribe el nombre y se elige el proveedor que la provee.
-    // Regla del dominio: una marca pertenece a un único proveedor (no se cruza entre varios).
+    // Una marca pertenece a un único proveedor (no se cruza entre varios).
     public partial class FormNuevaMarca : Form
     {
         private readonly ProveedorBLL _bll = new ProveedorBLL();

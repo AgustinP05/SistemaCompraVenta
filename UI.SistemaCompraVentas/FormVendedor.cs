@@ -44,7 +44,6 @@ namespace UI.SistemaCompraVentas
             dgvCarrito.Columns["Nombre"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dgvCarrito.Columns["Precio"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-            //dgvCarrito.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             dgvCarrito.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             ActualizarGrilla();
 

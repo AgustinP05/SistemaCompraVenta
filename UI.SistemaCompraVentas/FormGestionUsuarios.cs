@@ -371,9 +371,7 @@ namespace UI.SistemaCompraVentas
             if (cboEditRoles.Items.Count > 0) cboEditRoles.SelectedIndex = 0;
         }
 
-        // ── Global ───────────────────────────────────────────────────────
-
-        // ── Tab 3: Permisos por rol ───────────────────────────────────────
+        // ── Permisos por rol ───────────────────────────────────────
 
         private void cboRolPermisos_SelectedIndexChanged(object sender, EventArgs e)
         {

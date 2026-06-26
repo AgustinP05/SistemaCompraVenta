@@ -31,7 +31,7 @@ namespace UI.SistemaCompraVentas
         {
             try
             {
-                // SP_ObtenerClientes filtra por DNI, Nombre o Apellido (LIKE %filtro%).
+                // SP_ObtenerClientes filtra por DNI, Nombre o Apellido
                 dgvResultados.DataSource = oClienteBLL.ObtenerClientes(txtBusqueda.Text.Trim());
                 OcultarColumnasExtra();
                 AjustarColumnas();

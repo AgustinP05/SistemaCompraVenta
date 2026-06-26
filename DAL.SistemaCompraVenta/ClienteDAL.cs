@@ -48,7 +48,7 @@ namespace DAL.SistemaCompraVenta
         public List<Cliente> ListarTodo()
         {
             List<Cliente> lista = new List<Cliente>();
-            // Llamamos a tu SP de listar (asegúrate de tener SP_ListarClientes en SQL)
+           
             DataTable dt = conexion.LeerPorStoreProcedure("SP_ListarClientes", null);
 
             foreach (DataRow fila in dt.Rows)
@@ -59,7 +59,6 @@ namespace DAL.SistemaCompraVenta
                     Dni = fila["DNI"].ToString(),
                     Nombre = fila["Nombre"].ToString(),
                     Apellido = fila["Apellido"].ToString()
-                    // Agregá los demás campos según tu tabla
                 });
             }
             return lista;

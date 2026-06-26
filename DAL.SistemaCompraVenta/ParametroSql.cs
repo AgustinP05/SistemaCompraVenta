@@ -4,8 +4,7 @@ using System.Data.SqlClient;
 
 namespace DAL.SistemaCompraVenta
 {
-    // Única responsabilidad: fabricar SqlParameter. Antes vivían como crearParametro()
-    // dentro de Conexion, que no tenía nada que ver con armar parámetros.
+    // Única responsabilidad: fabricar SqlParameter.
     public static class ParametroSql
     {
         // Genérico: si el valor es null (o DBNull), lo manda como DBNull para SQL.

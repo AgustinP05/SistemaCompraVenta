@@ -15,11 +15,11 @@ namespace UI.SistemaCompraVentas
         }
         private void MenuPrincipal_Load(object sender, EventArgs e)
         {
-            // 1. Configuramos las visibilidades de los botones usando el patrón Composite
+            //    Configuramos las visibilidades de los botones usando el patrón Composite
             ConfigurarPermisos();
             ReordenarBotones();   
 
-            // 2. Verificamos si hay alguien logueado usando el Singleton de la BLL
+            //    Verificamos si hay alguien logueado usando el Singleton de la BLL
             var usuarioLogueado = Sesion.ObtenerInstancia().UsuarioActual;
             if (usuarioLogueado != null)
             {
@@ -68,7 +68,7 @@ namespace UI.SistemaCompraVentas
 
         private void ReordenarBotones()
         {
-            // Lista de botones en el orden lógico que querés mostrarlos
+            // Lista de botones en orden lógico 
             var botones = new List<System.Windows.Forms.Button>
             {
                 btnUsuarios,         // 1

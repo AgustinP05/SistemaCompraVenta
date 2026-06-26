@@ -11,8 +11,7 @@ namespace BLL.SistemaCompraVenta
         private CompraDAL oCompraDAL = new CompraDAL();
 
         // Registra la orden de compra (cabecera + detalles, de forma atómica en la DAL).
-        // Nace en estado Pendiente y NO toca el stock: el stock recién se mueve cuando
-        // el encargado de Stock la recepciona.
+        // Nace en estado Pendiente y NO toca el stock: el stock recién se mueve cuando el encargado de Stock la recepciona.
         public int RegistrarCompra(Compra nuevaCompra)
         {
             if (nuevaCompra == null)
@@ -33,10 +32,10 @@ namespace BLL.SistemaCompraVenta
 
         public Compra ObtenerCompraPorId(int idCompra) => oCompraDAL.ObtenerCompraPorId(idCompra);
 
-        // Procesa la recepción de una orden pendiente. Cada detalle trae la
-        // CantidadConfirmada (lo efectivamente recibido). Suma el stock por lo
-        // recibido, registra los faltantes como reclamo y transiciona el estado
-        // (Confirmada si llegó todo, Reclamo si faltó algo) vía el patrón State.
+        // Procesa la recepción de una orden pendiente.
+        // Cada detalle trae la CantidadConfirmada (lo efectivamente recibido). 
+        // Suma el stock por lo recibido, registra los faltantes como reclamo y
+        // transiciona el estado ('Confirmada' si llegó todo, 'Reclamo' si faltó algo) vía el patrón State.
         // usuarioRecepcion = el encargado de Stock logueado que confirma.
         public void ProcesarRecepcion(Compra compra, Usuario usuarioRecepcion)
         {
@@ -61,8 +60,9 @@ namespace BLL.SistemaCompraVenta
 
             DateTime fechaRecepcion = DateTime.Now;
 
-            // Persistencia ATÓMICA en la DAL: suma stock + confirma detalles + reclamos
-            // + cierra el estado, todo en una transacción (todo o nada).
+            // Persistencia ATÓMICA en la DAL: 
+            // suma stock + confirma detalles + reclamos + cierra el estado. 
+            // Todo en una transacción (todo o nada).
             oCompraDAL.ProcesarRecepcion(compra.IdCompra, compra.Detalles,
                 nuevoEstado.Nombre, fechaRecepcion, usuarioRecepcion.ID);
 

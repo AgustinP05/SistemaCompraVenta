@@ -22,8 +22,7 @@ namespace BLL.SistemaCompraVenta.Services
 
             DataRow fila = tabla.Rows[0];
 
-            // La contraseña no se almacena: se deriva (ddMM nac. + 4 primeros del DNI)
-            // y se compara contra lo ingresado.
+            // La contraseña no se almacena: se deriva (ddMM nac. + 4 primeros del DNI) y se compara contra lo ingresado.
             DateTime? fechaNac = fila["FechaNacimiento"] == DBNull.Value
                 ? (DateTime?)null
                 : Convert.ToDateTime(fila["FechaNacimiento"]);
@@ -120,8 +119,7 @@ namespace BLL.SistemaCompraVenta.Services
             if (string.IsNullOrWhiteSpace(dni))
                 throw new Exception("DNI inválido.");
 
-            // La DAL traduce la violación de FK (usuario con operaciones) a una
-            // OperacionNoPermitidaException con el mensaje correspondiente.
+            // La DAL traduce la violación de FK (usuario que tenga operaciones) a una OperacionNoPermitidaException con el mensaje correspondiente.
             return oUsuarioDAL.EliminarUsuario(dni) > 0;
         }
     }
