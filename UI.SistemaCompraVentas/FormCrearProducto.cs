@@ -11,9 +11,12 @@ namespace UI.SistemaCompraVentas
             new BLL.SistemaCompraVenta.ProductoBLL();
         private readonly BLL.SistemaCompraVenta.ProveedorBLL _provBll =
             new BLL.SistemaCompraVenta.ProveedorBLL();
+        private readonly BLL.SistemaCompraVenta.CategoriaBLL _catBll =
+            new BLL.SistemaCompraVenta.CategoriaBLL();
 
         private bool _cargando = false;
         private int _idProductoSeleccionado = 0;
+        private int _idCategoriaSeleccionada = 0;
         private string _categoriaSeleccionada = "";
         private Producto _productoVariante; // producto resuelto en la solapa SKU
 
@@ -24,10 +27,9 @@ namespace UI.SistemaCompraVentas
 
         private void FormCrearProducto_Load(object sender, EventArgs e)
         {
-            cboCategoria.Items.Clear();
-            cboCategoria.Items.Add("Calzado");
-            cboCategoria.Items.Add("Vestimenta");
-            cboCategoria.SelectedIndex = 0;
+            cboCategoria.DisplayMember = "Nombre";
+            cboCategoria.ValueMember = "ID_Categoria";
+            cboCategoria.DataSource = _catBll.ListarCategorias();
 
             dgvProductosCargados.Columns.Add("colId",        "ID");
             dgvProductosCargados.Columns.Add("colNombre",    "Nombre");
@@ -50,7 +52,7 @@ namespace UI.SistemaCompraVentas
                 Producto p = new Producto();
                 p.Nombre       = txtNombre.Text.Trim();
                 p.Marca        = cboMarca.Text;
-                p.ID_Categoria = IdCategoria(cboCategoria.Text);
+                p.ID_Categoria = Convert.ToInt32(cboCategoria.SelectedValue);
                 p.Categoria    = cboCategoria.Text;
                 p.PrecioVenta  = (double)nmPrecioVenta.Value;
                 p.PrecioCosto  = (double)nmPrecioCosto.Value;
@@ -80,7 +82,7 @@ namespace UI.SistemaCompraVentas
             nmPrecioCosto.Value = 0;
         }
 
-        // Marca nueva: se asocia a proveedores en un diálogo y queda disponible en el combo.
+
         private void btnNuevaMarca_Click(object sender, EventArgs e)
         {
             using (var dlg = new FormNuevaMarca())
@@ -108,6 +110,7 @@ namespace UI.SistemaCompraVentas
 
         // ── Solapa 2: Buscar / Editar / Eliminar ──
 
+
         private void btnBuscar_Click(object sender, EventArgs e)
         {
             try
@@ -124,7 +127,7 @@ namespace UI.SistemaCompraVentas
             finally { _cargando = false; }
         }
 
-        // El ID se muestra; solo se oculta la FK interna de categoría.
+
         private void AjustarColumnas()
         {
             if (dgvProductos.Columns.Contains("ID_Categoria"))
@@ -139,16 +142,17 @@ namespace UI.SistemaCompraVentas
 
             var fila = dgvProductos.CurrentRow;
             _idProductoSeleccionado = GrillaHelper.LeerEntero(dgvProductos, fila, "ID_Producto", "Id");
+            _idCategoriaSeleccionada = GrillaHelper.LeerEntero(dgvProductos, fila, "ID_Categoria");
             _categoriaSeleccionada  = GrillaHelper.LeerCelda(dgvProductos, fila, "Categoria");
 
             txtEditNombre.Text    = GrillaHelper.LeerCelda(dgvProductos, fila, "Nombre");
             SeleccionarMarca(cboEditMarca, GrillaHelper.LeerCelda(dgvProductos, fila, "Marca"));
-            txtEditCategoria.Text = _categoriaSeleccionada; // solo lectura: la categoría no se edita
+            txtEditCategoria.Text = _categoriaSeleccionada; 
             nmEditPrecioVenta.Value = LeerPrecio(fila, "PrecioVenta");
             nmEditPrecioCosto.Value = LeerPrecio(fila, "PrecioCosto");
         }
 
-        // Si la marca del producto no está en el catálogo, la agrega para poder mostrarla.
+
         private void SeleccionarMarca(ComboBox cbo, string marca)
         {
             if (string.IsNullOrEmpty(marca)) { cbo.SelectedIndex = -1; return; }
@@ -182,7 +186,7 @@ namespace UI.SistemaCompraVentas
                 p.Id           = _idProductoSeleccionado;
                 p.Nombre       = txtEditNombre.Text.Trim();
                 p.Marca        = cboEditMarca.Text;
-                p.ID_Categoria = IdCategoria(_categoriaSeleccionada); // categoría bloqueada
+                p.ID_Categoria = _idCategoriaSeleccionada; 
                 p.Categoria    = _categoriaSeleccionada;
                 p.PrecioVenta  = (double)nmEditPrecioVenta.Value;
                 p.PrecioCosto  = (double)nmEditPrecioCosto.Value;
@@ -251,6 +255,7 @@ namespace UI.SistemaCompraVentas
         private void LimpiarEdicion()
         {
             _idProductoSeleccionado = 0;
+            _idCategoriaSeleccionada = 0;
             _categoriaSeleccionada = "";
             txtEditNombre.Clear();
             cboEditMarca.SelectedIndex = -1;
@@ -259,7 +264,7 @@ namespace UI.SistemaCompraVentas
             nmEditPrecioCosto.Value = 0;
         }
 
-        // ── Solapa 3: Crear Variante (SKU) ───────────────────────────────
+
 
         private void CargarColores()
         {
@@ -274,7 +279,7 @@ namespace UI.SistemaCompraVentas
             using (var buscador = new FormBuscarProductoBase())
             {
                 if (buscador.ShowDialog() == DialogResult.OK && buscador.IdProductoSeleccionado > 0)
-                    txtIdProducto.Text = buscador.IdProductoSeleccionado.ToString(); // dispara ResolverProducto
+                    txtIdProducto.Text = buscador.IdProductoSeleccionado.ToString(); 
             }
         }
 
@@ -283,8 +288,7 @@ namespace UI.SistemaCompraVentas
             ResolverProducto();
         }
 
-        // Resuelve el producto a partir del ID tipeado: muestra su nombre, carga los
-        // talles de su categoría y lista sus variantes.
+
         private void ResolverProducto()
         {
             _productoVariante = null;
@@ -353,13 +357,7 @@ namespace UI.SistemaCompraVentas
             }
         }
 
-        // ── Helpers ──────────────────────────────────────────────────────
-
-        // Mapeo nombre -> ID centralizado en la BLL (Categorias). El combo solo tiene
-        // "Calzado"/"Vestimenta", así que el ?? nunca cae al default.
-        private static int IdCategoria(string categoria) =>
-            BLL.SistemaCompraVenta.Categorias.IdPorNombre(categoria)
-            ?? BLL.SistemaCompraVenta.Categorias.Vestimenta;
+ 
 
         private void btnSalir_Click(object sender, EventArgs e) => this.Close();
     }
