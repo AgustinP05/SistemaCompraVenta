@@ -10,7 +10,6 @@ namespace ENT.SistemaCompraVenta
         private string nombre;
         private string marca;
         private int idCategoria;
-        private string categoria;
         private double precioVenta;
         private double precioCosto;
 
@@ -37,12 +36,6 @@ namespace ENT.SistemaCompraVenta
         {
             get { return idCategoria; }
             set { idCategoria = value; }
-        }
-
-        public string Categoria
-        {
-            get { return categoria; }
-            set { categoria = value; }
         }
 
         public double PrecioVenta
