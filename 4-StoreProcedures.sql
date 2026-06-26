@@ -458,6 +458,13 @@ CREATE PROCEDURE SP_ListarColores AS BEGIN
 END;
 GO
 ---
+IF OBJECT_ID('SP_ListarCategorias', 'P') IS NOT NULL DROP PROCEDURE SP_ListarCategorias;
+GO
+CREATE PROCEDURE SP_ListarCategorias AS BEGIN
+    SELECT ID_Categoria, Nombre FROM tCategoria ORDER BY Nombre;
+END;
+GO
+---
 IF OBJECT_ID('SP_ListarTallesPorCategoria', 'P') IS NOT NULL DROP PROCEDURE SP_ListarTallesPorCategoria;
 GO
 -- Talles válidos para la categoría del producto (Calzado vs Vestimenta)

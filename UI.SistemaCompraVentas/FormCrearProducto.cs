@@ -18,6 +18,7 @@ namespace UI.SistemaCompraVentas
         private int _idProductoSeleccionado = 0;
         private int _idCategoriaSeleccionada = 0;
         private string _categoriaSeleccionada = "";
+        private List<Categoria> _categorias = new List<Categoria>();
         private Producto _productoVariante; // producto resuelto en la solapa SKU
 
         public FormCrearProducto()
@@ -27,9 +28,10 @@ namespace UI.SistemaCompraVentas
 
         private void FormCrearProducto_Load(object sender, EventArgs e)
         {
+            _categorias = _catBll.ListarCategorias();
             cboCategoria.DisplayMember = "Nombre";
             cboCategoria.ValueMember = "ID_Categoria";
-            cboCategoria.DataSource = _catBll.ListarCategorias();
+            cboCategoria.DataSource = _categorias;
 
             dgvProductosCargados.Columns.Add("colId",        "ID");
             dgvProductosCargados.Columns.Add("colNombre",    "Nombre");
@@ -53,14 +55,13 @@ namespace UI.SistemaCompraVentas
                 p.Nombre       = txtNombre.Text.Trim();
                 p.Marca        = cboMarca.Text;
                 p.ID_Categoria = Convert.ToInt32(cboCategoria.SelectedValue);
-                p.Categoria    = cboCategoria.Text;
                 p.PrecioVenta  = (double)nmPrecioVenta.Value;
                 p.PrecioCosto  = (double)nmPrecioCosto.Value;
 
                 int nuevoId = _bll.GuardarProducto(p);
                 MessageBox.Show("Producto creado con éxito (ID " + nuevoId + ").");
 
-                dgvProductosCargados.Rows.Add(nuevoId, p.Nombre, p.Marca, p.Categoria,
+                dgvProductosCargados.Rows.Add(nuevoId, p.Nombre, p.Marca, cboCategoria.Text,
                     p.PrecioVenta.ToString("N2"), p.PrecioCosto.ToString("N2"));
 
                 LimpiarCarga();
@@ -186,8 +187,7 @@ namespace UI.SistemaCompraVentas
                 p.Id           = _idProductoSeleccionado;
                 p.Nombre       = txtEditNombre.Text.Trim();
                 p.Marca        = cboEditMarca.Text;
-                p.ID_Categoria = _idCategoriaSeleccionada; 
-                p.Categoria    = _categoriaSeleccionada;
+                p.ID_Categoria = _idCategoriaSeleccionada;
                 p.PrecioVenta  = (double)nmEditPrecioVenta.Value;
                 p.PrecioCosto  = (double)nmEditPrecioCosto.Value;
 
@@ -266,6 +266,13 @@ namespace UI.SistemaCompraVentas
 
 
 
+        // Resuelve el nombre de la categoría a partir de su ID (Producto ya no guarda el string).
+        private string NombreCategoria(int idCategoria)
+        {
+            var c = _categorias.Find(x => x.ID_Categoria == idCategoria);
+            return c != null ? c.Nombre : "";
+        }
+
         private void CargarColores()
         {
             cboColor.DataSource = _bll.ListarColores();
@@ -298,7 +305,7 @@ namespace UI.SistemaCompraVentas
             if (_productoVariante != null)
             {
                 lblProductoNombre.Text = _productoVariante.Nombre + "  ·  " +
-                                         _productoVariante.Marca + "  ·  " + _productoVariante.Categoria;
+                                         _productoVariante.Marca + "  ·  " + NombreCategoria(_productoVariante.ID_Categoria);
 
                 cboTalle.DataSource = _bll.ListarTallesPorCategoria(_productoVariante.ID_Categoria);
                 cboTalle.DisplayMember = "Valor";

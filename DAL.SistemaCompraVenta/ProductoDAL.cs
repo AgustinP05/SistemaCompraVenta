@@ -12,14 +12,12 @@ namespace DAL.SistemaCompraVenta
 
         private Producto MapearProducto(DataRow fila)
         {
-            string categoria = fila["Categoria"].ToString();
             Producto p = new Producto();
 
             p.Id           = Convert.ToInt32(fila["ID_Producto"]);
             p.Nombre       = fila["Nombre"].ToString();
             p.Marca        = fila["Marca"].ToString();
             p.ID_Categoria = Convert.ToInt32(fila["ID_Categoria"]);
-            p.Categoria    = categoria;
             p.PrecioVenta  = (double)Convert.ToDecimal(fila["PrecioVenta"]);
             p.PrecioCosto  = (double)Convert.ToDecimal(fila["PrecioCosto"]);
             return p;
